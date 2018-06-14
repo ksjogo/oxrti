@@ -3,6 +3,7 @@ var path = require("path"),
     glob = require("glob");
 
 module.exports = {
+    mode: 'production',
     //devtool: "eval-source-map",
     target: "node",
     node: {

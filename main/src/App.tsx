@@ -13,7 +13,7 @@ class App extends React.Component<{ appState: AppState }, {}> {
             <div>
                 {location.hostname === 'localhost' ?
                     <DevTools /> : <div />}
-                <h1>Oxrti 3</h1>
+                <h1>Oxrti</h1>
             </div>
         )
     }
