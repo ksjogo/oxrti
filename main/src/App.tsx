@@ -1,0 +1,22 @@
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import { observable } from 'mobx'
+import { observer } from 'mobx-react'
+import DevTools from 'mobx-react-devtools'
+import AppState from './AppState'
+import { hot } from 'react-hot-loader'
+
+@observer
+class App extends React.Component<{ appState: AppState }, {}> {
+    render () {
+        return (
+            <div>
+                {location.hostname === 'localhost' ?
+                    <DevTools /> : <div />}
+                <h1>Oxrti 3</h1>
+            </div>
+        )
+    }
+}
+
+export default hot(module)(App)

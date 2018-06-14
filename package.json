@@ -1,0 +1,41 @@
+{
+  "name": "wellbeingbots",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@types/async": "^2.0.49",
+    "@types/gremlin": "git+https://github.com/akane30/npm-gremlin.git",
+    "@types/lodash": "^4.14.109",
+    "@types/node": "^9.6.21",
+    "@types/node-fetch": "^1.6.9",
+    "async": "^2.6.1",
+    "azure-functions-nodejs-worker": "^0.1.1-0",
+    "azure-storage": "^2.8.3",
+    "botbuilder": "^3.15.0",
+    "botbuilder-azure": "3.0.4",
+    "botbuilder-cognitiveservices": "^1.2.0",
+    "glob": "^7.1.2",
+    "gremlin": "^2.7.0",
+    "lodash": "^4.17.10",
+    "lodash-decorators": "^4.5.0",
+    "node-fetch": "^1.7.3",
+    "npm": "^6.1.0",
+    "raw-loader": "^0.5.1",
+    "source-map-support": "^0.5.6",
+    "ts-loader": "^3.2.0",
+    "tslint": "^5.10.0",
+    "tslint-config-standard": "^7.0.0",
+    "typescript": "^2.9.2",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.11.2"
+  },
+  "devDependencies": {
+    "restify": "^4.3.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
