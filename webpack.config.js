@@ -1,48 +1,54 @@
-var path = require("path"),
-    webpack = require("webpack"),
-    glob = require("glob");
+var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
-    mode: 'production',
-    //devtool: "eval-source-map",
-    target: "node",
-    node: {
-        __dirname: true,
-    },
-    entry: glob.sync("*/index.ts").reduce((acc, value) => {
-        console.log(value)
-        acc[value.replace(/.ts$/, ".js")] = "./" + value; return acc;
-    }, {}),
-    output: {
-        path: process.cwd(),
-        filename: "[name]",
-        libraryTarget: "commonjs2"
-    },
-    resolve: {
-        /* modules:  [path.join(__dirname, "node_modules")],*/
-        extensions: [".ts", ".js", ".json"]
-    },
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: [{
-                    loader: "ts-loader",
-                    options: {
-                        silent: true
-                    }
-                }]
-            }, {
-                test: /\.json$/,
-                use: ['json-loader']
-            }
-        ]
-    },
-    plugins: [
-        new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.DefinePlugin({ "global.GENTLY": false }),
-        new webpack.SourceMapDevToolPlugin({
-            filename: '[name].map'
-        })
+  mode: 'development',
+  entry: (process.env.NODE_ENV !== 'production') ? [
+    'webpack-dev-server/client?http://localhost:3000',
+    'webpack/hot/only-dev-server',
+    './src/common/index'
+  ] : [
+      './src/common/index'
+    ],
+  plugins: [
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[name].map'
+    })
+  ],
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js',
+    publicPath: '/static/'
+  },
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: true,
+              plugins: ['react-hot-loader/babel'],
+            },
+          },
+          {
+            loader: "awesome-typescript-loader"
+          },
+        ],
+        include: path.join(__dirname, 'src')
+      }, {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      }, {
+        test: /\.(gif|png|jpe?g|svg)$/i,
+        loaders: ["base64-image-loader"]
+      }
     ]
+  }
 };

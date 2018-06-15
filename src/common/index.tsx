@@ -12,7 +12,9 @@ document.body.appendChild(el)
 console.log('oxrti started')
 
 setTimeout(() => {
+    console.log('init 1')
 }, 10)
 
 setTimeout(() => {
+    console.log('init 2')
 }, 1500)

@@ -3,6 +3,10 @@ node_modules/
 *.js.map
 .funcpack/
 local.settings.json
+node_modules/
+static/bundle.js
+.vscode
+dist/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
