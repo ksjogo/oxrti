@@ -6,9 +6,9 @@ module.exports = {
   entry: (process.env.NODE_ENV !== 'production') ? [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    './src/common/index'
+    './src/web/index'
   ] : [
-      './src/common/index'
+      './src/web/index'
     ],
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),

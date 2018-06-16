@@ -5,8 +5,19 @@ build:
 install:
 	npm install
 
-run:
+start:
+	npx electron-webpack dev
+
+startweb:
 	node server.js
+
+electronbuild:
+	npx electron-webpack build --mode "production"
+	sed -i 's/require("source-map-support\/source-map-support.js").install(),//' dist/main/main.js
+	npx electron-builder -c.mac.identity=null
 
 lint:
 	npx tslint -p . -c tslint.json **/*.tsx **/*.ts --fix  --exclude **/*.d.ts
+
+patches:
+	sed -i 's/if (!options.ignoreUnaccepted)/if (false)/' node_modules/webpack/lib/HotModuleReplacement.runtime.js
