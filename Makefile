@@ -16,6 +16,9 @@ electronbuild:
 	sed -i 's/require("source-map-support\/source-map-support.js").install(),//' dist/main/main.js
 	npx electron-builder -c.mac.identity=null
 
+macPrepare:
+	brew install anttweakbar freeimage glew glfw3
+
 lint:
 	npx tslint -p . -c tslint.json **/*.tsx **/*.ts --fix  --exclude **/*.d.ts
 

@@ -1,1 +1,3 @@
 # oxrti
+
+# Dev Setup Mac
