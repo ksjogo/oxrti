@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
 import AppState from './AppState'
 import { AppContainer } from 'react-hot-loader'
+import { DefaultScene } from './DefaultScene'
 
 @observer
 class App extends React.Component<{ appState: AppState }, {}> {
@@ -15,6 +16,7 @@ class App extends React.Component<{ appState: AppState }, {}> {
                     <h1>Oxrti</h1>
                     <p>text </p>
                     <p>{this.props.appState.counter}</p>
+                    <DefaultScene />
                 </div>
             </AppContainer>
         )
