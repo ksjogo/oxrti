@@ -1,0 +1,4 @@
+[submodule "data"]
+	path = data
+	url = https://github.com/ksjogo/oxrti_data.git
+	branch = master
