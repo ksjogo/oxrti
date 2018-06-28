@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
-import AppState from './AppState'
-import { AppContainer } from 'react-hot-loader'
+import AppState from '../State/AppState'
+import { AppContainer, hot } from 'react-hot-loader'
 import { DefaultScene } from './DefaultScene'
 
 @observer
@@ -22,5 +22,4 @@ class App extends React.Component<{ appState: AppState }, {}> {
         )
     }
 }
-
-export default App
+export default hot(module)(App)
