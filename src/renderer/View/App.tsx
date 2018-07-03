@@ -15,7 +15,7 @@ class App extends React.Component<{ appState: AppState }, {}> {
                     {location.hostname === 'localhost' ?
                         <DevTools /> : <div />}
                     <h1>Oxrti</h1>
-                    <p>text </p>
+                    <p>Build 2 </p>
                     <p>{this.props.appState.uptime}</p>
                     <DefaultScene />
                 </div>
