@@ -4,7 +4,7 @@ var path = require("path"),
 
 module.exports = {
     mode: 'production',
-    //devtool: "eval-source-map",
+    devtool: false,
     target: "node",
     node: {
         __dirname: true,
