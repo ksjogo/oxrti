@@ -5,6 +5,7 @@ startweb:
 	node server.js
 
 build:
+	sed -i "s/<title>Oxrti.*<\/title>/<title>Oxrti - $$(date)<\/title>/" azurestatic/index.html
 	npx webpack	--mode "production"
 	npx webpack --config webpack.functions.js
 
