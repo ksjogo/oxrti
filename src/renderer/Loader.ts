@@ -2,6 +2,8 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import AppState from './State/AppState'
 import App from './View/App'
+import plugins from '../../oxrti.plugins.json'
+import * as path from 'path'
 
 export default function init (elementId: string | HTMLElement) {
 
@@ -12,7 +14,22 @@ export default function init (elementId: string | HTMLElement) {
         ReactDOM.render(React.createElement(App, { appState: store }), mount)
     }
 
-    // Initial render
+    let pluginContext = require.context('./Plugins', true, /^\.\//)
+
+    function loadPlugins () {
+        console.log(plugins)
+        plugins.forEach(name => {
+            if (name !== path.basename(name)) {
+                console.error('file-system paths currently not allowed for plugins')
+            } else {
+                let plugin = pluginContext(`./${name}/${name}`).default as Plugin
+                console.log(`Loaded plugin: ${plugin.name}`)
+            }
+        })
+    }
+
+    // Initial run
+    loadPlugins()
     renderApp(App, store)
 
     // Connect HMR
@@ -26,6 +43,11 @@ export default function init (elementId: string | HTMLElement) {
         module.hot.accept(['./View/App'], () => {
             // Componenent definition changed, re-render app
             renderApp(require('./View/App').default, store)
+        })
+
+        module.hot.accept((pluginContext as any).id, () => {
+            // Some plugin changed, let's reload
+            loadPlugins()
         })
     }
 }

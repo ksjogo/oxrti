@@ -15,6 +15,7 @@ class TodoController extends shim(TodoModel) {
     @action
     toggle () {
         this.done = !this.done
+        console.log('tog2gle')
     }
 
 }
