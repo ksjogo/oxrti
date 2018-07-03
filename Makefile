@@ -1,15 +1,15 @@
+start:
+	npx electron-webpack dev
+
+startweb:
+	node server.js
+
 build:
 	npx webpack	--mode "production"
 	npx webpack --config webpack.functions.js
 
 install:
 	npm install
-
-start:
-	npx electron-webpack dev
-
-startweb:
-	node server.js
 
 electronbuild:
 	npx electron-webpack build --mode "production"

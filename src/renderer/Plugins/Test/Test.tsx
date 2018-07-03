@@ -20,7 +20,6 @@ class TodoController extends shim(TodoModel) {
 }
 
 class TodoView extends Component {
-    setState (state) { }
 }
 
 let instance = new Plugin('Todo', TodoModel, TodoController, TodoView)

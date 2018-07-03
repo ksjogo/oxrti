@@ -18,14 +18,12 @@ export default function init (elementId: string | HTMLElement) {
     // Connect HMR
     if (module.hot) {
         module.hot.accept(['./State/AppState'], () => {
-            debugger
             // Store definition changed, recreate a new one from old state
             store = new (require('./State/AppState').default)(store)
             renderApp(require('./View/App').default, store)
         })
 
         module.hot.accept(['./View/App'], () => {
-            debugger
             // Componenent definition changed, re-render app
             renderApp(require('./View/App').default, store)
         })

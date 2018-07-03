@@ -16,7 +16,7 @@ class App extends React.Component<{ appState: AppState }, {}> {
                         <DevTools /> : <div />}
                     <h1>Oxrti</h1>
                     <p>text </p>
-                    <p>{this.props.appState.counter}</p>
+                    <p>{this.props.appState.uptime}</p>
                     <DefaultScene />
                 </div>
             </AppContainer>
