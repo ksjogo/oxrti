@@ -4,6 +4,7 @@ import DevTools from 'mobx-react-devtools'
 import AppState from '../State/AppState'
 import { AppContainer, hot } from 'react-hot-loader'
 import { DefaultScene } from './DefaultScene'
+import Test from '../Plugins/Test/Test'
 
 @observer
 class App extends React.Component<{ appState: AppState }, {}> {
