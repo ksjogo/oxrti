@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
 :: ----------------------
@@ -107,7 +108,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 )
 
 :: 3. Restore npm
-call :RestoreNpmPackages "%DEPLOYMENT_TARGET%"
+:: call :RestoreNpmPackages "%DEPLOYMENT_TARGET%"
 
 exit /b %ERRORLEVEL%
 
