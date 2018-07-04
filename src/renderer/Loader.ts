@@ -5,38 +5,44 @@ import App from './View/App'
 import plugins from '../../oxrti.plugins.json'
 import * as path from 'path'
 import { destroy, getSnapshot } from 'mobx-state-tree'
-import { connectReduxDevtools } from 'mst-middlewares'
+import { connectReduxDevtools, asReduxStore } from 'mst-middlewares'
+import * as remotedev from 'remotedev'
 
 export default function init (elementId: string | HTMLElement) {
 
     let mount = typeof elementId === 'object' ? elementId : document.getElementById(elementId)
     let state: IAppState = null
 
+    // transform the current state to the new one
     function createAppState (snapshot) {
-
         // kill old store to prevent accidental use and run clean up hooks
-        if (state)
-            destroy(state)
+        try {
+            if (state) {
+                if ((window as any).devToolsExtension)
+                    (window as any).devToolsExtension.disconnect()
+                destroy(state)
+            }
+        } catch (e) {
+            // there is some circular kill detection in mobx
+            // we can ignore that as we kill the state anyway
+        }
 
         // create new one
         state = (require('./State/AppState').default).create(snapshot)
-
-        debugger
-
-        // connect devtools
-        // connectReduxDevtools(require('remotedev'), state)
+        connectReduxDevtools(remotedev, state)
 
         return state
     }
 
-    function renderApp (App, store) {
-        ReactDOM.render(React.createElement(App, { appState: store }), mount)
+    function renderApp (App, state) {
+        ReactDOM.render(React.createElement(App, { appState: state }), mount)
     }
 
+    // webpack bundles the modules into one context
     let pluginContext = require.context('./Plugins', true, /^\.\//)
 
+    // we can load them manually
     function loadPlugins () {
-        console.log(plugins)
         plugins.forEach(name => {
             if (name !== path.basename(name)) {
                 console.error('file-system paths currently not allowed for plugins')

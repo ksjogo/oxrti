@@ -24,4 +24,7 @@ lint:
 	npx tslint -p . -c tslint.json **/*.tsx **/*.ts --fix  --exclude **/*.d.ts
 
 patches:
-	sed -i 's/if (!options.ignoreUnaccepted)/if (false)/' node_modules/webpack/lib/HotModuleReplacement.runtime.js
+	@echo "Fixing Webpack HMR"
+	@sed -i 's/if (!options.ignoreUnaccepted)/if (false)/' node_modules/webpack/lib/HotModuleReplacement.runtime.js
+	@echo "Fixing Webpack WS"
+	@sed -i "s/  WebSocket = require('ws');/  throw new Error('we cannot use ws, it will annoy webpack');/" ./node_modules/socketcluster-client/lib/sctransport.js

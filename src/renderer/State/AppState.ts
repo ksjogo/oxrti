@@ -16,7 +16,7 @@ class AppStateController extends shim(AppStateData) {
 
   @action
   uptimer () {
-    this.uptime += 5
+    this.uptime += 3
   }
 
   @action
