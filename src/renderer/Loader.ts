@@ -1,14 +1,33 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import AppState from './State/AppState'
+import AppState, { initalState, IAppState } from './State/AppState'
 import App from './View/App'
 import plugins from '../../oxrti.plugins.json'
 import * as path from 'path'
+import { destroy, getSnapshot } from 'mobx-state-tree'
+import { connectReduxDevtools } from 'mst-middlewares'
 
 export default function init (elementId: string | HTMLElement) {
 
     let mount = typeof elementId === 'object' ? elementId : document.getElementById(elementId)
-    let store = new AppState()
+    let state: IAppState = null
+
+    function createAppState (snapshot) {
+
+        // kill old store to prevent accidental use and run clean up hooks
+        if (state)
+            destroy(state)
+
+        // create new one
+        state = (require('./State/AppState').default).create(snapshot)
+
+        debugger
+
+        // connect devtools
+        // connectReduxDevtools(require('remotedev'), state)
+
+        return state
+    }
 
     function renderApp (App, store) {
         ReactDOM.render(React.createElement(App, { appState: store }), mount)
@@ -30,19 +49,18 @@ export default function init (elementId: string | HTMLElement) {
 
     // Initial run
     loadPlugins()
-    renderApp(App, store)
+    renderApp(App, createAppState(initalState))
 
     // Connect HMR
     if (module.hot) {
         module.hot.accept(['./State/AppState'], () => {
             // Store definition changed, recreate a new one from old state
-            store = new (require('./State/AppState').default)(store)
-            renderApp(require('./View/App').default, store)
+            renderApp(require('./View/App').default, createAppState(getSnapshot(state)))
         })
 
         module.hot.accept(['./View/App'], () => {
             // Componenent definition changed, re-render app
-            renderApp(require('./View/App').default, store)
+            renderApp(require('./View/App').default, state)
         })
 
         module.hot.accept((pluginContext as any).id, () => {
@@ -50,4 +68,10 @@ export default function init (elementId: string | HTMLElement) {
             loadPlugins()
         })
     }
+
+    function uptimer () {
+        state.uptimer()
+        setTimeout(uptimer, 1000)
+    }
+    uptimer()
 }

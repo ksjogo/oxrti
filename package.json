@@ -69,5 +69,8 @@
   },
   "author": "Johannes Bernhard Goslar",
   "license": "GPL-3.0-or-later",
-  "description": "Azure hosting package for oxrti"
+  "description": "Azure hosting package for oxrti",
+  "dependencies": {
+    "mst-middlewares": "^2.2.0"
+  }
 }

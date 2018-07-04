@@ -1,24 +1,31 @@
-import { observable } from 'mobx'
-import autobind from 'autobind-decorator'
-import * as querystring from 'querystring'
+import { types, IModelType } from 'mobx-state-tree'
+import { shim, action, mst } from 'classy-mst'
+export type __IModelType = IModelType<any, any>
 
-export default class AppState {
-
-  @observable
-  uptime = 0
-
-  @autobind
-  uptimer () {
-    this.uptime += 1
-    setTimeout(this.uptimer, 1000)
-  }
-
-  constructor (old?: AppState) {
-    if (old) {
-      this.uptime = old.uptime
-    }
-
-    setTimeout(this.uptimer, 10)
-  }
-
+export const initalState = {
+  uptime: 2,
+  otherValue: 10,
 }
+
+const AppStateData = types.model({
+  uptime: types.number,
+  otherValue: types.number,
+})
+
+class AppStateController extends shim(AppStateData) {
+
+  @action
+  uptimer () {
+    this.uptime += 5
+  }
+
+  @action
+  otherAction () {
+
+  }
+}
+
+const AppState = mst(AppStateController, AppStateData, 'AppState')
+export default AppState
+
+export type IAppState = typeof AppState.Type
