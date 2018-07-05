@@ -1,16 +1,18 @@
-import { IModelType } from 'mobx-state-tree'
-import { ModelInterface } from 'classy-mst'
-import { Component } from 'react'
+import { IModelType, types } from 'mobx-state-tree'
+import { ModelInterface, shim, action, mst } from 'classy-mst'
 
-export default class Plugin<S = {}, T= {}> {
-    name = ''
+const PluginModel = types.model({
+    title: types.string,
+    loaded: false,
+})
 
-    constructor (
-        name: string,
-        model: IModelType<S, T>,
-        controller: ModelInterface<S, T>,
-        view: new () => Component,
-    ) {
-        this.name = name
+class PluginController extends shim(PluginModel) {
+    @action
+    load () {
+        this.loaded = true
     }
 }
+
+const Plugin = mst(PluginController, PluginModel, 'TestPlugin')
+export default Plugin
+export type IPlugin = typeof Plugin.Type

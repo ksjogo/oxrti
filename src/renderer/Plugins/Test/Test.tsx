@@ -1,27 +1,23 @@
-import { types } from 'mobx-state-tree'
+import React from 'react'
 import { mst, shim, action } from 'classy-mst'
-import { Component } from 'react'
+import { types } from 'mobx-state-tree'
+import { IAppState } from '../../State/AppState'
 import Plugin from '../Plugin'
 
-const TodoModel = types.model({
-
-    title: types.string,
-    done: false,
-
+const TodoModel = Plugin.props({
+    extra: types.number,
 })
 
-class TodoController extends shim(TodoModel) {
-
+class TodoController extends shim(TodoModel, Plugin) {
     @action
-    toggle () {
-        this.done = !this.done
-        console.log('toggle')
+    setExtra () {
+        this.extra = 10
     }
-
 }
 
-class TodoView extends Component {
-}
+const TestPlugin = mst(TodoController, TodoModel, 'TestPlugin')
+export type ITestPlugin = typeof TestPlugin.Type
 
-let instance = new Plugin('Todo', TodoModel, TodoController, TodoView)
-export default instance
+function view (state: IAppState, myState: ITestPlugin) {
+    return <p>{myState.title}</p>
+}
