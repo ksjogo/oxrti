@@ -1,17 +1,26 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import AppState, { initalState, IAppState } from './State/AppState'
+import { initalState, IAppState } from './State/AppState'
 import App from './View/App'
 import plugins from '../../oxrti.plugins.json'
 import * as path from 'path'
 import { destroy, getSnapshot } from 'mobx-state-tree'
-import { connectReduxDevtools, asReduxStore } from 'mst-middlewares'
+import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 
 export default function init (elementId: string | HTMLElement) {
 
     let mount = typeof elementId === 'object' ? elementId : document.getElementById(elementId)
     let state: IAppState = null
+
+    // webpack bundles the modules into one context
+    // TOIMP: could refine regex here
+    let pluginContext = require.context('./Plugins', true, /^\.\//)
+    function pluginLoader (name: string, preload = false): Plugin {
+        let plugin = pluginContext(`./${name}/${name}`).default as Plugin
+        console.log(`${preload ? 'Pre-' : ''}Loaded plugin: ${name}`)
+        return plugin
+    }
 
     // transform the current state to the new one
     function createAppState (snapshot) {
@@ -23,13 +32,14 @@ export default function init (elementId: string | HTMLElement) {
                 destroy(state)
             }
         } catch (e) {
-            // there is some circular kill detection in mobx
+            // there is some circular kill detection in mobx due to the redux devtools
             // we can ignore that as we kill the state anyway
         }
 
         // create new one
         state = (require('./State/AppState').default).create(snapshot)
         connectReduxDevtools(remotedev, state)
+        state.setPluginLoader(pluginLoader)
 
         return state
     }
@@ -38,24 +48,26 @@ export default function init (elementId: string | HTMLElement) {
         ReactDOM.render(React.createElement(App, { appState: state }), mount)
     }
 
-    // webpack bundles the modules into one context
-    let pluginContext = require.context('./Plugins', true, /^\.\//)
-
     // we can load them manually
-    function loadPlugins () {
+    function loadPlugins (preload = false) {
         plugins.forEach(name => {
             if (name !== path.basename(name)) {
                 console.error('file-system paths currently not allowed for plugins')
             } else {
-                let plugin = pluginContext(`./${name}/${name}`).default as Plugin
-                console.log(`Loaded plugin: ${plugin.name}`)
+                // types need to be know to be able to reconstruct from state tree
+                if (preload)
+                    pluginLoader(name, preload)
+                else
+                    state.loadPlugin(name)
             }
         })
     }
 
     // Initial run
+    loadPlugins(true)
+    createAppState(initalState)
     loadPlugins()
-    renderApp(App, createAppState(initalState))
+    renderApp(App, state)
 
     // Connect HMR
     if (module.hot) {
@@ -69,8 +81,10 @@ export default function init (elementId: string | HTMLElement) {
             renderApp(require('./View/App').default, state)
         })
 
-        module.hot.accept((pluginContext as any).id, () => {
+        module.hot.accept((pluginContext as any).id, (updatedDependencies) => {
             // Some plugin changed, let's reload
+            console.log(updatedDependencies)
+            debugger
             loadPlugins()
         })
     }

@@ -6,7 +6,15 @@ const PluginModel = types.model({
     loaded: false,
 })
 
+type hooks = []
+
 class PluginController extends shim(PluginModel) {
+
+    @action
+    prepareHooks (hooks: hooks) {
+        console.log('hooked')
+    }
+
     @action
     load () {
         this.loaded = true

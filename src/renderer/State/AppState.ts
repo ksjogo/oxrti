@@ -1,6 +1,7 @@
 import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
 export type __IModelType = IModelType<any, any>
+import Plugin from '../Plugin'
 
 export const initalState = {
   uptime: 2,
@@ -10,9 +11,18 @@ export const initalState = {
 const AppStateData = types.model({
   uptime: types.number,
   otherValue: types.number,
+  plugins: types.optional(types.map(Plugin), {}),
 })
 
+export type PluginLoader = (name: string) => Plugin
+let pluginLoader: PluginLoader = null
+
 class AppStateController extends shim(AppStateData) {
+
+  @action
+  setPluginLoader (loader: PluginLoader) {
+    pluginLoader = loader
+  }
 
   @action
   uptimer () {
@@ -23,6 +33,14 @@ class AppStateController extends shim(AppStateData) {
   otherAction () {
 
   }
+
+  @action
+  loadPlugin (name: string) {
+    let plugin = pluginLoader(name)
+    debugger
+    console.log(plugin)
+  }
+
 }
 
 const AppState = mst(AppStateController, AppStateData, 'AppState')
