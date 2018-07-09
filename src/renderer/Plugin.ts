@@ -6,13 +6,11 @@ const PluginModel = types.model({
     loaded: false,
 })
 
-type hooks = []
-
 class PluginController extends shim(PluginModel) {
 
     @action
-    prepareHooks (hooks: hooks) {
-        console.log('hooked')
+    prepareHooks () {
+        console.log('PluginController Hooked')
     }
 
     @action
@@ -21,6 +19,6 @@ class PluginController extends shim(PluginModel) {
     }
 }
 
-const Plugin = mst(PluginController, PluginModel, 'TestPlugin')
+const Plugin = mst(PluginController, PluginModel, 'Plugin')
 export default Plugin
 export type IPlugin = typeof Plugin.Type

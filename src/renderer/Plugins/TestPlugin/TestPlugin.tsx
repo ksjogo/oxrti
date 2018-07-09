@@ -4,19 +4,29 @@ import { types } from 'mobx-state-tree'
 import { IAppState } from '../../State/AppState'
 import Plugin from '../../Plugin'
 
-const TodoModel = Plugin.props({
+const TestModel = Plugin.props({
     title: 'Test',
     extra: 20,
 })
 
-class TodoController extends shim(TodoModel, Plugin) {
+class TestController extends shim(TestModel, Plugin) {
     @action
-    setExtra () {
-        this.extra = 14
+    setExtra (event: any = null) {
+        this.extra = 18
+    }
+
+    @action
+    setExtra2 (event: any = null) {
+        this.extra = 17
+    }
+
+    prepareHooks () {
+        super.prepareHooks()
+        console.log('TestController hooked')
     }
 }
 
-const TestPlugin = mst(TodoController, TodoModel, 'TestPlugin')
+const TestPlugin = mst(TestController, TestModel, 'TestPlugin')
 export default TestPlugin
 export type ITestPlugin = typeof TestPlugin.Type
 
