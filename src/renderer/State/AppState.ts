@@ -4,14 +4,9 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 
-export const initalState = {
-  uptime: 2,
-  otherValue: 10,
-}
-
 const AppStateData = types.model({
-  uptime: types.number,
-  otherValue: types.number,
+  uptime: 0,
+  activeTab: 0,
   plugins: types.optional(types.map(Plugin), {}),
 })
 
@@ -62,6 +57,10 @@ class AppStateController extends shim(AppStateData) {
     // hook the plugin into the rest of the program
     this.plugins.get(name).prepareHooks()
 
+  }
+
+  @action switchTab (event, index) {
+    this.activeTab = index
   }
 
 }

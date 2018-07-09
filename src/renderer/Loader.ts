@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { initalState, IAppState } from './State/AppState'
+import { IAppState } from './State/AppState'
 import App from './View/App'
 import plugins from '../../oxrti.plugins.json'
 import * as path from 'path'
@@ -41,7 +41,7 @@ function loadPlugins (preload = false) {
 let state: IAppState = null
 
 // transform the current state to the new one
-function createAppState (snapshot) {
+function createAppState (snapshot = {}) {
     // kill old store to prevent accidental use and run clean up hooks
     try {
         if (state) {
@@ -81,7 +81,7 @@ export default function init (elementId: string | HTMLElement) {
     // Initial run
     reloadPluginContext()
     loadPlugins(true)
-    createAppState(initalState)
+    createAppState()
     loadPlugins()
     renderApp(App, state)
 
