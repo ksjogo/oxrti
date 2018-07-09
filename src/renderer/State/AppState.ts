@@ -20,19 +20,13 @@ let pluginLoader: PluginLoader = null
 
 class AppStateController extends shim(AppStateData) {
 
-  @action
   setPluginLoader (loader: PluginLoader) {
     pluginLoader = loader
   }
 
   @action
   uptimer () {
-    this.uptime += 3
-  }
-
-  @action
-  otherAction () {
-
+    this.uptime += 1
   }
 
   @action
@@ -67,6 +61,7 @@ class AppStateController extends shim(AppStateData) {
 
     // hook the plugin into the rest of the program
     this.plugins.get(name).prepareHooks()
+
   }
 
 }
