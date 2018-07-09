@@ -1,15 +1,25 @@
-import { AppContainer, hot } from 'react-hot-loader'
+import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
 import { IAppState } from '../State/AppState'
 import { ITestPlugin } from '../Plugins/TestPlugin/TestPlugin'
-import autobind from 'autobind-decorator'
-import { withStyles } from '@material-ui/core/styles'
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
+import red from '@material-ui/core/colors/red'
+
+// TOFIX: not working standalone currently
+// import 'typeface-roboto'
+
+// let's be a bit special and use our own theme
+const theme = createMuiTheme({
+    palette: {
+        primary: red,
+    },
+})
 
 function TabContainer (props) {
     return (
@@ -25,7 +35,7 @@ class App extends React.Component<{ appState: IAppState }, {}> {
     render () {
         let test = (this.props.appState.plugins.get('TestPlugin') as ITestPlugin)
         return (
-            <div>
+            <MuiThemeProvider theme={theme}>
                 {location.hostname === 'localhost' ?
                     <DevTools /> : <div />}
                 <AppBar position='static'>
@@ -54,7 +64,7 @@ class App extends React.Component<{ appState: IAppState }, {}> {
                     <TabContainer>
                         Item Three
                         </TabContainer>}
-            </div>
+            </MuiThemeProvider>
         )
     }
 }
