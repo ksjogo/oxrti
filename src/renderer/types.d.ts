@@ -3,3 +3,9 @@ declare module '*.css' {
   //@ts-ignore
   export default content
 }
+
+declare module '*.glsl' {
+  const content: string
+  //@ts-ignore
+  export = content
+}

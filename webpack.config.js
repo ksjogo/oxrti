@@ -1,9 +1,11 @@
 var path = require('path');
 var webpack = require('webpack');
+var webpackMerge = require('webpack-merge');
 
 module.exports = (env, argv) => {
   let productionP = argv.mode === 'production'
-  return {
+  // merge the additional electron-webpack config back in
+  let config = webpackMerge({
     mode: !productionP ? 'development' : 'production',
     entry: !productionP ? [
       'webpack-dev-server/client?http://localhost:3000',
@@ -39,6 +41,7 @@ module.exports = (env, argv) => {
               loader: 'babel-loader',
               options: {
                 babelrc: true,
+                // this could be unneccessary with our stateless react architechture, need to verify
                 plugins: !productionP ? ['react-hot-loader/babel'] : [],
               },
             },
@@ -56,5 +59,6 @@ module.exports = (env, argv) => {
         }
       ]
     }
-  };
+  }, require('./webpack.renderer.additions'));
+  return config;
 }

@@ -53,6 +53,7 @@ class App extends React.Component<{ appState: IAppState }, {}> {
                         <p>Build 4 </p>
                         <p>{this.props.appState.uptime}</p>
                         <p>{test.extra}</p>
+                        <p>{test.shader()}</p>
                         <button onClick={test.setExtra} > Tap me!</button>
                         <button onClick={test.setExtra2} > Tap me!</button>
                     </TabContainer>}

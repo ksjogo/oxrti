@@ -1,5 +1,5 @@
-var path = require("path"),
-    webpack = require("webpack"),
+//This file is compiling the Azure functions which are located on top level
+var webpack = require("webpack"),
     glob = require("glob");
 
 module.exports = {
@@ -19,7 +19,6 @@ module.exports = {
         libraryTarget: "commonjs2"
     },
     resolve: {
-        /* modules:  [path.join(__dirname, "node_modules")],*/
         extensions: [".ts", ".js", ".json"]
     },
     module: {

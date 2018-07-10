@@ -3,6 +3,7 @@ import { mst, shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
 import { IAppState } from '../../State/AppState'
 import Plugin from '../../Plugin'
+import shader from './shader.glsl'
 
 const TestModel = Plugin.props({
     title: 'Test',
@@ -23,6 +24,10 @@ class TestController extends shim(TestModel, Plugin) {
     prepareHooks () {
         super.prepareHooks()
         console.log('TestController hooked')
+    }
+
+    shader () {
+        return shader
     }
 }
 
