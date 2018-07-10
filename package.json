@@ -78,6 +78,8 @@
   "license": "GPL-3.0",
   "description": "oxrti",
   "dependencies": {
+    "gl-react": "^3.15.0",
+    "gl-react-dom": "^3.15.0",
     "glsl-noise": "0.0.0",
     "glslify": "^6.2.1",
     "webpack-merge": "^4.1.3"

@@ -10,6 +10,9 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
 import red from '@material-ui/core/colors/red'
+import GLView from './GLView'
+import shader2 from './test.glsl'
+import shader from '../Plugins/TestPlugin/shader.glsl'
 
 // TOFIX: not working standalone currently
 // import 'typeface-roboto'
@@ -59,6 +62,8 @@ class App extends React.Component<{ appState: IAppState }, {}> {
                     </TabContainer>}
                 {this.props.appState.activeTab === 1 &&
                     <TabContainer>
+                        <GLView shader={shader} uniforms={{ iGlobalTime: this.props.appState.uptime }} />
+                        <GLView shader={shader2} uniforms={{ blue: 0 }} />
                         Item Two
                         </TabContainer>}
                 {this.props.appState.activeTab === 2 &&
