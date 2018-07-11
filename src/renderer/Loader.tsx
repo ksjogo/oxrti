@@ -7,6 +7,7 @@ import * as path from 'path'
 import { destroy, getSnapshot } from 'mobx-state-tree'
 import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
+import { Provider } from 'mobx-react'
 
 let mount: HTMLElement
 
@@ -66,7 +67,9 @@ function createAppState (snapshot = {}) {
 }
 
 function renderApp (App, state) {
-    ReactDOM.render(React.createElement(App, { appState: state }), mount)
+    ReactDOM.render(<Provider appState={state} >
+        <App />
+    </Provider>, mount)
 }
 
 function uptimer () {

@@ -1,6 +1,6 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import { observer } from 'mobx-react'
+import { observer, Provider, inject } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
 import { IAppState } from '../State/AppState'
 import { ITestPlugin } from '../Plugins/TestPlugin/TestPlugin'
@@ -32,6 +32,7 @@ function TabContainer (props) {
     )
 }
 
+@inject('appState')
 @observer
 class App extends React.Component<{ appState: IAppState }, {}> {
 
