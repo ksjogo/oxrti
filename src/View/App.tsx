@@ -1,7 +1,6 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import DevTools from 'mobx-react-devtools'
-import { ITestPlugin, TestView } from '../Plugins/TestPlugin/TestPlugin'
+import { TestView } from '../Plugins/TestPlugin/TestPlugin'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
@@ -12,7 +11,6 @@ import shader2 from './test.glsl'
 import shader from '../Plugins/TestPlugin/shader.glsl'
 import Component from './Component'
 import Theme from './Theme'
-import { observer, Provider, inject } from 'mobx-react'
 
 function TabContainer (props) {
     return (
@@ -24,8 +22,6 @@ function TabContainer (props) {
 export default hot(module)(Component(props => {
     return (
         <MuiThemeProvider theme={Theme}>
-            {location.hostname === 'localhost' ?
-                <DevTools /> : <div />}
             <AppBar position='static'>
                 <Tabs value={props.appState.activeTab}
                     onChange={props.appState.switchTab} >

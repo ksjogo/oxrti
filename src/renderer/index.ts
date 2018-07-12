@@ -1,5 +1,5 @@
 import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
-import init from '../renderer/Loader'
+import init from '../Loader'
 const tools = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS, REDUX_DEVTOOLS]
     .forEach(name => {
         installExtension(name)

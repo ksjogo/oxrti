@@ -87,6 +87,9 @@
   "electronWebpack": {
     "renderer": {
       "webpackConfig": "webpack.renderer.additions.js"
+    },
+    "main": {
+      "sourceDirectory": "src/electron"
     }
   }
 }
