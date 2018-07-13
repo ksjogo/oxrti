@@ -6,6 +6,8 @@ interface ComponentProps {
     appState?: IAppState,
 }
 
-export default function Component<P> (inner: React.SFC<ComponentProps & P>) {
+export { ComponentProps }
+
+export default function Component<Props = {}> (inner: React.SFC<ComponentProps & Props>) {
     return inject('appState')(observer(inner))
 }

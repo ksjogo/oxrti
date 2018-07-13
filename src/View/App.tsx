@@ -1,6 +1,5 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import { TestView } from '../Plugins/TestPlugin/TestPlugin'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
@@ -20,6 +19,7 @@ function TabContainer (props) {
     )
 }
 export default hot(module)(Component(props => {
+    let Func = props.appState.plugins.get('TestPlugin').components()['Test']
     return (
         <MuiThemeProvider theme={Theme}>
             <AppBar position='static'>
@@ -36,7 +36,7 @@ export default hot(module)(Component(props => {
                     <h1>Oxrti</h1>
                     <p>Build 4 </p>
                     <p>{props.appState.uptime}</p>
-                    <TestView thing='abc' />
+                    <Func />
                 </TabContainer>}
             {props.appState.activeTab === 1 &&
                 <TabContainer>
