@@ -1,6 +1,6 @@
 import React from 'react'
 import Plugin, { PluginCreator, shim, action } from '../../Plugin'
-import shader from './shader.glsl'
+import shader from './zoom.glsl'
 
 const TestModel = Plugin.props({
     title: 'Test',

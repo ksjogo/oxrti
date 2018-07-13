@@ -15,7 +15,7 @@ class TestController extends shim(TestModel, Plugin) {
 
     @action
     setExtra2 (event: any = null) {
-        this.extra = 234
+        this.extra = 237
     }
 
     prepareHooks () {

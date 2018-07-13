@@ -1,5 +1,5 @@
-import { observer, Provider, inject } from 'mobx-react'
-import * as React from 'react'
+import { observer, inject } from 'mobx-react'
+import { SFC } from 'react'
 import { IAppState } from '../State/AppState'
 
 interface ComponentProps {
@@ -8,6 +8,6 @@ interface ComponentProps {
 
 export { ComponentProps }
 
-export default function Component<Props = {}> (inner: React.SFC<ComponentProps & Props>) {
+export default function Component<Props = {}> (inner: SFC<ComponentProps & Props>) {
     return inject('appState')(observer(inner))
 }

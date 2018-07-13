@@ -10,6 +10,8 @@ import shader2 from './test.glsl'
 import shader from '../Plugins/TestPlugin/shader.glsl'
 import Component from './Component'
 import Theme from './Theme'
+import PluginRender from './PluginRender'
+import Stack from './Stack'
 
 function TabContainer (props) {
     return (
@@ -19,7 +21,6 @@ function TabContainer (props) {
     )
 }
 export default hot(module)(Component(props => {
-    let Func = props.appState.plugins.get('TestPlugin').components()['Test']
     return (
         <MuiThemeProvider theme={Theme}>
             <AppBar position='static'>
@@ -36,12 +37,13 @@ export default hot(module)(Component(props => {
                     <h1>Oxrti</h1>
                     <p>Build 4 </p>
                     <p>{props.appState.uptime}</p>
-                    <Func />
+                    <PluginRender name='TestPlugin:Test' />
                 </TabContainer>}
             {props.appState.activeTab === 1 &&
                 <TabContainer>
                     <GLView shader={shader} uniforms={{ iGlobalTime: props.appState.uptime }} />
                     <GLView shader={shader2} uniforms={{ blue: 1 }} />
+                    <Stack />
                     Item Two
                         </TabContainer>}
             {props.appState.activeTab === 2 &&

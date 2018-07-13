@@ -17,7 +17,11 @@ function reloadPluginContext () {
     // TOIMP: could refine regex here
     pluginContext = require.context('./Plugins', true, /^\.\//)
 }
-
+/**
+ * Load the plugin's code via webpack context
+ * @param name must be the same as folder and filename
+ * @param preload must be enabled on first run to allow the classy-mst type registration before instanziation
+ */
 function pluginLoader (name: string, preload = false): Plugin {
     let plugin = pluginContext(`./${name}/${name}`).default as Plugin
     console.log(`${preload ? 'Pre-' : ''}Loaded plugin: ${name}`)
