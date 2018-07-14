@@ -13,7 +13,7 @@ import Theme from './Theme'
 import PluginRender from './PluginRender'
 import Stack from './Stack'
 
-function TabContainer (props) {
+function TabContainer(props) {
     return (
         <Typography component='div' style={{ padding: 8 * 3 }}>
             {props.children}

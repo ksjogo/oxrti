@@ -28,7 +28,10 @@ function pluginLoader (name: string, preload = false): Plugin {
     return plugin
 }
 
-// we can load them manually
+/**
+ * Load all plugins
+ * @param preload as above
+ */
 function loadPlugins (preload = false) {
     plugins.forEach(name => {
         if (name !== path.basename(name)) {
@@ -45,7 +48,10 @@ function loadPlugins (preload = false) {
 
 let state: IAppState = null
 
-// transform the current state to the new one
+/**
+ * transform the current state to the new one
+ * @param snapshot the previous tree snapshot
+ */
 function createAppState (snapshot = {}) {
     // kill old store to prevent accidental use and run clean up hooks
     try {
@@ -70,16 +76,30 @@ function createAppState (snapshot = {}) {
     return state
 }
 
+/**
+ * Render reactly on the detected mount point
+ * @param App app (view) code
+ * @param state state tree
+ */
 function renderApp (App, state) {
     ReactDOM.render(<Provider appState={state} >
         <App />
     </Provider>, mount)
 }
 
+/**
+ * Standard function to have some global timer
+ * Currently spamming the redux dev tools though
+ */
 function uptimer () {
     state.uptimer()
     setTimeout(uptimer, 1000)
 }
+
+/**
+ * Let's get this started
+ * @param elementId Hook into elementId or HTMLElement
+ */
 
 export default function init (elementId: string | HTMLElement) {
 

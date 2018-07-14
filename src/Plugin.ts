@@ -2,6 +2,7 @@ import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
 import Component, { ComponentProps } from './View/Component'
 import { ReactNode, ReactElement } from 'react'
+import { Shaders, Node } from 'gl-react'
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -20,11 +21,17 @@ const PluginModel = types.model({
  */
 class PluginController extends shim(PluginModel) {
 
+    /**
+     * Actually hook into the
+     */
     @action
     prepareHooks () {
         console.log('PluginController Hooked')
     }
 
+    /**
+     * A plugin shall be loaded, otherwise it might lay dormant and not do much
+     */
     @action
     load () {
         this.loaded = true
@@ -32,11 +39,17 @@ class PluginController extends shim(PluginModel) {
 
     /**
      * A plugin's components to be referenced on a string basis
+     * Our base PluginController doesn't have empty and remains empty to not interfer with mobx-state-tree subclassing for the moment
+     * If we define components here, subsclasses will also have to define them, we should introduce some merging potentially
      */
     components (): { [key: string]: React.SFC<ComponentProps> } {
         return {}
     }
 
+    /**
+     *
+     * @param name of a specific view
+     */
     component (name: string) {
         return this.components()[name]
     }
@@ -55,15 +68,18 @@ const Plugin = mst(PluginController, PluginModel, 'Plugin')
  */
 function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name: string) {
     let SubPlugin = mst(Code, Data, name)
-    type pluginType = typeof SubPlugin.Type
-    type propsType = ComponentProps & { children?: ReactNode }
-    type returnType = ReactElement<any> | null
-    let SubComponent = function (inner: (plugin: pluginType, props: propsType) => returnType) {
+    // outer level constructor function
+    // inner is basically (plugin, props) => ReactElement
+    // we could potentially extract the definition and do a templated type
+    let SubComponent = function (inner: (plugin: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }) => ReactElement<any> | null) {
+        // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         return Component(function (props) {
             let plugin = (props.appState.plugins.get(name)) as any
+            // actual rendering function
             return inner(plugin, props)
         })
     }
+    // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }
 }
 
@@ -76,4 +92,6 @@ export {
     shim as shim,
     action as action,
     PluginCreator as PluginCreator,
+    Shaders as Shaders,
+    Node as ShaderNode,
 }
