@@ -124,7 +124,7 @@ export default function init (elementId: string | HTMLElement) {
             renderApp(require('./View/App').default, state)
         })
 
-        module.hot.accept((pluginContext as any).id, (updatedDependencies) => {
+        module.hot.accept((pluginContext).id, (updatedDependencies) => {
             // Some plugin changed, let's reload
             reloadPluginContext()
             loadPlugins()

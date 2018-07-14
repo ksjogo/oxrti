@@ -27,7 +27,7 @@ class AppStateController extends shim(AppStateData) {
   @action
   loadPlugin (name: string) {
     // classy-mst will add the new type to Plugin Union
-    let plugin = pluginLoader(name) as Plugin
+    let plugin = pluginLoader(name)
     // but it will not clear up the previous specifications
     let pluginDeep: any = plugin
     let used: any = {}

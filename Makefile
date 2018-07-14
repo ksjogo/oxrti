@@ -21,7 +21,7 @@ macPrepare:
 	brew install anttweakbar freeimage glew glfw3
 
 lint:
-	npx tslint -p . -c tslint.json **/*.tsx **/*.ts --fix  --exclude **/*.d.ts
+	npx tslint --project . --fix -e oxrti.plugins.json
 
 patches:
 	@echo "Fixing Webpack HMR"
