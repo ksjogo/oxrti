@@ -3,6 +3,7 @@ import { shim, action, mst } from 'classy-mst'
 import Component, { ComponentProps } from './View/Component'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
+import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -22,36 +23,27 @@ const PluginModel = types.model({
 class PluginController extends shim(PluginModel) {
 
     /**
-     * Actually hook into the
-     */
-    @action
-    prepareHooks (appState: any) {
-        console.log('PluginController Hooked')
-    }
-
-    /**
      * A plugin shall be loaded, otherwise it might lay dormant and not do much
      */
     @action
-    load () {
+    load (appState: any) {
         this.loaded = true
     }
 
-    /**
-     * A plugin's components to be referenced on a string basis
-     * Our base PluginController doesn't have empty and remains empty to not interfer with mobx-state-tree subclassing for the moment
-     * If we define components here, subsclasses will also have to define them, we should introduce some merging potentially
-     */
-    components (): { [key: string]: React.SFC<ComponentProps> } {
+    hooks (): HookConfig {
         return {}
     }
 
-    /**
-     *
-     * @param name of a specific view
-     */
-    component (name: string) {
-        return this.components()[name]
+    hook (name: HookName, instance: string) {
+        return this.hooks()[name][instance]
+    }
+
+    componentHook (name: HookName, instance: string): ComponentHook {
+        return this.hook(name, instance) as ComponentHook
+    }
+
+    functionHook (name: HookName, instance: string): FunctionHook {
+        return this.hook(name, instance) as FunctionHook
     }
 }
 

@@ -28,7 +28,7 @@
     "babel-core": "^7.0.0-0",
     "babel-loader": "^8.0.0-beta.3",
     "base64-image-loader": "^1.2.1",
-    "classy-mst": "git+https://github.com/ksjogo/classy-mst.git",
+    "classy-mst": "^1.0.2",
     "core-worker": "^0.3.5",
     "css-loader": "^1.0.0",
     "electron": "^2.0.5",

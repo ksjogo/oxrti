@@ -21,12 +21,6 @@ class TestController extends shim(TestModel, Plugin) {
     setExtra2 (event: any = null) {
         this.extra = 237
     }
-
-    prepareHooks (appState: IAppState) {
-        super.prepareHooks(appState)
-        console.log('TestController hooked')
-    }
-
     shader () {
         return shader
     }

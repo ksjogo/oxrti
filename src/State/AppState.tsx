@@ -3,14 +3,14 @@ import { shim, action, mst } from 'classy-mst'
 export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
-import RenderStack from './RenderStack'
+import HookManager, { HookMapper, HookIterator } from './HookManager'
+import { HookConfig, HookName } from '../Hook'
 
 const AppStateData = types.model({
   uptime: 0,
   activeTab: 0,
   plugins: types.optional(types.map(Plugin), {}),
-  renderStack: types.optional(RenderStack, { stack: [] }),
-  viewerSideHooks: types.optional(types.array(types.string), []),
+  hooks: types.optional(types.map(HookManager), {}),
 })
 
 export type PluginLoader = (name: string) => Plugin
@@ -58,20 +58,62 @@ class AppStateController extends shim(AppStateData) {
     this.plugins.set(name, snapshot)
 
     // hook the plugin into the rest of the program
-    this.plugins.get(name).prepareHooks(this)
-
+    let instance = this.plugins.get(name)
+    instance.load(this)
+    this.loadHooks(name, instance.hooks())
   }
 
   @action switchTab (event, index) {
     this.activeTab = index
   }
 
+  /**
+   * Connect all hooks in our state tree
+   * @param pluginName need to store the reference
+   * @param hooks actual hook configuration
+   */
   @action
-  addViewerSideHook (name: string) {
-    if (this.viewerSideHooks.indexOf(name) === -1)
-      this.viewerSideHooks.push(name)
+  loadHooks (pluginName: string, hooks: HookConfig) {
+    for (let hookName in hooks) {
+      // ensure we got an appropiate hook manager
+      let manager = this.hooks.get(hookName)
+      if (!manager) {
+        this.hooks.set(hookName, HookManager.create({}))
+        manager = this.hooks.get(hookName)
+      }
+      for (let functionName in hooks[hookName]) {
+        // create a unique reference
+        let hookReference = `${pluginName}$${hookName}$${functionName}`
+        let priority = hooks[hookName][functionName].priority
+        // and actually insert it
+        manager.insert(hookReference, priority)
+      }
+    }
   }
 
+  /**
+   * Iterate over a given hookname
+   * @param name of the hook
+   * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
+   */
+  hookForEach (name: HookName, iterator: HookIterator): void {
+    let manager = this.hooks.get(name)
+    if (!manager)
+      return
+    manager.forEach(iterator, name, this)
+  }
+
+  /**
+   * Map over a given hookname
+   * @param name of the hook
+   * @param mapper function, will be called with each concrete hook instance, could be multiple from one plugin
+   */
+  hookMap<S> (name: HookName, mapper: HookMapper<S>): S[] {
+    let manager = this.hooks.get(name)
+    if (!manager)
+      return []
+    return manager.map(mapper, name, this)
+  }
 }
 
 const AppState = mst(AppStateController, AppStateData, 'AppState')

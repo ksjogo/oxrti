@@ -1,7 +1,6 @@
 // <- oxrti default imports
 import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-import { IAppState } from '../../State/AppState'
 // oxrti default imports ->
 
 import shader from './rotation.glsl'
@@ -15,15 +14,20 @@ const RotationModel = Plugin.props({
 
 class RotationController extends shim(RotationModel, Plugin) {
 
-    prepareHooks (appState: IAppState) {
-        appState.renderStack.insert('Rotation:Rotation', 10)
-        appState.addViewerSideHook('Rotation:Slider')
-    }
-
-    components () {
+    hooks () {
         return {
-            'Rotation': RotationComponent,
-            'Slider': SliderComponent,
+            ViewerRender: {
+                Rotation: {
+                    component: RotationComponent,
+                    priority: 10,
+                },
+            },
+            ViewerSide: {
+                Rotation: {
+                    component: SliderComponent,
+                    priority: 10,
+                },
+            },
         }
     }
 

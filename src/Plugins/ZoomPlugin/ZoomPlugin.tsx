@@ -1,7 +1,6 @@
 // <- oxrti default imports
 import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-import { IAppState } from '../../State/AppState'
 // oxrti default imports ->
 
 import Slider from '@material-ui/lab/Slider'
@@ -15,16 +14,20 @@ const ZoomModel = Plugin.props({
 
 class ZoomController extends shim(ZoomModel, Plugin) {
 
-    prepareHooks (appState: IAppState) {
-        super.prepareHooks(appState)
-        appState.renderStack.insert('Zoom:Zoom', 20)
-        appState.addViewerSideHook('Zoom:Slider')
-    }
-
-    components () {
+    hooks () {
         return {
-            Zoom: ZoomComponent,
-            Slider: SliderComponent,
+            ViewerRender: {
+                Zoom: {
+                    priority: 20,
+                    component: ZoomComponent,
+                },
+            },
+            ViewerSide: {
+                Zoom: {
+                    component: SliderComponent,
+                    priority: 20,
+                },
+            },
         }
     }
 
