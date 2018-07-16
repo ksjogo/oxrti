@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography'
 
 const RotationModel = Plugin.props({
     title: 'Rotation',
-    angle: 5,
+    angle: 0,
 })
 
 class RotationController extends shim(RotationModel, Plugin) {
