@@ -41,12 +41,12 @@ class TestController extends shim(TestModel, Plugin) {
 const { Plugin: TestPlugin, Component } = PluginCreator(TestController, TestModel, 'TestPlugin')
 export default TestPlugin
 
-const TestView = Component((plugin, props) => {
+const TestView = Component(function TestComponent (props) {
     return <>
         <p>{props.children}</p>
-        <p>{plugin.extra}</p>
-        <p>{plugin.shader()}</p>
-        <button onClick={plugin.setExtra} > Tap me2!</button>
-        <button onClick={plugin.setExtra2} > Tap me!</button>
+        <p>{this.extra}</p>
+        <p>{this.shader()}</p>
+        <button onClick={this.setExtra} > Tap me2!</button>
+        <button onClick={this.setExtra2} > Tap me!</button>
     </>
 })

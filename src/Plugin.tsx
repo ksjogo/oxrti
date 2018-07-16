@@ -71,12 +71,14 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // outer level constructor function
     // inner is basically (plugin, props) => ReactElement
     // we could potentially extract the definition and do a templated type
-    let SubComponent = function (inner: (plugin: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }) => ReactElement<any> | null) {
+    type innerType = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }) => ReactElement<any> | null
+    let SubComponent = function (inner: innerType) {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         return Component(function (props) {
             let plugin = (props.appState.plugins.get(name)) as any
             // actual rendering function
-            return inner(plugin, props)
+            // allow this so all code inside a plugin can just refer to this
+            return inner.apply(plugin, [props])
         })
     }
     // allow easier renaming in the calling module

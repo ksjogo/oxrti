@@ -37,20 +37,20 @@ class ZoomController extends shim(ZoomModel, Plugin) {
 const { Plugin: TestPlugin, Component } = PluginCreator(ZoomController, ZoomModel, 'ZoomPlugin')
 export default TestPlugin
 
-const ZoomComponent = Component((plugin, props) => {
+const ZoomComponent = Component(function ZoomNode (props) {
     return <ShaderNode
         shader={{
             frag: shader,
         }}
         uniforms={{
             children: props.children,
-            scale: 1 / plugin.scale,
+            scale: 1 / this.scale,
         }} />
 })
 
-const SliderComponent = Component((plugin, props) => {
+const SliderComponent = Component(function ZoomSlider (props) {
     return <div>
         <Typography>Zoom</Typography>
-        <Slider value={plugin.scale} onChange={plugin.onSlider} min={1} max={10} />
+        <Slider value={this.scale} onChange={this.onSlider} min={1} max={10} />
     </div>
 })

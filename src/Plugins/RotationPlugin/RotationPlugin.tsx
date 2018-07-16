@@ -36,20 +36,20 @@ class RotationController extends shim(RotationModel, Plugin) {
 const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')
 export default RotationPlugin
 
-const RotationComponent = Component((plugin, props) => {
+const RotationComponent = Component(function RotationNode (props) {
     return <ShaderNode
         shader={{
             frag: shader,
         }}
         uniforms={{
             children: props.children,
-            angle: plugin.angle / 360 * Math.PI * 2,
+            angle: this.angle / 360 * Math.PI * 2,
         }} />
 })
 
-const SliderComponent = Component((plugin, props) => {
+const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <Typography>Rotation</Typography>
-        <Slider value={plugin.angle} onChange={plugin.onSlider} min={0} max={360} />
+        <Slider value={this.angle} onChange={this.onSlider} min={0} max={360} />
     </div>
 })
