@@ -10,26 +10,18 @@ const shaders = Shaders.create({
     noise: {
         frag: noise,
     },
-    rotation: {
-        frag: rotating,
-    },
 })
 
 export default Component(function Stack (props) {
-    let inital = <MainObject />
+    let current = <MainObject />
+    props.appState.renderStack.stack.forEach(entry => {
+        let name = entry.name.split(':')
+        let Func = props.appState.plugins.get(name[0] + 'Plugin').component(name[1])
+        current = <Func>{current}</Func>
+    })
     return <Surface width={300} height={300}>
-        <Rotating>
-            <MainObject />
-        </Rotating>
+        {current}
     </Surface>
-})
-
-const Rotating = Component(props => {
-    return <Node
-        shader={shaders.rotation}
-        uniformsOptions={{ children: { interpolation: 'nearest' } }}
-        uniforms={{ angle: 10 + props.appState.uptime, scale: (1 + props.appState.uptime) / 20, children: props.children }}
-    />
 })
 
 const MainObject = Component(props => {

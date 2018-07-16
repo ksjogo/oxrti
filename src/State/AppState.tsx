@@ -10,6 +10,7 @@ const AppStateData = types.model({
   activeTab: 0,
   plugins: types.optional(types.map(Plugin), {}),
   renderStack: types.optional(RenderStack, { stack: [] }),
+  viewerSideHooks: types.optional(types.array(types.string), []),
 })
 
 export type PluginLoader = (name: string) => Plugin
@@ -63,6 +64,12 @@ class AppStateController extends shim(AppStateData) {
 
   @action switchTab (event, index) {
     this.activeTab = index
+  }
+
+  @action
+  addViewerSideHook (name: string) {
+    if (this.viewerSideHooks.indexOf(name) === -1)
+      this.viewerSideHooks.push(name)
   }
 
 }

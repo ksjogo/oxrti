@@ -129,6 +129,9 @@ export default function init (elementId: string | HTMLElement) {
             reloadPluginContext()
             loadPlugins()
         })
+
+        /*module.hot.accept(['../oxrti.plugins.json'], () => {
+        })*/
     }
 
     uptimer()

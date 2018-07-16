@@ -78,6 +78,7 @@
   "license": "GPL-3.0",
   "description": "oxrti",
   "dependencies": {
+    "@material-ui/lab": "^1.0.0-alpha.6",
     "gl-react": "^3.15.0",
     "gl-react-dom": "^3.15.0",
     "glsl-noise": "0.0.0",

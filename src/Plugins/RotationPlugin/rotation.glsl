@@ -1,11 +1,13 @@
-precision mediump float;
-
-uniform float iGlobalTime;
-
-#pragma glslify: noise = require("glsl-noise/simplex/3d")
+precision highp float;
+varying vec2 uv;
+uniform float angle;
+uniform sampler2D children;
 
 void main() {
-  float n = noise(vec3(gl_FragCoord.xy * 0.005, iGlobalTime));
-  gl_FragColor.rgb = vec3(n);
-  gl_FragColor.a   = 1.0;
+  mat2 rotation = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+  vec2 p = (uv - vec2(0.5)) * rotation + vec2(0.5);
+  gl_FragColor =
+    p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0
+    ? vec4(0.0)
+    : texture2D(children, p);
 }

@@ -4,23 +4,33 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import { IAppState } from '../../State/AppState'
 // oxrti default imports ->
 
+import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
+import Typography from '@material-ui/core/Typography'
 
 const ZoomModel = Plugin.props({
     title: 'Zoom',
+    scale: 1,
 })
 
 class ZoomController extends shim(ZoomModel, Plugin) {
 
     prepareHooks (appState: IAppState) {
         super.prepareHooks(appState)
-        appState.renderStack.insert('Zoom:Zoom', 10)
+        appState.renderStack.insert('Zoom:Zoom', 20)
+        appState.addViewerSideHook('Zoom:Slider')
     }
 
     components () {
         return {
-            'Zoom': ZoomComponent,
+            Zoom: ZoomComponent,
+            Slider: SliderComponent,
         }
+    }
+
+    @action
+    onSlider (event, value) {
+        this.scale = value
     }
 }
 
@@ -34,5 +44,13 @@ const ZoomComponent = Component((plugin, props) => {
         }}
         uniforms={{
             children: props.children,
+            scale: 1 / plugin.scale,
         }} />
+})
+
+const SliderComponent = Component((plugin, props) => {
+    return <div>
+        <Typography>Zoom</Typography>
+        <Slider value={plugin.scale} onChange={plugin.onSlider} min={1} max={10} />
+    </div>
 })

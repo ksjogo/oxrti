@@ -28,7 +28,6 @@ class RenderStackCode extends shim(RenderStackData) {
      */
     @action
     insert (name: string, priority: number) {
-        debugger
         let entry = {
             name: name,
             priority: priority,
@@ -38,9 +37,12 @@ class RenderStackCode extends shim(RenderStackData) {
         else for (let i = 0; i < this.stack.length; ++i) {
             if (name === this.stack[i].name)
                 break
-            if (priority > this.stack[i].priority) {
+            if (priority >= this.stack[i].priority) {
                 this.stack.splice(i, 0, entry)
+                break
             }
+            if (i === this.stack.length - 1)
+                this.stack.push(entry)
         }
     }
 }
