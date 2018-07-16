@@ -1,48 +1,37 @@
+// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action } from '../../Plugin'
+import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
+import { IAppState } from '../../State/AppState'
+// oxrti default imports ->
+
 import shader from './rotation.glsl'
 
-const TestModel = Plugin.props({
-    title: 'Test',
-    extra: 20,
+const RotationModel = Plugin.props({
+    title: 'Rotation',
 })
 
-class TestController extends shim(TestModel, Plugin) {
-    @action
-    setExtra (event: any = null) {
-        this.extra = 222
-    }
+class RotationController extends shim(RotationModel, Plugin) {
 
-    @action
-    setExtra2 (event: any = null) {
-        this.extra = 234
-    }
-
-    prepareHooks () {
-        super.prepareHooks()
-        console.log('TestController hooked')
-    }
-
-    shader () {
-        return shader
+    prepareHooks (appState: IAppState) {
+        appState.renderStack.insert('Rotation:Rotation', 20)
     }
 
     components () {
         return {
-            'Test': TestView,
+            'Rotation': RotationComponent,
         }
     }
 }
 
-const { Plugin: TestPlugin, Component } = PluginCreator(TestController, TestModel, 'TestPlugin')
-export default TestPlugin
+const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')
+export default RotationPlugin
 
-const TestView = Component((plugin, props) => {
-    return <>
-        <p>{props.children}</p>
-        <p>{plugin.extra}</p>
-        <p>{plugin.shader()}</p>
-        <button onClick={plugin.setExtra} > Tap me2!</button>
-        <button onClick={plugin.setExtra2} > Tap me!</button>
-    </>
+const RotationComponent = Component((plugin, props) => {
+    return <ShaderNode
+        shader={{
+            frag: shader,
+        }}
+        uniforms={{
+            children: props.children,
+        }} />
 })

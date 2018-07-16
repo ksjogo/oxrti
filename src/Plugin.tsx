@@ -1,7 +1,7 @@
 import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
 import Component, { ComponentProps } from './View/Component'
-import { ReactNode, ReactElement } from 'react'
+import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
 
 /**
@@ -25,7 +25,7 @@ class PluginController extends shim(PluginModel) {
      * Actually hook into the
      */
     @action
-    prepareHooks () {
+    prepareHooks (appState: any) {
         console.log('PluginController Hooked')
     }
 
@@ -83,6 +83,26 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     return { Plugin: SubPlugin, Component: SubComponent }
 }
 
+type ActualShader = string
+type ShaderConfig = {
+    frag: string,
+    vert?: string,
+}
+
+type TypedCreate = (config: { [key: string]: ShaderConfig }) => {
+    [key: string]: ActualShader,
+}
+
+const TypedShaders: {
+    create: TypedCreate,
+} = Shaders
+
+const TypedNode: React.StatelessComponent<{
+    uniforms?: any,
+    uniformOptions?: any,
+    shader: any,
+}> = Node
+
 /**
  * Facading the classy-mst and mobx-state-tree exports to simplfy importing and allow proxy changes without changing plugin code
  */
@@ -92,6 +112,7 @@ export {
     shim as shim,
     action as action,
     PluginCreator as PluginCreator,
-    Shaders as Shaders,
-    Node as ShaderNode,
+    TypedShaders as Shaders,
+    TypedNode as ShaderNode,
+    TypedNode,
 }

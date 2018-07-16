@@ -3,11 +3,13 @@ import { shim, action, mst } from 'classy-mst'
 export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
+import RenderStack from './RenderStack'
 
 const AppStateData = types.model({
   uptime: 0,
   activeTab: 0,
   plugins: types.optional(types.map(Plugin), {}),
+  renderStack: types.optional(RenderStack, { stack: [] }),
 })
 
 export type PluginLoader = (name: string) => Plugin
@@ -55,7 +57,7 @@ class AppStateController extends shim(AppStateData) {
     this.plugins.set(name, snapshot)
 
     // hook the plugin into the rest of the program
-    this.plugins.get(name).prepareHooks()
+    this.plugins.get(name).prepareHooks(this)
 
   }
 

@@ -1,3 +1,5 @@
 [
-    "TestPlugin"
+    "TestPlugin",
+    "ZoomPlugin",
+    "RotationPlugin"
 ]

@@ -5,13 +5,11 @@ import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
-import GLView from './GLView'
-import shader2 from './test.glsl'
-import shader from '../Plugins/TestPlugin/shader.glsl'
 import Component from './Component'
 import Theme from './Theme'
-import PluginRender from './PluginRender'
-import Stack from './Stack'
+import Viewer from './Viewer'
+import Settings from './Settings'
+import Converter from './Converter'
 
 function TabContainer (props) {
     return (
@@ -33,23 +31,16 @@ export default hot(module)(Component(props => {
             </AppBar>
             {props.appState.activeTab === 0 &&
                 <TabContainer>
-                    <p >Welcome home</p>
-                    <h1>Oxrti</h1>
-                    <p>Build 4 </p>
-                    <p>{props.appState.uptime}</p>
-                    <PluginRender name='TestPlugin:Test' />
+                    <Viewer />
                 </TabContainer>}
             {props.appState.activeTab === 1 &&
                 <TabContainer>
-                    <GLView shader={shader} uniforms={{ iGlobalTime: props.appState.uptime }} />
-                    <GLView shader={shader2} uniforms={{ blue: 1 }} />
-                    <Stack />
-                    Item Two
-                        </TabContainer>}
+                    <Converter />
+                </TabContainer>}
             {props.appState.activeTab === 2 &&
                 <TabContainer>
-                    Item Three
-                        </TabContainer>}
+                    <Settings />
+                </TabContainer>}
         </MuiThemeProvider>
     )
 }))

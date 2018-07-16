@@ -4,9 +4,9 @@ import { Surface } from 'gl-react-dom'
 import Component from './Component'
 import PluginRender from './PluginRender'
 
-interface SettingsProps {
+interface ConverterProps {
 }
 
-export default Component<SettingsProps>(function Settings (props) {
-    return <h1>Settings</h1>
+export default Component<ConverterProps>(function Converter (props) {
+    return <h1>Converter</h1>
 })

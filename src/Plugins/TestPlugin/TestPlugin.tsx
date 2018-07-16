@@ -1,5 +1,9 @@
+// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action } from '../../Plugin'
+import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
+import { IAppState } from '../../State/AppState'
+// oxrti default imports ->
+
 import shader from './shader.glsl'
 
 const TestModel = Plugin.props({
@@ -18,8 +22,8 @@ class TestController extends shim(TestModel, Plugin) {
         this.extra = 237
     }
 
-    prepareHooks () {
-        super.prepareHooks()
+    prepareHooks (appState: IAppState) {
+        super.prepareHooks(appState)
         console.log('TestController hooked')
     }
 
