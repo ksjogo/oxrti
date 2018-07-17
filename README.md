@@ -42,8 +42,8 @@ An oxrti window should open up.
 
 ## Build Servers
 
-* GNU/Linux and OSX status: [![Build Status](https://travis-ci.org/ksjogo/oxrti.svg?branch=master)](https://travis-ci.org/ksjogo/oxrti)
-* Windows status: 
+* GNU/Linux and OSX status: [![unix status](https://travis-ci.org/ksjogo/oxrti.svg?branch=master)](https://travis-ci.org/ksjogo/oxrti)
+* Windows: [![windows status](https://ci.appveyor.com/api/projects/status/41pgk56jugmeie7w?svg=true)](https://ci.appveyor.com/project/ksjogo/oxrti)
 
 ## Online Copy
 
