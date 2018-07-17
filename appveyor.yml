@@ -17,4 +17,5 @@ test_script:
   # run tests
   - npm test
 
-build: on
+#we are not really building for ms
+build: off
