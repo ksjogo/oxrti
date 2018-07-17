@@ -1,0 +1,10 @@
+{
+    "extends": "tslint-config-standard",
+    "rules": {
+        "ter-indent": [false],
+        "indent": [true, "spaces", 4, {"SwitchCase": 1}],
+        "curly": [false],
+        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+        "member-ordering": [false]
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": [
+      "es5",
+      "es6",
+      "dom"
+    ],
+    "sourceMap": true,
+    "noImplicitThis": true,
+    "removeComments": false,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "outDir": "dist",
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "node_modules",
+    "static"
+  ]
+}
