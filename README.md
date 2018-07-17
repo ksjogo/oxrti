@@ -30,13 +30,13 @@ npm install
 
 Access either the webpack dev server inside your browser:
 ```
-make startweb
-open http://localhost:3000
+npm run-script startweb
 ```
+Then open http://localhost:3000 inside your browser.
 
 Or use the electron version:
 ```
-make start
+npm start
 ```
 An oxrti window should open up.
 
