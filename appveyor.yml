@@ -19,3 +19,11 @@ test_script:
 
 #we are not really building for ms
 build: off
+
+notifications:
+- provider: Slack
+  incoming_webhook: https://hooks.slack.com/services/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
+  channel: code
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true

@@ -3,3 +3,5 @@ node_js: 10
 os:
   - linux
   - osx
+notifications:
+    slack: oxrti:r6yUvCEWKmRLX7ltTWClPRBE
