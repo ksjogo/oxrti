@@ -29,4 +29,4 @@ patches:
 	@echo "Fixing Webpack WS"
 	@sed -i "s/  WebSocket = require('ws');/  throw new Error('we cannot use ws, it will annoy webpack');/" ./node_modules/socketcluster-client/lib/sctransport.js
 	@echo "Fixing MaterialUI Slider"
-	@rm node_modules/@material-ui/lab/Slider/*.d.ts
+	@rm -f node_modules/@material-ui/lab/Slider/*.d.ts
