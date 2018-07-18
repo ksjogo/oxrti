@@ -4,15 +4,17 @@ var rimrif = require('rimraf'),
 
 console.log("Fixing Webpack HMR");
 replace({
-    regex: "if (!options.ignoreUnaccepted)",
+    regex: /if \(!options.ignoreUnaccepted\)/,
     replacement: "if (false)",
     paths: ['./node_modules/webpack/lib/HotModuleReplacement.runtime.js'],
+    silent: false,
 });
 console.log("Fixing Webpack WS");
 replace({
-    regex: "  WebSocket = require('ws');",
+    regex: /  WebSocket = require\('ws'\);/,
     replacement: " throw new Error('we cannot use ws, it will annoy webpack');",
     paths: ['./node_modules/socketcluster-client/lib/sctransport.js'],
+    silent: false,
 });
 console.log("Fixing MaterialUI Slider");
 rimrif.sync("node_modules/@material-ui/lab/Slider/*.d.ts");

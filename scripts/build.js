@@ -5,6 +5,7 @@ replace({
     regex: "<title>Oxrti.*<\/title>",
     replacement: "<title>Oxrti - " + (new Date()).toString() + "<\/title>",
     paths: ['./azurestatic/index.html'],
+    silent: false,
 });
 try {
     spawnSync('npx', ["-c webpack --mode 'production'"], { stdio: 'inherit' });

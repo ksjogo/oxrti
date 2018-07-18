@@ -7,11 +7,11 @@
       "es6",
       "dom"
     ],
+    "allowJs": true,
     "sourceMap": true,
     "noImplicitThis": true,
     "removeComments": false,
     "experimentalDecorators": true,
-    "resolveJsonModule": true,
     "jsx": "react",
     "outDir": "dist",
     "esModuleInterop": true

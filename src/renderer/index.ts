@@ -1,9 +1,10 @@
-import installExtension, { REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import init from '../Loader'
+
 try {
-    const tools = [REACT_DEVELOPER_TOOLS, MOBX_DEVTOOLS, REDUX_DEVTOOLS]
+    let installExtension = require('electron-devtools-installer')
+    const tools = [installExtension.REACT_DEVELOPER_TOOLS, installExtension.MOBX_DEVTOOLS, installExtension.REDUX_DEVTOOLS]
         .forEach(name => {
-            installExtension(name)
+            installExtension.default(name)
                 .then((name) => console.log(`Added Extension:  ${name}`))
                 .catch((err) => console.log('An error occurred: ', err))
         })
