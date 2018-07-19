@@ -41,6 +41,14 @@ npm start
 ```
 An oxrti window should open up.
 
+## Test Files
+
+There are some test files inside a submodule. Run
+```
+git submodule update --init
+```
+to download them.
+
 ## Build Servers
 
 * GNU/Linux and OSX status: [![unix status](https://travis-ci.org/ksjogo/oxrti.svg?branch=master)](https://travis-ci.org/ksjogo/oxrti)

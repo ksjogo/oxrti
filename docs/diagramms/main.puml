@@ -1,0 +1,7 @@
+@startuml main
+actor test
+actor customer
+rectangle State {
+
+}
+@enduml
