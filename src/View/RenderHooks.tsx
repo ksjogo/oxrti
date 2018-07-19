@@ -11,6 +11,5 @@ export default Component<{ name: HookNameComponent }>(function RenderHooks (prop
         let Func = hook.component
         return <Func key={fullName} />
     })
-    console.log(rendered)
     return <>{rendered}</>
 })
