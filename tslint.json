@@ -1,10 +1,35 @@
 {
     "extends": "tslint-config-standard",
     "rules": {
-        "ter-indent": [false],
-        "indent": [true, "spaces", 4, {"SwitchCase": 1}],
-        "curly": [false],
-        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
-        "member-ordering": [false]
+        "no-unused-variable": [
+            false
+        ],
+        "ter-indent": [
+            false
+        ],
+        "no-use-before-declare": [
+            false
+        ],
+        "indent": [
+            true,
+            "spaces",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "curly": [
+            false
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "always",
+                "singleline": "never"
+            }
+        ],
+        "member-ordering": [
+            false
+        ]
     }
 }
