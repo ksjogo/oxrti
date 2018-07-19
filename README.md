@@ -20,6 +20,7 @@ Prerequisites
  
    * Node.js in a recent version (v8.9.4 tested)
    * Npm (>=5.6.0) and npx (>=9.7.1) in a recent version 
+   * Git (in $PATH)
 
 The repository should be ready to go after cloning and npm installing.
 
