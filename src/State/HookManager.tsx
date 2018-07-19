@@ -1,6 +1,9 @@
 import { types } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import { FunctionHook, ComponentHook, HookName } from '../Hook'
+import { FunctionHook, ComponentHook, HookName, ConfigHook } from '../Hook'
+
+// circular dependency at the moment
+type IAppState = any
 
 /**
  * Single entry
@@ -17,8 +20,8 @@ const HookManagerData = types.model({
     stack: types.optional(types.array(HookEntry), []),
 })
 
-export type HookIterator = (hook: ComponentHook | FunctionHook, fullName?: string) => void
-export type HookMapper<S> = (hook: ComponentHook | FunctionHook, fullName?: string) => S
+export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => void
+export type HookMapper<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 /**
  * Manage the rendering stack for the main viewer component
  */
@@ -48,7 +51,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
-    forEach (iterator: HookIterator, name: HookName, appState: any) {
+    forEach (iterator: HookIterator, name: HookName, appState: IAppState) {
         this.stack.forEach(hook => {
             let instance = hook.name.split('$')
             let plugin = appState.plugins.get(instance[0])
@@ -56,12 +59,19 @@ class HookManagerCode extends shim(HookManagerData) {
         })
     }
 
-    map<S> (mapper: HookMapper<S>, name: HookName, appState: any): S[] {
+    map<S> (mapper: HookMapper<S>, name: HookName, appState: IAppState): S[] {
         let result = []
         this.forEach((hook, fullName) => {
             result.push(mapper(hook, fullName))
         }, name, appState)
         return result
+    }
+
+    pick<S> (index: number, name: HookName, appState: IAppState): S {
+        let hook = this.stack[index]
+        let instance = hook.name.split('$')
+        let plugin = appState.plugins.get(instance[0])
+        return plugin.hook(name, instance[2])
     }
 }
 

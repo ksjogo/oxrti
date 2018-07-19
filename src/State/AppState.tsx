@@ -114,6 +114,13 @@ class AppStateController extends shim(AppStateData) {
       return []
     return manager.map(mapper, name, this)
   }
+
+  hookPick<S> (name: HookName, index: number): S {
+    let manager = this.hooks.get(name)
+    if (!manager)
+      return null
+    return manager.pick(index, name, this)
+  }
 }
 
 const AppState = mst(AppStateController, AppStateData, 'AppState')

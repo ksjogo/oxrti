@@ -7,9 +7,8 @@ import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
 import Component from './Component'
 import Theme from './Theme'
-import Viewer from './Viewer'
-import Settings from './Settings'
-import Converter from './Converter'
+import { ConfigHook } from '../Hook'
+import { TabConfig } from './Tabs'
 
 function TabContainer (props) {
     return (
@@ -18,29 +17,22 @@ function TabContainer (props) {
         </Typography>
     )
 }
-export default hot(module)(Component(props => {
+export default hot(module)(Component(function App (props) {
+    let currentTab = props.appState.hookPick<ConfigHook<TabConfig>>('Tabs', props.appState.activeTab)
+    let CurrentRender = currentTab.config.content
     return (
         <MuiThemeProvider theme={Theme}>
             <AppBar position='static'>
                 <Tabs value={props.appState.activeTab}
                     onChange={props.appState.switchTab} >
-                    <Tab label='Main' />
-                    <Tab label='Converter' />
-                    <Tab label='Settings' />
+                    {props.appState.hookMap('Tabs', (hook: ConfigHook<TabConfig>, fullName) => {
+                        return <Tab {...hook.config.tab} key={fullName} />
+                    })}
                 </Tabs>
             </AppBar>
-            {props.appState.activeTab === 0 &&
-                <TabContainer>
-                    <Viewer />
-                </TabContainer>}
-            {props.appState.activeTab === 1 &&
-                <TabContainer>
-                    <Converter />
-                </TabContainer>}
-            {props.appState.activeTab === 2 &&
-                <TabContainer>
-                    <Settings />
-                </TabContainer>}
+            <TabContainer>
+                <CurrentRender />
+            </TabContainer>
         </MuiThemeProvider>
     )
 }))

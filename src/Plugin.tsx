@@ -1,6 +1,6 @@
 import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import Component, { ComponentProps } from './View/Component'
+import Component, { ComponentProps, PluginComponentType } from './View/Component'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
 import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
@@ -64,7 +64,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // inner is basically (plugin, props) => ReactElement
     // we could potentially extract the definition and do a templated type
     type innerType = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }) => ReactElement<any> | null
-    let SubComponent = function (inner: innerType) {
+    let SubComponent = function (inner: innerType): PluginComponentType {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         return Component(function (props) {
             let plugin = (props.appState.plugins.get(name)) as any

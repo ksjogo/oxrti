@@ -2,5 +2,8 @@
 module.exports = [
     "TestPlugin",
     "RotationPlugin",
-    "ZoomPlugin"
+    "ZoomPlugin",
+    "ConverterPlugin",
+    "RendererPlugin",
+    "SettingsPlugin",
 ];
