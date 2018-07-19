@@ -1,6 +1,7 @@
 import { observer, inject, IWrappedComponent } from 'mobx-react'
 import { SFC } from 'react'
 import { IAppState } from '../State/AppState'
+import { withStyles } from '@material-ui/core/styles'
 
 interface ComponentProps {
     appState?: IAppState,

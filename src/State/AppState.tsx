@@ -5,6 +5,7 @@ import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator } from './HookManager'
 import { HookConfig, HookName } from '../Hook'
+import Theme from '../View/Theme'
 
 const AppStateData = types.model({
   uptime: 0,
@@ -17,6 +18,10 @@ export type PluginLoader = (name: string) => Plugin
 let pluginLoader: PluginLoader = null
 
 class AppStateController extends shim(AppStateData) {
+
+  theme () {
+    return Theme
+  }
 
   setPluginLoader (loader: PluginLoader) {
     pluginLoader = loader
