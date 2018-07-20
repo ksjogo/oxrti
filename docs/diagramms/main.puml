@@ -1,7 +1,160 @@
 @startuml main
-actor test
-actor customer
-rectangle State {
+package MainBundle {
+    database State {
+        class AppState {
+
+        }
+        class HookManager {
+
+        }
+        AppState "1" *-- "n" HookManager : contains
+    }
+    AppState "1" *-- "n" Plugin : tracks state for
+    rectangle View {
+        class App<<SFC>>
+        class Component<<SFC>>
+        class GLView<<SFC>>
+        class RenderHooks<<SFC>>
+        class Tabs<<Types>>
+        class Theme<<Config>>
+        hide members
+    }
+    class Plugin {
+
+    }
+    class Hook <<Types>> {
+
+    }
+    class Loader {
+
+    }
+    class FileFormat {
+
+    }
+}
+HookManager "1" -- "1" Hook : contains
+
+rectangle Plugins {
+    package Renderer {
+        class RendererPlugin {
+
+        }
+        Plugin <|-- RendererPlugin
+        class RendererTab<<SFC>>
+        class Stack {
+
+        }
+        class RendererNode {
+
+        }
+    }
+    package RotationPlugin {
+        class RotationPlugin {
+
+        }
+        Plugin <|-- RotationPlugin
+        class RotationNode {
+            
+        }
+    }
+    RendererNode <- RotationNode
+    package ZoomPlugin {
+        class ZoomPlugin {
+
+        }
+        Plugin <|-- ZoomPlugin
+        class ZoomNode {
+            
+        }
+    }
+    RendererNode <- ZoomNode 
+    package Converter {
+         class ConverterPlugin {
+            
+        }
+        class ConverterTab<<SFC>>
+        class ConverterStrategy {
+            
+        }
+        Plugin <|-- ConverterPlugin
+    }
+    package PTMConverterPlugin {
+         class PTMConverterPlugin {
+            hooks {}
+        }
+        class PTMStrategy {
+
+        }
+        Plugin <|-- PTMConverterPlugin
+    }
+    ConverterStrategy <|-- PTMStrategy
+    package RTIConverterPlugin {
+         class RTIConverterPlugin {
+            hooks {}
+        }
+        class RTIStrategy {
+
+        }
+        Plugin <|-- RTIConverterPlugin
+    }
+    ConverterStrategy <|-- RTIStrategy
+    package Settings {
+        class SettingsPlugin {
+            
+        }
+        class ConverterTab<<SFC>>
+        Plugin <|-- SettingsPlugin
+    }
+    package Test {
+         class TestPlugin {
+            
+        }
+        class TestTab<<SFC>>
+        Plugin <|-- TestPlugin
+    }
+}
+FileFormat <-> ConverterStrategy
+package ElectronBackend {
 
 }
+
+cloud WebViewer {
+ 
+}
+
+WebViewer -> MainBundle
+
+cloud ElectronApp {
+ 
+}
+
+cloud AzureHosted {
+ 
+}
+
+AzureHosted -> MainBundle
+
+ElectronApp -> MainBundle
+ElectronApp -> ElectronBackend
+
+mix_actor "Museum Website Visitor"
+"Museum Website Visitor" -> WebViewer
+
+mix_actor "Researcher"
+"Researcher" -> ElectronApp
+
+
+WebViewer .. Plugins :bundles
+AzureHosted .. Plugins
+ElectronApp .. Plugins
+
+Loader -> State : creates initial
+Loader -> App : mounts
+App -> State : renders
+
+Plugin "1" *-- "n" Hook : declares
+
+hide <<SFC>> circle
+hide <<Config>> circle
+hide <<Types>> circle
 @enduml
