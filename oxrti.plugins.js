@@ -6,4 +6,5 @@ module.exports = [
     "ConverterPlugin",
     "RendererPlugin",
     "SettingsPlugin",
+    "PTMConverterPlugin"
 ];

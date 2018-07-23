@@ -4,6 +4,9 @@ import Component, { ComponentProps, PluginComponentType } from './View/Component
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
 import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
+import { IAppState } from './State/AppState'
+import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
+import { observer, inject } from 'mobx-react'
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -22,11 +25,15 @@ const PluginModel = types.model({
  */
 class PluginController extends shim(PluginModel) {
 
+    // volatile access to app state
+    appState: IAppState
+
     /**
      * A plugin shall be loaded, otherwise it might lay dormant and not do much
      */
     @action
-    load (appState: any) {
+    load (appState: IAppState) {
+        this.appState = appState
         this.loaded = true
     }
 
@@ -62,16 +69,30 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     let SubPlugin = mst(Code, Data, name)
     // outer level constructor function
     // inner is basically (plugin, props) => ReactElement
-    // we could potentially extract the definition and do a templated type
-    type innerType = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }) => ReactElement<any> | null
-    let SubComponent = function (inner: innerType): PluginComponentType {
+    // we could potentially extract a better style definition though
+    type innerType = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }, classes?: any) => ReactElement<any> | null
+    // can we type the styles somehow?
+    function SubComponent (inner: innerType, styles?: any): PluginComponentType {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
-        return Component(function (props) {
-            let plugin = (props.appState.plugins.get(name)) as any
-            // actual rendering function
-            // allow this so all code inside a plugin can just refer to this
-            return inner.apply(plugin, [props])
-        })
+        if (!styles) {
+            return Component(function (props) {
+                let plugin = (props.appState.plugins.get(name)) as any
+                // actual rendering function
+                // allow this so all code inside a plugin can just refer to this
+                return inner.apply(plugin, [props])
+            })
+        } else {
+            // material ui needs an extra hoc wrapper
+            // and slightly different observer ordering
+            // cache the actual inner function
+            let InnerMost = withStyles(styles)(observer((props) => {
+                return inner.apply(props.plugin, [props, props.classes])
+            }))
+            return inject('appState')(function (props) {
+                let plugin = (props.appState.plugins.get(name)) as any
+                return <InnerMost plugin={plugin} />
+            })
+        }
     }
     // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }

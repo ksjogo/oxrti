@@ -5,66 +5,121 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 
 import Dropzone from 'react-dropzone'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { Typography, Grid, Theme } from '@material-ui/core'
-import createStyled from 'material-ui-render-props-styles'
+import { Typography, Grid, Theme, createStyles } from '@material-ui/core'
+import path from 'path'
+import ConverterStrategy from './ConverterStrategy'
+import { ConfigHook } from '../../Hook'
+import ConverterStrategyConfig from './ConverterStrategyConfig'
+import { readAsArrayBuffer } from 'promise-file-reader'
+import IConverterUI from './ConverterUI'
+import FileSaver from 'file-saver'
 
 const ConverterModel = Plugin.props({
     title: 'Converter',
     progress: 0,
+    statusMessage: 'No file',
+    zipName: '',
+    dataHref: '',
 })
 
-class ConverterController extends shim(ConverterModel, Plugin) {
+class ConverterController extends shim(ConverterModel, Plugin) implements IConverterUI {
+
     hooks () {
         return {
             Tabs: {
                 Converter: {
-                    priority: 10,
-                    config: {
-                        content: ConverterView,
-                        tab: {
-                            label: 'Converter',
-                        },
+                    priority: 40,
+                    content: ConverterView,
+                    tab: {
+                        label: 'Converter',
                     },
                 },
             },
         }
     }
 
-    onDrop (files: any) {
-        console.log(files)
+    @action
+    async setMessage (message: string) {
+        this.statusMessage = message
+    }
+
+    @action
+    async setProgress (progress: number) {
+        this.progress = progress
+    }
+
+    @action
+    async setZipname (name: string) {
+        this.zipName = name
+    }
+
+    @action
+    async setDatahref (value: string) {
+        this.dataHref = value
+    }
+
+    @action
+    async onDrop (files: File[]) {
+        try {
+            let file = files[0]
+            this.setMessage('Received file.')
+            let ending = path.extname(file.name)
+            this.setZipname(path.basename(file.name, ending) + '.zip')
+            let strategy: new (...args: any[]) => ConverterStrategy
+            this.appState.hookForEach('ConverterFileFormat', (hook: ConfigHook<ConverterStrategyConfig>) => {
+                if (hook.fileEndings.indexOf(ending) !== -1)
+                    strategy = hook.strategy
+            })
+            if (!strategy) {
+                return this.statusMessage = `File format ${ending} is not supported at the moment`
+            }
+
+            let content = await readAsArrayBuffer(file) as ArrayBuffer
+            this.setMessage('Read file.')
+            let result = await (new strategy(content, this)).process()
+            let url = URL.createObjectURL(result)
+            this.setDatahref(url)
+            FileSaver.saveAs(result, this.zipName)
+        } catch (e) {
+            console.error(e)
+            this.setProgress(0)
+            debugger
+            await this.setMessage(e.message)
+        }
     }
 }
 
 const { Plugin: ConverterPlugin, Component } = PluginCreator(ConverterController, ConverterModel, 'ConverterPlugin')
 export default ConverterPlugin
 
-const Styled = createStyled((theme: Theme) => {
-    return {
-        dropzone: {
-            border: '1px solid ' + theme.palette.primary.main,
-            width: '100%',
-            height: '50px',
-        },
-    }
+const styles = (theme: Theme) => createStyles({
+    dropzone: {
+        border: '1px solid ' + theme.palette.primary.main,
+        width: '100%',
+        height: '50px',
+    },
+    download: {
+        color: 'green',
+        height: '50px',
+    },
 })
 
-const ConverterView = Component(function ConverterView (props) {
-    return <Styled>
-        {({ classes }) => (
-
-            < Typography component='div' style={{
-                padding: 8 * 3,
-            }} >
-                <Grid container justify='center'>
-                    <Dropzone onDrop={(files) => this.onDrop(files)} className={classes.dropzone}>
-                        <div>Try dropping some files here, or click to select files to upload.</div>
-                    </Dropzone>
-                    <LinearProgress variant='determinate' value={this.progress} style={{
-                        width: '100%',
-                    }} />
-                </Grid>
-            </Typography >
-        )}
-    </Styled>
-
-})
+const ConverterView = Component(function ConverterView (props, classes) {
+    return < Typography component='div' style={{
+        padding: 8 * 3,
+    }} >
+        <Grid container justify='center'>
+            <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+                <div>Try dropping some files here, or click to select files to upload.</div>
+            </Dropzone>
+            <LinearProgress variant='determinate' value={this.progress} style={{
+                width: '100%',
+            }} />
+            <div><p>{this.statusMessage}</p></div>
+            {this.dataHref &&
+                <div>
+                    <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
+                </div>}
+        </Grid>
+    </Typography >
+}, styles)

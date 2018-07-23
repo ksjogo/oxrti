@@ -22,6 +22,7 @@ const HookManagerData = types.model({
 
 export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => void
 export type HookMapper<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
+export type HookFind<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 /**
  * Manage the rendering stack for the main viewer component
  */

@@ -19,14 +19,14 @@ function TabContainer (props) {
 }
 export default hot(module)(Component(function App (props) {
     let currentTab = props.appState.hookPick<ConfigHook<TabConfig>>('Tabs', props.appState.activeTab)
-    let CurrentRender = currentTab.config.content
+    let CurrentRender = currentTab.content
     return (
         <MuiThemeProvider theme={Theme}>
             <AppBar position='static'>
                 <Tabs value={props.appState.activeTab}
                     onChange={props.appState.switchTab} >
                     {props.appState.hookMap('Tabs', (hook: ConfigHook<TabConfig>, fullName) => {
-                        return <Tab {...hook.config.tab} key={fullName} />
+                        return <Tab {...hook.tab} key={fullName} />
                     })}
                 </Tabs>
             </AppBar>

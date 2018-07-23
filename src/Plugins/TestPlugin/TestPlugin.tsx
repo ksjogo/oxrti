@@ -15,11 +15,9 @@ class TestController extends shim(TestModel, Plugin) {
             Tabs: {
                 Converter: {
                     priority: -3,
-                    config: {
-                        content: TestView,
-                        tab: {
-                            label: 'Test',
-                        },
+                    content: TestView,
+                    tab: {
+                        label: 'Test',
                     },
                 },
             },

@@ -13,11 +13,9 @@ class SettingsController extends shim(SettingsModel, Plugin) {
             Tabs: {
                 Converter: {
                     priority: 0,
-                    config: {
-                        content: SettingsView,
-                        tab: {
-                            label: 'Settings',
-                        },
+                    content: SettingsView,
+                    tab: {
+                        label: 'Settings',
                     },
                 },
             },

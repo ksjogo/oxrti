@@ -16,11 +16,9 @@ class RendererController extends shim(RendererModel, Plugin) {
             Tabs: {
                 Converter: {
                     priority: 20,
-                    config: {
-                        content: RendererView,
-                        tab: {
-                            label: 'Viewer',
-                        },
+                    content: RendererView,
+                    tab: {
+                        label: 'Viewer',
                     },
                 },
             },

@@ -10,7 +10,7 @@ import Theme from '../View/Theme'
 const AppStateData = types.model({
   uptime: 0,
   activeTab: 0,
-  plugins: types.optional(types.map(Plugin), {}),
+  plugins: types.late(() => types.optional(types.map(Plugin), {})),
   hooks: types.optional(types.map(HookManager), {}),
 })
 
@@ -126,6 +126,8 @@ class AppStateController extends shim(AppStateData) {
       return null
     return manager.pick(index, name, this)
   }
+
+  // hookFind<S> (name: HookName, filter: number): S {
 }
 
 const AppState = mst(AppStateController, AppStateData, 'AppState')

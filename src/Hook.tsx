@@ -1,9 +1,9 @@
-import { IWrappedComponent } from 'mobx-react'
-import { ComponentProps, PluginComponentType } from './View/Component'
+import { PluginComponentType } from './View/Component'
 import { TabConfig } from './View/Tabs'
+import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
 
 export type HookBase = {
-    priority: number,
+    priority?: number,
     name?: string,
 }
 
@@ -15,9 +15,7 @@ export type FunctionHook<P= any> = HookBase & {
     func: P,
 }
 
-export type ConfigHook<P = any> = HookBase & {
-    config: P,
-}
+export type ConfigHook<P = any> = HookBase & P
 
 export type ComponentHooks<P = PluginComponentType> = { [key: string]: ComponentHook<P> }
 export type FunctionHooks<P = any> = { [key: string]: FunctionHook<P> }
@@ -28,6 +26,7 @@ export type HookConfig = {
     ViewerSide?: ComponentHooks,
     Test?: FunctionHooks,
     Tabs?: ConfigHooks<TabConfig>,
+    ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,
 }
 
 type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof T]
