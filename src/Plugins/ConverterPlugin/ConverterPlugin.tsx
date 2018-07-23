@@ -120,7 +120,7 @@ const ConverterView = Component(function ConverterView (props, classes) {
             <LinearProgress variant='determinate' value={this.progress} style={{
                 width: '100%',
             }} />
-            <div><p>{this.statusMessage}</p></div>
+            <div><p>{this.statusMessage} </p></div>
             {this.dataHref &&
                 <div>
                     <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>

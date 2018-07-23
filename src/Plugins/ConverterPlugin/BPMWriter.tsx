@@ -32,7 +32,7 @@ export default class BmpEncoder {
 
     COMPONENTS = 3
 
-    constructor(imgData: { width: number, height, data: Uint8Array }) {
+    constructor (imgData: { width: number, height, data: Uint8Array }) {
         this.buffer = imgData.data
         this.width = imgData.width
         this.height = imgData.height
