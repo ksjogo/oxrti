@@ -68,7 +68,6 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
         try {
             let file = files[0]
             this.setDatahref('')
-            this.setMessage('Received file.')
             let ending = path.extname(file.name)
             this.setZipname(path.basename(file.name, ending) + '.zip')
             let strategy: new (...args: any[]) => ConverterStrategy
@@ -79,9 +78,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             if (!strategy) {
                 return this.statusMessage = `File format ${ending} is not supported at the moment`
             }
-
             let content = await readAsArrayBuffer(file) as ArrayBuffer
-            this.setMessage('Read file.')
             let result = await (new strategy(content, this)).process()
             let url = URL.createObjectURL(result)
             this.setDatahref(url)

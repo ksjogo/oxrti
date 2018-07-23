@@ -59,8 +59,10 @@ export default abstract class ConverterStrategy {
         await this.ui.setProgress(0)
         let zip = new JSZip()
         await this.fillZip(zip)
-        await this.ui.setMessage('Zip generated.')
-        return zip.generateAsync({ type: 'blob' })
+        await this.ui.setMessage('Exporting zip.')
+        let ret = await zip.generateAsync({ type: 'blob' })
+        await this.ui.setMessage('')
+        return Promise.resolve(ret)
     }
 
     abstract async parseMetadata ()

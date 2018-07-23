@@ -1,15 +1,9 @@
 /**
- * @author shaozilee
- * https://github.com/shaozilee/bmp-js
+ * adapted from https://github.com/shaozilee/bmp-js
  * LICENSE: MIT
- *
- * BMP format encoder,encode 24bit BMP
- * Not support quality compression
- *
  */
 
 export default class BmpEncoder {
-    /******************header***********************/
     flag = 'BM'
     reserved = 0
     offset = 54
@@ -30,7 +24,7 @@ export default class BmpEncoder {
     pos = 0
     bitPP = 0
 
-    COMPONENTS = 3
+    COMPONENTS = 1
 
     constructor (imgData: { width: number, height, data: Uint8Array }) {
         this.buffer = imgData.data
@@ -44,7 +38,7 @@ export default class BmpEncoder {
     }
 
     encode () {
-        let tempBuffer = new Buffer(this.offset + this.rgbSize)
+        let tempBuffer = Buffer.alloc(this.offset + this.rgbSize)
         this.pos = 0
         tempBuffer.write(this.flag, this.pos, 2); this.pos += 2
         tempBuffer.writeUInt32LE(this.fileSize, this.pos); this.pos += 4
