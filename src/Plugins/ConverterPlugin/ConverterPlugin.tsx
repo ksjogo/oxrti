@@ -13,6 +13,7 @@ import ConverterStrategyConfig from './ConverterStrategyConfig'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
+import { sleep } from '../../util'
 
 const ConverterModel = Plugin.props({
     title: 'Converter',
@@ -41,27 +42,32 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
     @action
     async setMessage (message: string) {
         this.statusMessage = message
+        await sleep(0)
     }
 
     @action
     async setProgress (progress: number) {
         this.progress = progress
+        await sleep(0)
     }
 
     @action
     async setZipname (name: string) {
         this.zipName = name
+        await sleep(0)
     }
 
     @action
     async setDatahref (value: string) {
         this.dataHref = value
+        await sleep(0)
     }
 
     @action
     async onDrop (files: File[]) {
         try {
             let file = files[0]
+            this.setDatahref('')
             this.setMessage('Received file.')
             let ending = path.extname(file.name)
             this.setZipname(path.basename(file.name, ending) + '.zip')
@@ -83,7 +89,6 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
         } catch (e) {
             console.error(e)
             this.setProgress(0)
-            debugger
             await this.setMessage(e.message)
         }
     }

@@ -1,5 +1,4 @@
 import ConverterStrategy from '../ConverterPlugin/ConverterStrategy'
-import { sleep } from '../../util'
 import _ from 'lodash'
 import bmp from 'bmp-js'
 import JSZip from 'jszip'
@@ -15,10 +14,10 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         return new Uint8Array(this.content)
     }
 
-    async process () {
-        await this.ui.setProgress(0)
-        await this.ui.setMessage('Parsing metadata.')
+    scales: number[]
+    biases: number[]
 
+    async parseMetadata () {
         let prefix = this.readTillNewLine()
         if (prefix !== PREFIX)
             return Promise.reject(`Prefix ${prefix} is not supported, only ${PREFIX} is!`)
@@ -28,14 +27,12 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             return Promise.reject(`Prefix ${format} is not supported, only ${FORMAT} is currently!`)
 
         let widthAndHeight = this.readTillNewLine()
-        let width = 0
-        let height = 0
         let split = widthAndHeight.split(' ')
-        width = parseInt(split[0], 10)
+        this.width = parseInt(split[0], 10)
         if (split.length === 2)
-            height = parseInt(split[1], 10)
+            this.height = parseInt(split[1], 10)
         else
-            height = parseInt(this.readTillNewLine(), 10)
+            this.height = parseInt(this.readTillNewLine(), 10)
 
         let scales = this.readTillNewLine().split(' ')
         let biases
@@ -46,47 +43,43 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
         scales = scales.slice(0, 6)
 
-        let scalesF = scales.map(val => parseFloat(val))
-        let biasesF = biases.map(val => parseFloat(val))
+        this.scales = scales.map(val => parseFloat(val))
+        this.biases = biases.map(val => parseFloat(val))
+    }
 
-        await this.ui.setMessage('Reading pixels.')
+    data: Uint8Array[]
+    coeffs = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
 
-        const pixels = height * width
+    async readPixels () {
+
         /**
          * a_0, a_1, a_2, a_3, a_4, a_5, a_6, R, G, B
          */
-        const coeffs = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
-        let data = _.range(0, 9).map(() => new Uint8Array(pixels))
-        for (let pix = 0; pix < pixels; pix++) {
-            for (let co = 0; co < data.length; co++)
-                data[co][pix] = this.readOne()
-            if (pix % (pixels / 100) === 0) {
-                await this.ui.setProgress((pix / pixels * 100) + 1)
-                await sleep(1)
+        this.data = _.range(0, 9).map(() => new Uint8Array(this.pixels))
+        for (let pix = 0; pix < this.pixels; pix++) {
+            for (let co = 0; co < this.data.length; co++)
+                this.data[co][pix] = this.readOne()
+            if (pix % (this.pixels / 100) === 0) {
+                await this.ui.setProgress(pix / this.pixels * 100 + 1)
             }
         }
+    }
 
-        if (this.currentIndex !== this.view.length)
-            throw new Error('we missed some data!')
+    async readSuffix () {
+        //
+    }
 
-        await this.ui.setMessage('Generating zip.')
-        await this.ui.setProgress(0)
-
-        let zip = new JSZip()
-
-        for (let i = 0; i < data.length; i++) {
+    async fillZip (zip) {
+        for (let i = 0; i < this.data.length; i++) {
             let bmpData = {
-                data: data[i],
-                width: width,
-                height: height,
+                data: this.data[i],
+                width: this.width,
+                height: this.height,
             }
 
             let bmpfile = new BmpEncoder(bmpData).encode()
-            await zip.file(`${coeffs[i]}.bmp`, bmpfile)
-            await this.ui.setProgress(((i + 1) / data.length) * 100)
+            await zip.file(`${this.coeffs[i]}.bmp`, bmpfile)
+            await this.ui.setProgress(((i + 1) / this.data.length) * 100)
         }
-
-        await this.ui.setMessage('Zip generated.')
-        return zip.generateAsync({ type: 'blob' })
     }
 }

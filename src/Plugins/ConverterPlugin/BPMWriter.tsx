@@ -30,9 +30,9 @@ export default class BmpEncoder {
     pos = 0
     bitPP = 0
 
-    COMPONENTS = 1
+    COMPONENTS = 3
 
-    constructor (imgData: { width: number, height, data: Uint8Array }) {
+    constructor(imgData: { width: number, height, data: Uint8Array }) {
         this.buffer = imgData.data
         this.width = imgData.width
         this.height = imgData.height
@@ -53,7 +53,7 @@ export default class BmpEncoder {
 
         tempBuffer.writeUInt32LE(this.headerInfoSize, this.pos); this.pos += 4
         tempBuffer.writeUInt32LE(this.width, this.pos); this.pos += 4
-        tempBuffer.writeUInt32LE(this.height, this.pos); this.pos += 4
+        tempBuffer.writeInt32LE(-this.height, this.pos); this.pos += 4
         tempBuffer.writeUInt16LE(this.planes, this.pos); this.pos += 2
         tempBuffer.writeUInt16LE(this.bitPP, this.pos); this.pos += 2
         tempBuffer.writeUInt32LE(this.compress, this.pos); this.pos += 4
@@ -70,12 +70,15 @@ export default class BmpEncoder {
             for (let x = 0; x < this.width; x++) {
                 let p = this.pos + y * rowBytes + x * this.COMPONENTS
 
-                /*i++// a
-                tempBuffer[p] = this.buffer[i++]// b
-                tempBuffer[p + 1] = this.buffer[i++]// g
-                tempBuffer[p + 2] = this.buffer[i++]// r*/
+                if (this.COMPONENTS === 3) {
+                    i++// a
+                    tempBuffer[p] = this.buffer[i++]// b
+                    tempBuffer[p + 1] = this.buffer[i++]// g
+                    tempBuffer[p + 2] = this.buffer[i++]
+                } else {
+                    tempBuffer.writeUInt8(this.buffer[i++], p)
+                }
 
-                tempBuffer.writeUInt8(this.buffer[i++], p)
             }
             if (this.extraBytes > 0) {
                 let fillOffset = this.pos + y * rowBytes + this.width * this.COMPONENTS
