@@ -49,7 +49,6 @@ export default class PTMConverterStrategy extends ConverterStrategy {
     coeffs = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
 
     async readPixels () {
-
         /**
          * a_0, a_1, a_2, a_3, a_4, a_5, a_6, R, G, B
          */
@@ -67,17 +66,63 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         //
     }
 
-    async fillZip (zip) {
+    async bundleChannels () {
+        let bmps = []
         for (let i = 0; i < this.data.length; i++) {
             let bmpData = {
                 data: this.data[i],
                 width: this.width,
                 height: this.height,
             }
-
-            let bmpfile = new BmpEncoder(bmpData).encode()
-            await zip.file(`${this.coeffs[i]}.bmp`, bmpfile)
+            bmps.push(new BmpEncoder(bmpData).encode())
             await this.ui.setProgress(((i + 1) / this.data.length) * 100)
+        }
+
+        this.channels = {
+            L: {
+                a0: {
+                    data: bmps[0],
+                    fileformat: 'bmp',
+                },
+                a1: {
+                    data: bmps[1],
+                    fileformat: 'bmp',
+                },
+                a2: {
+                    data: bmps[2],
+                    fileformat: 'bmp',
+                },
+                a3: {
+                    data: bmps[3],
+                    fileformat: 'bmp',
+                },
+                a4: {
+                    data: bmps[4],
+                    fileformat: 'bmp',
+                },
+                a5: {
+                    data: bmps[5],
+                    fileformat: 'bmp',
+                },
+            },
+            R: {
+                R: {
+                    data: bmps[7],
+                    fileformat: 'bmp',
+                },
+            },
+            G: {
+                G: {
+                    data: bmps[8],
+                    fileformat: 'bmp',
+                },
+            },
+            B: {
+                B: {
+                    data: bmps[9],
+                    fileformat: 'bmp',
+                },
+            },
         }
     }
 }

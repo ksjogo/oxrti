@@ -69,7 +69,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             let file = files[0]
             this.setDatahref('')
             let ending = path.extname(file.name)
-            this.setZipname(path.basename(file.name, ending) + '.zip')
+            this.setZipname(path.basename(file.name, ending) + 'btf.zip')
             let strategy: new (...args: any[]) => ConverterStrategy
             this.appState.hookForEach('ConverterFileFormat', (hook: ConfigHook<ConverterStrategyConfig>) => {
                 if (hook.fileEndings.indexOf(ending) !== -1)
