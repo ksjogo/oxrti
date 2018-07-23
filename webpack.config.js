@@ -59,6 +59,6 @@ module.exports = (env, argv) => {
         }
       ]
     }
-  }, require('./webpack.renderer.additions'));
+  }, require('./webpack.renderer.shared'));
   return config;
 }

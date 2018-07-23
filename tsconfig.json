@@ -19,5 +19,8 @@
   "exclude": [
     "node_modules",
     "static"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "silent": true
+  }
 }

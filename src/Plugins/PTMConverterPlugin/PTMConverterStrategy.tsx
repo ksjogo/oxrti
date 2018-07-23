@@ -1,7 +1,5 @@
 import ConverterStrategy from '../ConverterPlugin/ConverterStrategy'
-import _ from 'lodash'
-import bmp from 'bmp-js'
-import JSZip from 'jszip'
+import { range } from 'lodash'
 import BmpEncoder from '../ConverterPlugin/BPMWriter'
 
 const PREFIX = 'PTM_1.2'
@@ -55,7 +53,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         /**
          * a_0, a_1, a_2, a_3, a_4, a_5, a_6, R, G, B
          */
-        this.data = _.range(0, 9).map(() => new Uint8Array(this.pixels))
+        this.data = range(0, 9).map(() => new Uint8Array(this.pixels))
         for (let pix = 0; pix < this.pixels; pix++) {
             for (let co = 0; co < this.data.length; co++)
                 this.data[co][pix] = this.readOne()
