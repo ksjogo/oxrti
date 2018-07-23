@@ -56,9 +56,4 @@ to download them.
 
 ## Online Copy
 
-Later live versions will be available online and hosted.
-
-<!--
-The easiest way to access to software is by visiting [our hosted version](https://oxrti.azurewebsites.net/api/azurestatic) for the latest release. To see the current master, visit [here](https://oxrti-master.azurewebsites.net/api/azurestatic).
-
--->
+The easiest way to access to software is by visiting [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
