@@ -69,7 +69,8 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             let file = files[0]
             this.setDatahref('')
             let ending = path.extname(file.name)
-            this.setZipname(path.basename(file.name, ending) + '.btf.zip')
+            let name = path.basename(file.name, ending)
+            this.setZipname(name + '.btf.zip')
             let strategy: new (...args: any[]) => ConverterStrategy
             this.appState.hookForEach('ConverterFileFormat', (hook: ConfigHook<ConverterStrategyConfig>) => {
                 if (hook.fileEndings.indexOf(ending) !== -1)
@@ -80,6 +81,8 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             }
             let content = await readAsArrayBuffer(file) as ArrayBuffer
             let btf = await (new strategy(content, this)).process()
+            btf.name = name
+            this.appState.filecache[name] = btf
             await this.setProgress(50)
             await this.setMessage('Exporting zip.')
             let zip = await btf.generateZip()

@@ -18,7 +18,7 @@ export default abstract class ConverterStrategy {
     constructor (content: ArrayBuffer, ui: IConverterUI) {
         this.ui = ui
         this.fileBuffer = content
-        this.inputBuffer = new Buffer(content)
+        this.inputBuffer = Buffer.from(content)
         this.output = new BTFFile()
     }
 

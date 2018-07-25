@@ -6,18 +6,29 @@ import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator } from './HookManager'
 import { HookConfig, HookName } from '../Hook'
 import Theme from '../View/Theme'
+import BTFFile, { BTFCache } from '../BTFFile'
 
 const AppStateData = types.model({
   uptime: 0,
   activeTab: 0,
   plugins: types.late(() => types.optional(types.map(Plugin), {})),
   hooks: types.optional(types.map(HookManager), {}),
+  currentFile: '',
 })
 
 export type PluginLoader = (name: string) => Plugin
 let pluginLoader: PluginLoader = null
 
 class AppStateController extends shim(AppStateData) {
+
+  // volatile cache
+  filecache: BTFCache
+
+  btf () {
+    if (this.currentFile === '')
+      return null
+    return this.filecache[this.currentFile]
+  }
 
   theme () {
     return Theme

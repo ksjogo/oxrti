@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-
+export type BTFCache = { [key: string]: BTFFile }
 export type Channels = { [key: string]: Channel }
 export type Channel = { [key: string]: Coefficent }
 export type Coefficent = {
@@ -15,16 +15,18 @@ export default class BTFFile {
     oxrtiState: object = {}
     width: number = 0
     height: number = 0
+    name: string = ''
 
     channels: Channels
 
-    constructor () { }
+    constructor() { }
 
     generateManifest () {
         return JSONY({
             data: null,
             width: this.width,
             height: this.height,
+            name: this.name,
         })
     }
 

@@ -8,6 +8,7 @@ import { destroy, getSnapshot } from 'mobx-state-tree'
 import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
+import { BTFCache } from './BTFFile'
 
 let mount: HTMLElement
 
@@ -47,7 +48,7 @@ function loadPlugins (preload = false) {
 }
 
 let state: IAppState = null
-
+let filecache: BTFCache = {}
 /**
  * transform the current state to the new one
  * @param snapshot the previous tree snapshot
@@ -67,6 +68,7 @@ function createAppState (snapshot = {}) {
 
     // create new one
     state = (require('./State/AppState').default).create(snapshot)
+    state.filecache = filecache
 
     if ((window as any).devToolsExtension)
         connectReduxDevtools(remotedev, state)
