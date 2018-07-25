@@ -10,9 +10,10 @@ export type Coefficent = {
 }
 
 export default abstract class ConverterStrategy {
-    view: Uint8Array | Int8Array = null
-    content: ArrayBuffer = null
+    fileBuffer: ArrayBuffer
+    inputBuffer: Buffer
     ui: IConverterUI
+    pixelData: Buffer
 
     width = 0
     height = 0
@@ -23,19 +24,17 @@ export default abstract class ConverterStrategy {
 
     constructor (content: ArrayBuffer, ui: IConverterUI) {
         this.ui = ui
-        this.content = content
-        this.view = this.createView()
+        this.fileBuffer = content
+        this.inputBuffer = new Buffer(content)
     }
-
-    abstract createView ()
 
     currentIndex = 0
     readTillNewLine () {
         let str = ''
         while (true) {
-            if (this.currentIndex >= this.view.length)
+            if (this.currentIndex >= this.inputBuffer.length)
                 throw new Error('Reached end of file before newline')
-            let next = String.fromCharCode(this.view[this.currentIndex++])
+            let next = String.fromCharCode(this.inputBuffer[this.currentIndex++])
             if (next !== '\n')
                 str += next
             else
@@ -44,23 +43,28 @@ export default abstract class ConverterStrategy {
         return str
     }
 
-    readOne (progress = true) {
-        if (this.currentIndex >= this.view.length) {
-            debugger
+    readOne () {
+        if (this.currentIndex >= this.inputBuffer.length) {
             throw new Error('Reached end of file prematurely!')
         }
 
-        return this.view[this.currentIndex++]
+        return this.inputBuffer[this.currentIndex++]
+    }
+
+    async preparePixelData () {
+        this.pixelData = Buffer.from(this.fileBuffer, this.currentIndex)
+        this.currentIndex += this.fileBuffer.byteLength - this.currentIndex
     }
 
     async process (): Promise<Blob> {
         await this.ui.setProgress(0)
         await this.ui.setMessage('Parsing metadata.')
         await this.parseMetadata()
+        await this.preparePixelData()
         await this.ui.setMessage('Reading pixels.')
         await this.readPixels()
         await this.readSuffix()
-        if (this.currentIndex !== this.view.length)
+        if (this.currentIndex !== this.inputBuffer.length)
             throw new Error('we missed some data!')
         await this.ui.setMessage('Bundling channels.')
         await this.bundleChannels()
@@ -73,7 +77,6 @@ export default abstract class ConverterStrategy {
         let ret = await zip.generateAsync({ type: 'blob' })
         await this.ui.setMessage('')
         await this.ui.setProgress(100)
-        await sleep(0)
         return Promise.resolve(ret)
     }
 

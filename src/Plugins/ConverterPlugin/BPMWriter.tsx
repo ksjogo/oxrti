@@ -1,9 +1,11 @@
+import Writer from './Writer'
+
 /**
  * adapted from https://github.com/shaozilee/bmp-js
  * LICENSE: MIT
  */
 
-export default class BmpEncoder {
+export default class BmpEncoder extends Writer {
     flag = 'BM'
     reserved = 0
     offset = 54
@@ -14,10 +16,6 @@ export default class BmpEncoder {
     vr = 0
     colors = 0
     importantColors = 0
-    width = 0
-    height = 0
-    buffer: Uint8Array = null
-    data = []
     headerInfoSize = 40
     extraBytes = 0
     rgbSize = 0
@@ -25,11 +23,9 @@ export default class BmpEncoder {
     bitPP = 0
 
     COMPONENTS = 1
+    constructor (config) {
+        super(config)
 
-    constructor (imgData: { width: number, height, data: Uint8Array }) {
-        this.buffer = imgData.data
-        this.width = imgData.width
-        this.height = imgData.height
         this.bitPP = this.COMPONENTS * 8
 
         this.extraBytes = this.width % 4
@@ -66,11 +62,11 @@ export default class BmpEncoder {
 
                 if (this.COMPONENTS === 3) {
                     i++// a
-                    tempBuffer[p] = this.buffer[i++]// b
-                    tempBuffer[p + 1] = this.buffer[i++]// g
-                    tempBuffer[p + 2] = this.buffer[i++]
+                    tempBuffer[p] = this.inputBuffer[i++]// b
+                    tempBuffer[p + 1] = this.inputBuffer[i++]// g
+                    tempBuffer[p + 2] = this.inputBuffer[i++]
                 } else {
-                    tempBuffer.writeUInt8(this.buffer[i++], p)
+                    tempBuffer.writeUInt8(this.inputBuffer[i++], p)
                 }
 
             }

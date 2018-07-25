@@ -69,7 +69,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             let file = files[0]
             this.setDatahref('')
             let ending = path.extname(file.name)
-            this.setZipname(path.basename(file.name, ending) + 'btf.zip')
+            this.setZipname(path.basename(file.name, ending) + '.btf.zip')
             let strategy: new (...args: any[]) => ConverterStrategy
             this.appState.hookForEach('ConverterFileFormat', (hook: ConfigHook<ConverterStrategyConfig>) => {
                 if (hook.fileEndings.indexOf(ending) !== -1)
@@ -104,6 +104,10 @@ const styles = (theme: Theme) => createStyles({
         color: 'green',
         height: '50px',
     },
+    progress: {
+        transition: 'none',
+        width: '100%',
+    },
 })
 
 const ConverterView = Component(function ConverterView (props, classes) {
@@ -114,14 +118,12 @@ const ConverterView = Component(function ConverterView (props, classes) {
             <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
                 <div>Try dropping some files here, or click to select files to upload.</div>
             </Dropzone>
-            <LinearProgress variant='determinate' value={this.progress} style={{
-                width: '100%',
-            }} />
+            <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
             <div><p>{this.statusMessage} </p></div>
             {this.dataHref &&
                 <div>
                     <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
                 </div>}
         </Grid>
-    </Typography >
+    </Typography>
 }, styles)

@@ -1,6 +1,7 @@
 import ConverterStrategy from '../ConverterPlugin/ConverterStrategy'
 import { range } from 'lodash'
 import BmpEncoder from '../ConverterPlugin/BPMWriter'
+import PNGWriter from '../ConverterPlugin/PNGWriter'
 
 const PREFIX = 'PTM_1.2'
 const FORMAT = 'PTM_FORMAT_LRGB'
@@ -8,12 +9,10 @@ const FORMAT = 'PTM_FORMAT_LRGB'
  * Implementing PTM Converting according to http://www.hpl.hp.com/research/ptm/downloads/PtmFormat12.pdf
  */
 export default class PTMConverterStrategy extends ConverterStrategy {
-    createView () {
-        return new Uint8Array(this.content)
-    }
 
     scales: number[]
     biases: number[]
+    format = FORMAT
 
     async parseMetadata () {
         let prefix = this.readTillNewLine()
@@ -45,21 +44,43 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         this.biases = biases.map(val => parseFloat(val))
     }
 
-    data: Uint8Array[]
-    coeffs = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
-
+    coeffNames = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
+    coeffData: Buffer[]
     async readPixels () {
         /**
-         * a_0, a_1, a_2, a_3, a_4, a_5, a_6, R, G, B
+         * a_0, a_1, a_2, a_3, a_4, a_5, R, G, B
          */
-        this.data = range(0, 9).map(() => new Uint8Array(this.pixels))
-        for (let pix = 0; pix < this.pixels; pix++) {
-            for (let co = 0; co < this.data.length; co++)
-                this.data[co][pix] = this.readOne()
-            if (pix % (this.pixels / 100) === 0) {
-                await this.ui.setProgress(pix / this.pixels * 100 + 1)
+        this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
+        // orientated at http://www.tobias-franke.eu/projects/ptm/
+        // and https://github.com/alexbrey/ptmconvert/blob/master/hg/src/ptmconvert.cpp
+        for (let y = 0; y < this.height; ++y)
+            for (let x = 0; x < this.width; ++x) {
+                let p = ((y * this.width) + x)
+                let index = p // * 3
+
+                // flip image upside down if format LRGB
+                // if (this.format === 'PTM_FORMAT_LRGB')
+                index = (((this.height - 1 - y) * this.width) + x) // * 3
+
+                // flip image horizontally if format JPEG
+                // if (this.format === 'PTM_FORMAT_JPEG_LRGB')
+                //    index = ((y * this.width) + (this.width - 1 - x)) * 3
+
+                // coefficients: first wxhx6 block
+                for (let i = 0; i <= 5; i++)
+                    // coeffHdata[index + c] = ptm->coefficients[p * 6 + c]
+                    // coeffLdata[index + c] = ptm->coefficients[p * 6 + c + 3]
+                    this.coeffData[i][index] = this.pixelData[p * 6 + i]
+
+                // rgb: second wxhx3 block
+                for (let i = 0; i <= 2; i++)
+                    // rgbdata[index + c] = ptm->coefficients[num_pixels * 6 + p * 3 + c]
+                    this.coeffData[i + 6][index] = this.pixelData[this.pixels * 6 + p * 3 + i]
+
+                if (p % (this.pixels / 100) === 0) {
+                    await this.ui.setProgress(p / this.pixels * 100 + 1)
+                }
             }
-        }
     }
 
     async readSuffix () {
@@ -68,59 +89,59 @@ export default class PTMConverterStrategy extends ConverterStrategy {
 
     async bundleChannels () {
         let bmps = []
-        for (let i = 0; i < this.data.length; i++) {
+        for (let i = 0; i < this.coeffData.length; i++) {
             let bmpData = {
-                data: this.data[i],
+                data: this.coeffData[i],
                 width: this.width,
                 height: this.height,
+                elementSize: 8 as 8 | 16,
             }
-            bmps.push(new BmpEncoder(bmpData).encode())
-            await this.ui.setProgress(((i + 1) / this.data.length) * 100)
+            bmps.push(new PNGWriter(bmpData).encode())
+            await this.ui.setProgress(((i + 1) / this.coeffData.length) * 100)
         }
-
         this.channels = {
             L: {
                 a0: {
                     data: bmps[0],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
                 a1: {
                     data: bmps[1],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
                 a2: {
                     data: bmps[2],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
                 a3: {
                     data: bmps[3],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
                 a4: {
                     data: bmps[4],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
                 a5: {
                     data: bmps[5],
-                    fileformat: 'bmp',
+                    fileformat: 'png',
                 },
             },
             R: {
                 R: {
-                    data: bmps[7],
-                    fileformat: 'bmp',
+                    data: bmps[6],
+                    fileformat: 'png',
                 },
             },
             G: {
                 G: {
-                    data: bmps[8],
-                    fileformat: 'bmp',
+                    data: bmps[7],
+                    fileformat: 'png',
                 },
             },
             B: {
                 B: {
-                    data: bmps[9],
-                    fileformat: 'bmp',
+                    data: bmps[8],
+                    fileformat: 'png',
                 },
             },
         }
