@@ -19,7 +19,7 @@ export default class BTFFile {
 
     channels: Channels
 
-    constructor() { }
+    constructor () { }
 
     generateManifest () {
         return JSONY({
@@ -44,6 +44,10 @@ export default class BTFFile {
         zip.file('manifest.json', this.generateManifest())
         zip.file('oxrti.json', JSONY(this.oxrtiState))
         return zip.generateAsync({ type: 'blob' })
+    }
+
+    texUrl (co: Coefficent) {
+        return 'data:image/png;base64,' + co.data.toString('base64')
     }
 }
 
