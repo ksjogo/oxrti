@@ -119,6 +119,7 @@ export default function init (elementId: string | HTMLElement) {
         module.hot.accept(['./State/AppState'], () => {
             // Store definition changed, recreate a new one from old state
             renderApp(require('./View/App').default, createAppState(getSnapshot(state)))
+            loadPlugins()
         })
 
         module.hot.accept(['./View/App'], () => {

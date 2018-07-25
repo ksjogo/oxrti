@@ -22,12 +22,19 @@ let pluginLoader: PluginLoader = null
 class AppStateController extends shim(AppStateData) {
 
   // volatile cache
+  // as we don't want to preserve files inside the state tree
   filecache: BTFCache
 
   btf () {
     if (this.currentFile === '')
       return null
     return this.filecache[this.currentFile]
+  }
+
+  @action
+  loadFile (file: BTFFile) {
+    this.filecache[file.name] = file
+    this.currentFile = file.name
   }
 
   theme () {

@@ -37,6 +37,7 @@ const RendererView = Component(function RendererView (props) {
         <Grid item xs={4}>
             <h1>Oxrti</h1>
             <p>Uptime: {props.appState.uptime}</p>
+            {props.appState.btf() && <p>{props.appState.btf().name}</p>}
             <RenderHooks name='ViewerSide' />
         </Grid>
     </Grid>

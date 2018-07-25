@@ -82,7 +82,6 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             let content = await readAsArrayBuffer(file) as ArrayBuffer
             let btf = await (new strategy(content, this)).process()
             btf.name = name
-            this.appState.filecache[name] = btf
             await this.setProgress(50)
             await this.setMessage('Exporting zip.')
             let zip = await btf.generateZip()
@@ -90,6 +89,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             await this.setMessage('')
             let url = URL.createObjectURL(zip)
             this.setDatahref(url)
+            this.appState.loadFile(btf)
             setTimeout(() => {
                 FileSaver.saveAs(zip, this.zipName)
             }, 400)
