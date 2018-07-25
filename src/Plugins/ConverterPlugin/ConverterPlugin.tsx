@@ -18,7 +18,7 @@ import { sleep } from '../../util'
 const ConverterModel = Plugin.props({
     title: 'Converter',
     progress: 0,
-    statusMessage: 'No file',
+    statusMessage: 'No file.',
     zipName: '',
     dataHref: '',
 })
@@ -79,10 +79,17 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
                 return this.statusMessage = `File format ${ending} is not supported at the moment`
             }
             let content = await readAsArrayBuffer(file) as ArrayBuffer
-            let result = await (new strategy(content, this)).process()
-            let url = URL.createObjectURL(result)
+            let btf = await (new strategy(content, this)).process()
+            await this.setProgress(50)
+            await this.setMessage('Exporting zip.')
+            let zip = await btf.generateZip()
+            await this.setProgress(100)
+            await this.setMessage('')
+            let url = URL.createObjectURL(zip)
             this.setDatahref(url)
-            FileSaver.saveAs(result, this.zipName)
+            setTimeout(() => {
+                FileSaver.saveAs(zip, this.zipName)
+            }, 400)
         } catch (e) {
             console.error(e)
             this.setProgress(0)

@@ -1,13 +1,5 @@
 import IConverterUI from './ConverterUI'
-import JSZip from 'jszip'
-import { sleep } from '../../util'
-
-export type Channels = { [key: string]: Channel }
-export type Channel = { [key: string]: Coefficent }
-export type Coefficent = {
-    data: Buffer,
-    fileformat: string,
-}
+import BTFFile, { Channels } from '../../BTFFile'
 
 export default abstract class ConverterStrategy {
     fileBuffer: ArrayBuffer
@@ -17,6 +9,7 @@ export default abstract class ConverterStrategy {
 
     width = 0
     height = 0
+    output: BTFFile
 
     get pixels () {
         return this.width * this.height
@@ -26,6 +19,7 @@ export default abstract class ConverterStrategy {
         this.ui = ui
         this.fileBuffer = content
         this.inputBuffer = new Buffer(content)
+        this.output = new BTFFile()
     }
 
     currentIndex = 0
@@ -56,10 +50,12 @@ export default abstract class ConverterStrategy {
         this.currentIndex += this.fileBuffer.byteLength - this.currentIndex
     }
 
-    async process (): Promise<Blob> {
+    async process (): Promise<BTFFile> {
         await this.ui.setProgress(0)
         await this.ui.setMessage('Parsing metadata.')
         await this.parseMetadata()
+        this.output.width = this.width
+        this.output.height = this.height
         await this.preparePixelData()
         await this.ui.setMessage('Reading pixels.')
         await this.readPixels()
@@ -67,44 +63,15 @@ export default abstract class ConverterStrategy {
         if (this.currentIndex !== this.inputBuffer.length)
             throw new Error('we missed some data!')
         await this.ui.setMessage('Bundling channels.')
-        await this.bundleChannels()
-        await this.ui.setMessage('Generating zip.')
         await this.ui.setProgress(0)
-        let zip = new JSZip()
-        await this.fillZip(zip)
-        await this.ui.setProgress(50)
-        await this.ui.setMessage('Exporting zip.')
-        let ret = await zip.generateAsync({ type: 'blob' })
-        await this.ui.setMessage('')
-        await this.ui.setProgress(100)
-        return Promise.resolve(ret)
+        this.output.channels = await this.bundleChannels()
+        return Promise.resolve(this.output)
     }
 
     abstract async parseMetadata ()
     abstract async readPixels ()
     abstract async readSuffix ()
 
-    channels: Channels
-    abstract async bundleChannels ()
+    abstract async bundleChannels (): Promise<Channels>
 
-    async fillZip (zip: JSZip) {
-        let dataFolder = zip.folder('data')
-        for (const channelName in this.channels) {
-            let channelFolder = dataFolder.folder(channelName)
-            for (const coefficentName in this.channels[channelName]) {
-                let coefficent = this.channels[channelName][coefficentName]
-                channelFolder.file(`${coefficentName}.${coefficent.fileformat}`, coefficent.data)
-            }
-        }
-        let manifest = await this.generateManifest()
-        zip.file('manifest.json', manifest)
-    }
-
-    async generateManifest (): Promise<string> {
-        return Promise.resolve(JSON.stringify({
-            data: null,
-            width: this.width,
-            height: this.height,
-        }, null, 2))
-    }
 }

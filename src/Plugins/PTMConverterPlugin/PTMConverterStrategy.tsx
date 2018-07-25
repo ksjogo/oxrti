@@ -1,7 +1,6 @@
 import ConverterStrategy from '../ConverterPlugin/ConverterStrategy'
-import { range } from 'lodash'
-import BmpEncoder from '../ConverterPlugin/BPMWriter'
 import PNGWriter from '../ConverterPlugin/PNGWriter'
+import { Channels } from '../../BTFFile'
 
 const PREFIX = 'PTM_1.2'
 const FORMAT = 'PTM_FORMAT_LRGB'
@@ -99,7 +98,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             bmps.push(new PNGWriter(bmpData).encode())
             await this.ui.setProgress(((i + 1) / this.coeffData.length) * 100)
         }
-        this.channels = {
+        let channels: Channels = {
             L: {
                 a0: {
                     data: bmps[0],
@@ -145,5 +144,6 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
         }
+        return Promise.resolve(channels)
     }
 }
