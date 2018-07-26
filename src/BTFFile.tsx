@@ -49,6 +49,10 @@ export default class BTFFile {
     texUrl (co: Coefficent) {
         return 'data:image/png;base64,' + co.data.toString('base64')
     }
+
+    aspectRatio () {
+        return this.width / this.height
+    }
 }
 
 export async function fromZip (data) {

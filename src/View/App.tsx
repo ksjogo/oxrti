@@ -9,17 +9,12 @@ import Component from './Component'
 import Theme from './Theme'
 import { ConfigHook } from '../Hook'
 import { TabConfig } from './Tabs'
+import { isUndefined } from 'util'
 
-function TabContainer (props) {
-    return (
-        <Typography component='div' style={{ padding: 8 * 3 }}>
-            {props.children}
-        </Typography>
-    )
-}
 export default hot(module)(Component(function App (props) {
     let currentTab = props.appState.hookPick<ConfigHook<TabConfig>>('Tabs', props.appState.activeTab)
     let CurrentRender = currentTab.content
+    let padding = currentTab.padding !== undefined ? currentTab.padding : 24
     return (
         <MuiThemeProvider theme={Theme}>
             <AppBar position='static'>
@@ -30,9 +25,9 @@ export default hot(module)(Component(function App (props) {
                     })}
                 </Tabs>
             </AppBar>
-            <TabContainer>
+            <Typography component='div' style={{ padding: padding }}>
                 <CurrentRender />
-            </TabContainer>
+            </Typography>
         </MuiThemeProvider>
     )
 }))

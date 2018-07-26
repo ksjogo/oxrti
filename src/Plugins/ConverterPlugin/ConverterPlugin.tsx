@@ -121,19 +121,15 @@ const styles = (theme: Theme) => createStyles({
 })
 
 const ConverterView = Component(function ConverterView (props, classes) {
-    return < Typography component='div' style={{
-        padding: 8 * 3,
-    }} >
-        <Grid container justify='center'>
-            <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
-                <div>Try dropping some files here, or click to select files to upload.</div>
-            </Dropzone>
-            <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
-            <div><p>{this.statusMessage} </p></div>
-            {this.dataHref &&
-                <div>
-                    <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
-                </div>}
-        </Grid>
-    </Typography>
+    return <Grid container justify='center'>
+        <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+            <div>Try dropping some files here, or click to select files to upload.</div>
+        </Dropzone>
+        <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
+        <div><p>{this.statusMessage} </p></div>
+        {this.dataHref &&
+            <div>
+                <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
+            </div>}
+    </Grid>
 }, styles)

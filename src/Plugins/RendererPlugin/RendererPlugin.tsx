@@ -5,9 +5,15 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
 import RenderHooks from '../../View/RenderHooks'
+import Measure, { ContentRect } from 'react-measure'
+import { Theme, createStyles } from '@material-ui/core'
+import { render } from 'react-dom'
+import { observer } from 'mobx-react'
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
+    elementHeight: 300,
+    elementWidth: 300,
 })
 
 class RendererController extends shim(RendererModel, Plugin) {
@@ -24,20 +30,42 @@ class RendererController extends shim(RendererModel, Plugin) {
             },
         }
     }
+
+    @action
+    onResize (contentRect: ContentRect) {
+        debugger
+        this.elementHeight = contentRect.bounds.height
+        this.elementWidth = contentRect.bounds.width
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
 export default RendererPlugin
 
-const RendererView = Component(function RendererView (props) {
+const styles = (theme: Theme) => createStyles({
+    stack: {
+        width: '100%',
+        height: 0,
+        'padding-bottom': '100%',
+    },
+})
+
+const RendererView = Component(function RendererView (props, classes) {
+    let aspect = props.appState.btf() ? `${100 / props.appState.btf().aspectRatio()}%` : '100%'
     return <Grid container spacing={16}>
         <Grid item xs={8}>
-            <Stack />
+            <Measure bounds onResize={this.onResize.bind(this)}>
+                {({ measureRef }) =>
+                    <div ref={measureRef} className={classes.stack} style={{
+                        paddingBottom: aspect,
+                    }}>
+                        <Stack />
+                    </div>
+                }
+            </Measure>
         </Grid>
         <Grid item xs={4}>
-            <h1>Oxrti</h1>
-            <p>Uptime: {props.appState.uptime}</p>
             <RenderHooks name='ViewerSide' />
         </Grid>
     </Grid>
-})
+}, styles)

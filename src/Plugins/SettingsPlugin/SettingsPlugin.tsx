@@ -27,5 +27,8 @@ const { Plugin: SettingsPlugin, Component } = PluginCreator(SettingsController, 
 export default SettingsPlugin
 
 const SettingsView = Component(function SettingsView (props) {
-    return <h1>Settings</h1>
+    return <div>
+        <h1>Settings</h1>
+        <p>Uptime: {props.appState.uptime}</p>
+    </div>
 })
