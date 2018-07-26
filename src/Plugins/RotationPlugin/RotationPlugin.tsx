@@ -54,6 +54,6 @@ const RotationComponent = Component(function RotationNode (props) {
 const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <Typography>Rotation</Typography>
-        <Slider value={this.angle} onChange={this.onSlider} min={0} max={360} />
+        <Slider value={this.angle} onChange={this.onSlider} min={-180} max={180} />
     </div>
 })

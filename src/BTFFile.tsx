@@ -16,10 +16,13 @@ export default class BTFFile {
     width: number = 0
     height: number = 0
     name: string = ''
+    formatMetadata: object = {}
 
     channels: Channels
 
-    constructor () { }
+    constructor () {
+        //
+    }
 
     generateManifest () {
         return JSONY({

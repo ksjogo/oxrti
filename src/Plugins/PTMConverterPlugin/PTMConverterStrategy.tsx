@@ -2,6 +2,11 @@ import ConverterStrategy from '../ConverterPlugin/ConverterStrategy'
 import PNGWriter from '../ConverterPlugin/PNGWriter'
 import { Channels } from '../../BTFFile'
 
+export type PTMFormatMetadata = {
+    biases: number[],
+    scales: number[],
+}
+
 const PREFIX = 'PTM_1.2'
 const FORMAT = 'PTM_FORMAT_LRGB'
 /**
@@ -9,9 +14,8 @@ const FORMAT = 'PTM_FORMAT_LRGB'
  */
 export default class PTMConverterStrategy extends ConverterStrategy {
 
-    scales: number[]
-    biases: number[]
     format = FORMAT
+    formatMetadata: PTMFormatMetadata
 
     async parseMetadata () {
         let prefix = this.readTillNewLine()
@@ -31,7 +35,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             this.height = parseInt(this.readTillNewLine(), 10)
 
         let scales = this.readTillNewLine().split(' ')
-        let biases
+        let biases: string[]
         if (scales.length === 12) { // new line before bias
             biases = scales.slice(6, 13)
         } else {
@@ -39,8 +43,10 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
         scales = scales.slice(0, 6)
 
-        this.scales = scales.map(val => parseFloat(val))
-        this.biases = biases.map(val => parseFloat(val))
+        this.formatMetadata = {
+            scales: scales.map(val => parseFloat(val)),
+            biases: biases.map(val => parseFloat(val)),
+        }
     }
 
     coeffNames = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']

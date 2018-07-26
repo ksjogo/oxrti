@@ -8,7 +8,6 @@ import BaseNode from './BaseNode'
 
 export default Component<{
 }>(function Stack (props) {
-    debugger
     let Func = new PTMLRGB().render
     let current = <Func />
 

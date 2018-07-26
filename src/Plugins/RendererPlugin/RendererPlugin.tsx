@@ -33,7 +33,6 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     @action
     onResize (contentRect: ContentRect) {
-        debugger
         this.elementHeight = contentRect.bounds.height
         this.elementWidth = contentRect.bounds.width
     }

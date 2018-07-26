@@ -5,6 +5,7 @@ import { Shaders, Node } from 'gl-react'
 
 import noise from './noise.glsl'
 import standard from './ptmlrgb.glsl'
+import { PTMFormatMetadata } from '../PTMConverterPlugin/PTMConverterStrategy'
 
 const shaders = Shaders.create({
     noise: {
@@ -17,6 +18,7 @@ const shaders = Shaders.create({
 
 export default class PTMLRGB extends BaseNode {
     render = Component(props => {
+        this.appState = props.appState
         if (!props.appState.btf())
             return <Node
                 shader={shaders.noise}
@@ -30,6 +32,7 @@ export default class PTMLRGB extends BaseNode {
             width={btf.width}
             height={btf.height}
             uniforms={{
+                lightPosition: this.lightPos(),
                 texR: btf.texUrl(btf.channels.R.R),
                 texG: btf.texUrl(btf.channels.G.G),
                 texB: btf.texUrl(btf.channels.B.B),
@@ -39,6 +42,8 @@ export default class PTMLRGB extends BaseNode {
                 texL3: btf.texUrl(btf.channels.L.a3),
                 texL4: btf.texUrl(btf.channels.L.a4),
                 texL5: btf.texUrl(btf.channels.L.a5),
+                biases: (btf.formatMetadata as PTMFormatMetadata).biases,
+                scales: (btf.formatMetadata as PTMFormatMetadata).scales,
             }} />
     })
 }

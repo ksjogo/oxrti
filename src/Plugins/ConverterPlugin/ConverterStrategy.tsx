@@ -10,6 +10,7 @@ export default abstract class ConverterStrategy {
     width = 0
     height = 0
     output: BTFFile
+    formatMetadata: object
 
     get pixels () {
         return this.width * this.height
@@ -56,6 +57,7 @@ export default abstract class ConverterStrategy {
         await this.parseMetadata()
         this.output.width = this.width
         this.output.height = this.height
+        this.output.formatMetadata = this.formatMetadata
         await this.preparePixelData()
         await this.ui.setMessage('Reading pixels.')
         await this.readPixels()
