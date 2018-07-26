@@ -14,10 +14,12 @@ let mount: HTMLElement
 
 // webpack bundles the modules into one context
 let pluginContext
-function reloadPluginContext () {
-    // TOIMP: could refine regex here
+let pluginModules = {}
+function reloadPluginContext (inital = false) {
     pluginContext = require.context('./Plugins', true, /^\.\//)
+    return pluginContext
 }
+
 /**
  * Load the plugin's code via webpack context
  * @param name must be the same as folder and filename
@@ -108,7 +110,7 @@ export default function init (elementId: string | HTMLElement) {
     mount = typeof elementId === 'object' ? elementId : document.getElementById(elementId)
 
     // Initial run
-    reloadPluginContext()
+    reloadPluginContext(true)
     loadPlugins(true)
     createAppState()
     loadPlugins()
@@ -127,14 +129,35 @@ export default function init (elementId: string | HTMLElement) {
             renderApp(require('./View/App').default, state)
         })
 
-        module.hot.accept((pluginContext).id, (updatedDependencies) => {
-            // Some plugin changed, let's reload
-            reloadPluginContext()
-            loadPlugins()
+        module.hot.accept(pluginContext.id, () => {
+            let reloadedContext = reloadPluginContext()
+            // we need to find the changed modules
+            // code akin to https://github.com/webpack/docs/wiki/hot-module-replacement
+            let changedModules = reloadedContext.keys()
+                .map(function (key) {
+                    return [key, reloadedContext(key)]
+                })
+                .filter(function (reloadedModule) {
+                    return pluginModules[reloadedModule[0]] !== reloadedModule[1]
+                })
+            changedModules.forEach(function (module) {
+                pluginModules[module[0]] = module[1]
+                // filter for real plugin roots
+                let moduleName: string = module[0]
+                if (!moduleName.endsWith('Plugin.tsx'))
+                    return
+                // should regex?
+                moduleName = moduleName.split('/').reverse()[0].split('.')[0]
+                // and reload them
+                state.loadPlugin(moduleName)
+            })
+        })
+        // store inital modules to compare for changes later
+        pluginContext.keys().forEach(function (key) {
+            let module = pluginContext(key)
+            pluginModules[key] = module
         })
 
-        /*module.hot.accept(['../oxrti.plugins.json'], () => {
-        })*/
     }
 
     uptimer()
