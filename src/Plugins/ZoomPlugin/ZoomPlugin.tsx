@@ -53,7 +53,7 @@ const ZoomComponent = Component(function ZoomNode (props) {
 
 const SliderComponent = Component(function ZoomSlider (props) {
     return <div>
-        <Typography>Zoom</Typography>
+        <h3>Zoom</h3>
         <Slider value={this.scale} onChange={this.onSlider} min={0} max={10} />
     </div>
 })

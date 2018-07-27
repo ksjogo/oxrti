@@ -1,4 +1,5 @@
 import JSZip from 'jszip'
+import { observable } from 'mobx'
 export type BTFCache = { [key: string]: BTFFile }
 export type Channels = { [key: string]: Channel }
 export type Channel = { [key: string]: Coefficent }

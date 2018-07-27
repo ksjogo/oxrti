@@ -25,7 +25,6 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
     }
 
     loadNoCache (config: TexForRender): { promise: Promise<TextureAndSize>, dispose: Function } {
-        debugger
         let gl = this.gl
         let promise = createImageBitmap(config.data).then(img => {
             let texture = gl.createTexture()

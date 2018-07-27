@@ -14,6 +14,7 @@ import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
 import { sleep } from '../../util'
+import JSONDisplay, { BTFMetadataDisplay } from '../../View/JSONDisplay'
 
 const ConverterModel = Plugin.props({
     title: 'Converter',
@@ -88,8 +89,8 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             await this.setProgress(100)
             await this.setMessage('')
             let url = URL.createObjectURL(zip)
-            this.setDatahref(url)
             this.appState.loadFile(btf)
+            this.setDatahref(url)
             setTimeout(() => {
                 FileSaver.saveAs(zip, this.zipName)
             }, 400)
@@ -130,6 +131,7 @@ const ConverterView = Component(function ConverterView (props, classes) {
         {this.dataHref &&
             <div>
                 <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
+                <BTFMetadataDisplay />
             </div>}
     </Grid>
 }, styles)

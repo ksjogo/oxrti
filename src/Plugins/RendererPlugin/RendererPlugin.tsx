@@ -8,6 +8,7 @@ import RenderHooks from '../../View/RenderHooks'
 import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles } from '@material-ui/core'
 import OxrtiDataTextureLoader, { Registrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
+import { BTFMetadataDisplay } from '../../View/JSONDisplay'
 Registrator()
 
 const RendererModel = Plugin.props({
@@ -26,6 +27,12 @@ class RendererController extends shim(RendererModel, Plugin) {
                     tab: {
                         label: 'Viewer',
                     },
+                },
+            },
+            ViewerSide: {
+                Rotation: {
+                    component: BTFMetadataDisplay,
+                    priority: 0,
                 },
             },
         }
