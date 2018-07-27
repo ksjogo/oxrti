@@ -9,6 +9,7 @@ import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
+import Plugin from './Plugin'
 
 let mount: HTMLElement
 

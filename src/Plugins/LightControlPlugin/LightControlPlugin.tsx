@@ -3,14 +3,14 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import { Typography } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
+import hemispherical from './Hemisphere'
 
 // oxrti default imports ->
 
 const LightControlModel = Plugin.props({
     title: 'LightControl',
-    x: 0.5,
-    y: 0.5,
-    z: 1,
+    x: 0,
+    y: 0,
 })
 
 class LightController extends shim(LightControlModel, Plugin) {
@@ -34,9 +34,9 @@ class LightController extends shim(LightControlModel, Plugin) {
     onSliderY (event, value) {
         this.y = value
     }
-    @action
-    onSliderZ (event, value) {
-        this.z = value
+
+    hemisphericalCoords () {
+        return hemispherical(this.x, this.y)
     }
 }
 
@@ -47,10 +47,10 @@ const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <h3>Light</h3>
         <Typography>Pos X</Typography>
-        <Slider default={0.5} value={this.x} onChange={this.onSliderX} min={0} max={1} />
+        <Slider default={0} value={this.x} onChange={this.onSliderX} min={-1} max={1} />
         <Typography>Pos Y</Typography>
-        <Slider default={0.5} value={this.y} onChange={this.onSliderY} min={0} max={1} />
-        <Typography>Pos Z</Typography>
-        <Slider default={1} value={this.z} onChange={this.onSliderZ} min={0} max={1} />
+        <Slider default={0} value={this.y} onChange={this.onSliderY} min={-1} max={1} />
+        <Typography>Hemispherical</Typography>
+        <p>x: {this.hemisphericalCoords()[0]} <br />y: {this.hemisphericalCoords()[1]}<br />z: {this.hemisphericalCoords()[2]}</p>
     </div>
 })

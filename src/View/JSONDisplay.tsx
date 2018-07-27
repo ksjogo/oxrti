@@ -14,21 +14,24 @@ let JSONDisplay = Component<{ json: object | string, style?: any }>(function JSO
 })
 
 let BTFMetadataDisplay = Component(function BTFMetadata (props) {
-    return <div>
-        <h3>Metadata</h3>
-        <JSONDisplay
-            json={props.appState.btf().generateManifest()}
-            style={{
-                'fontFamily': 'monospace',
-                'cursor': 'default',
-                'backgroundColor': 'rgba(0, 0, 0, 0)',
-                'position': 'relative',
-                'padding': '10px',
-                'borderRadius': '3px',
-                'margin': '10px 0px',
-            }} />
+    if (props.appState.btf())
+        return <div>
+            <h3>Metadata</h3>
+            <JSONDisplay
+                json={props.appState.btf().generateManifest()}
+                style={{
+                    'fontFamily': 'monospace',
+                    'cursor': 'default',
+                    'backgroundColor': 'rgba(0, 0, 0, 0)',
+                    'position': 'relative',
+                    'padding': '10px',
+                    'borderRadius': '3px',
+                    'margin': '10px 0px',
+                }} />
 
-    </div>
+        </div>
+    else
+        return <div />
 })
 
 export default JSONDisplay

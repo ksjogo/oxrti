@@ -1,7 +1,6 @@
 import { ComponentProps } from '../../View/Component'
 import { IWrappedComponent } from 'mobx-react'
 import { IAppState } from '../../State/AppState'
-import LightControlPlugin from '../LightControlPlugin/LightControlPlugin'
 
 export default abstract class BaseNode {
     appState: IAppState
@@ -12,6 +11,6 @@ export default abstract class BaseNode {
         if (!plugin)
             return [0.5, 0.5, 1]
         else
-            return [plugin.x, plugin.y, plugin.z]
+            return [plugin.x, plugin.y, 1]
     }
 }
