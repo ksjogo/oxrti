@@ -57,3 +57,9 @@ to download them.
 ## Online Copy
 
 The easiest way to access to software is by visiting [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
+
+# Development
+Please enable the build pre-commit hook
+```
+ln -s -f ../../scripts/precommit.js .git/hooks/pre-commit
+```
