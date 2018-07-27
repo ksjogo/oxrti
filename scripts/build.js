@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var replace = require('replace'),
     spawnSync = require('child_process').spawnSync;
 console.log("Setting data");

@@ -10,5 +10,5 @@ export default abstract class Writer {
         this.inputElementSize = config.elementSize
     }
 
-    abstract encode (): Buffer
+    abstract encode (): Blob
 }

@@ -76,6 +76,6 @@ export default class BmpEncoder extends Writer {
             }
         }
 
-        return tempBuffer
+        return new Blob([tempBuffer], { type: 'image/bmp' })
     }
 }

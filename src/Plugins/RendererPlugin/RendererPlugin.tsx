@@ -7,8 +7,8 @@ import Stack from './Stack'
 import RenderHooks from '../../View/RenderHooks'
 import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles } from '@material-ui/core'
-import { render } from 'react-dom'
-import { observer } from 'mobx-react'
+import OxrtiDataTextureLoader, { Registrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
+Registrator()
 
 const RendererModel = Plugin.props({
     title: 'Renderer',

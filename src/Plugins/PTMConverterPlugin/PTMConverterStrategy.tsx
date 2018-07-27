@@ -132,19 +132,19 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             R: {
-                R: {
+                a0: {
                     data: bmps[6],
                     fileformat: 'png',
                 },
             },
             G: {
-                G: {
+                a0: {
                     data: bmps[7],
                     fileformat: 'png',
                 },
             },
             B: {
-                B: {
+                a0: {
                     data: bmps[8],
                     fileformat: 'png',
                 },

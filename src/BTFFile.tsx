@@ -3,8 +3,16 @@ export type BTFCache = { [key: string]: BTFFile }
 export type Channels = { [key: string]: Channel }
 export type Channel = { [key: string]: Coefficent }
 export type Coefficent = {
-    data: Buffer,
+    data: Blob,
     fileformat: string,
+}
+
+export type TexForRender = {
+    type: 'oxrti',
+    data: Blob,
+    width: number,
+    height: number,
+    ident: string,
 }
 
 function JSONY (thing) {
@@ -49,8 +57,16 @@ export default class BTFFile {
         return zip.generateAsync({ type: 'blob' })
     }
 
-    texUrl (co: Coefficent) {
-        return 'data:image/png;base64,' + co.data.toString('base64')
+    texForRender (channel: string, coefficent: string): TexForRender {
+        let co = this.channels[channel][coefficent]
+        // return 'data:image/png;base64,' + co.data.toString('base64')
+        return {
+            data: co.data,
+            width: this.width,
+            height: this.height,
+            type: 'oxrti',
+            ident: this.name + channel + coefficent,
+        }
     }
 
     aspectRatio () {
@@ -61,6 +77,7 @@ export default class BTFFile {
 export async function fromZip (data) {
     let archive = await JSZip.loadAsync(data)
     let manifest = archive.file('manifest.json')
+    //    manifest.async('blob')
     let state = archive.file('oxrti.json')
 
 }

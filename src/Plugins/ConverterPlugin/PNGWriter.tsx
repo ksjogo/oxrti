@@ -13,6 +13,7 @@ export default class PNGWriter extends Writer {
         }
         let img = new PNG(options)
         img.data = this.inputBuffer
-        return PNG.sync.write(img, options)
+        let buffer = PNG.sync.write(img, options)
+        return new Blob([buffer], { type: 'image/png' })
     }
 }
