@@ -19,29 +19,28 @@ void main() {
             //vec3 lightPos = vec3(0.5,0.5,1);
             //gl_FragColor = vec4(lightPosition,1);
             //return;
+            vec3 pointPos = vec3(uv,0);
             vec3 lightPos = lightPosition;
 
-            vec3 fragPosition = vec3(0.5,0.5,0);
-            vec3 fragTangent = vec3(0,0,1);
-            vec3 lightTemp;
-			vec3 halfAngleTemp;
-			vec3 tPrime;
-			vec3 bPrime;
-		
-			vec3 eyeDir = vec3(0,0,1);
+            vec3 toLight = normalize(lightPos - pointPos);
 
-			// calc projection of lightTemp into texture coords
-			lightTemp = normalize(lightPos - fragPosition);
-			
-			halfAngleTemp = normalize(eyeDir + lightTemp);
-			
-			tPrime = fragTangent - (halfAngleTemp * dot(fragTangent, halfAngleTemp));
-			tPrime = normalize(tPrime);
-			
-			bPrime = cross(halfAngleTemp, tPrime);
+            vec3 pointNormal = vec3(0,0,1);
+            vec3 pointTangent = vec3(1,0,0);
+            vec3 pointBinormal = vec3(0,1,0);
 
-			float Lu = dot(lightTemp, tPrime);
-			float Lv = dot(lightTemp, bPrime);
+            vec3 tangentSpaceLight= vec3(
+                dot(toLight, pointTangent),
+                dot(toLight, pointBinormal),
+                dot(toLight, pointNormal)
+            );
+
+            tangentSpaceLight.xy = normalize(tangentSpaceLight.xy);
+            tangentSpaceLight.xy *= (1.0-tangentSpaceLight.z);
+
+            //tangentSpaceLight = normalize(vec3(1,-1,0));
+
+            float Lu = tangentSpaceLight.x;
+            float Lv = tangentSpaceLight.y;
 		
 			float a0 = texture2D(texL0, uv).x;
             float a1 = texture2D(texL1, uv).x;

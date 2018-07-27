@@ -26,7 +26,6 @@ export default class PTMLRGB extends BaseNode {
             />
 
         let btf = props.appState.btf()
-
         return <Node
             shader={shaders.ptmlrgb}
             width={btf.width}
