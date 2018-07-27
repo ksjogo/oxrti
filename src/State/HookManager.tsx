@@ -43,18 +43,23 @@ class HookManagerCode extends shim(HookManagerData) {
         } else {
             // kill old entries of same name if priority changed)
             for (let i = 0; i < this.stack.length; ++i) {
-                if (this.stack[i].name === name && this.stack[i].priority !== priority)
-                    this.stack.splice(i, 1)
+                if (this.stack[i].name === name) {
+                    if (this.stack[i].priority !== priority)
+                        this.stack.splice(i, 1)
+                    else // priority stayed the same, so we leave the hook alone
+                        return
+                }
             }
+            // insert at place
             for (let i = 0; i < this.stack.length; ++i) {
-                if (name === this.stack[i].name)
-                    break
                 if (priority >= this.stack[i].priority) {
                     this.stack.splice(i, 0, entry)
                     break
                 }
-                if (i === this.stack.length - 1)
+                if (i === this.stack.length - 1) {
                     this.stack.push(entry)
+                    break
+                }
             }
         }
     }

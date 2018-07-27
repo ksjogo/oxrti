@@ -30,7 +30,7 @@ class RendererController extends shim(RendererModel, Plugin) {
                 },
             },
             ViewerSide: {
-                Rotation: {
+                Metadata: {
                     component: BTFMetadataDisplay,
                     priority: 0,
                 },
