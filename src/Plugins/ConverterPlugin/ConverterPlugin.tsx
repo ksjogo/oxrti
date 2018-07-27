@@ -104,6 +104,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
 
 const { Plugin: ConverterPlugin, Component } = PluginCreator(ConverterController, ConverterModel, 'ConverterPlugin')
 export default ConverterPlugin
+export type IConverterPlugin = typeof ConverterPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     dropzone: {

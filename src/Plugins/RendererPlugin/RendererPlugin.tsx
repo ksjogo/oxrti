@@ -47,6 +47,7 @@ class RendererController extends shim(RendererModel, Plugin) {
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
 export default RendererPlugin
+export type IRendererPlugin = typeof RendererPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     stack: {

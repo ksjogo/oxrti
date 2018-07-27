@@ -42,6 +42,7 @@ class LightController extends shim(LightControlModel, Plugin) {
 
 const { Plugin: LightControlPlugin, Component } = PluginCreator(LightController, LightControlModel, 'LightControlPlugin')
 export default LightControlPlugin
+export type ILightControlPlugin = typeof LightControlPlugin.Type
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <div>

@@ -23,3 +23,4 @@ class PTMonverterController extends shim(PTMConverterModel, Plugin) {
 
 const { Plugin: PTMConverterPlugin, Component } = PluginCreator(PTMonverterController, PTMConverterModel, 'PTMConverterPlugin')
 export default PTMConverterPlugin
+export type IPTMConverterPlugin = typeof PTMConverterPlugin.Type

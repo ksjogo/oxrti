@@ -25,6 +25,7 @@ class SettingsController extends shim(SettingsModel, Plugin) {
 
 const { Plugin: SettingsPlugin, Component } = PluginCreator(SettingsController, SettingsModel, 'SettingsPlugin')
 export default SettingsPlugin
+export type ISettingsPlugin = typeof SettingsPlugin.Type
 
 const SettingsView = Component(function SettingsView (props) {
     return <div>

@@ -37,6 +37,7 @@ class TestController extends shim(TestModel, Plugin) {
 
 const { Plugin: TestPlugin, Component } = PluginCreator(TestController, TestModel, 'TestPlugin')
 export default TestPlugin
+export type ITestPlugin = typeof TestPlugin.Type
 
 const TestView = Component(function TestComponent (props) {
     return <>

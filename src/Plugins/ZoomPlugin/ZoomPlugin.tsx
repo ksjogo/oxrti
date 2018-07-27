@@ -39,6 +39,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
 
 const { Plugin: ZoomPlugin, Component } = PluginCreator(ZoomController, ZoomModel, 'ZoomPlugin')
 export default ZoomPlugin
+export type IZoomPlugin = typeof ZoomPlugin.Type
 
 const ZoomComponent = Component(function ZoomNode (props) {
     return <ShaderNode

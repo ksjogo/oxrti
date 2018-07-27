@@ -39,6 +39,7 @@ class RotationController extends shim(RotationModel, Plugin) {
 
 const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')
 export default RotationPlugin
+export type IRotationPlugin = typeof RotationPlugin.Type
 
 const RotationComponent = Component(function RotationNode (props) {
     return <ShaderNode
