@@ -53,7 +53,10 @@ export default class PTMConverterStrategy extends ConverterStrategy {
     coeffData: Buffer[]
     async readPixels () {
         /**
-         * a_0, a_1, a_2, a_3, a_4, a_5, R, G, B
+         * The block contains of
+         * pixels times [a_0, a_1, a_2, a_3, a_4, a_5]
+         * and then
+         *  pixels times [R, G, B]
          */
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
         // orientated at http://www.tobias-franke.eu/projects/ptm/
@@ -65,7 +68,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
 
                 // flip image upside down if format LRGB
                 // if (this.format === 'PTM_FORMAT_LRGB')
-                index = (((this.height - 1 - y) * this.width) + x) // * 3
+                //index = (((this.height - 1 - y) * this.width) + x) // * 3
 
                 // flip image horizontally if format JPEG
                 // if (this.format === 'PTM_FORMAT_JPEG_LRGB')

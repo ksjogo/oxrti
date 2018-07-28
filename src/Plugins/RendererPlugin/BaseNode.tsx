@@ -3,6 +3,7 @@ import { ComponentProps } from '../../View/Component'
 import { IWrappedComponent } from 'mobx-react'
 import { IAppState } from '../../State/AppState'
 import { ILightControlPlugin } from '../LightControlPlugin/LightControlPlugin'
+import hemispherical from '../LightControlPlugin/Hemisphere'
 
 export default abstract class BaseNode {
     appState: IAppState
@@ -11,8 +12,8 @@ export default abstract class BaseNode {
     lightPos () {
         let plugin = this.appState.plugins.get('LightControlPlugin') as ILightControlPlugin
         if (!plugin)
-            return [0.5, 0.5, 1]
+            return hemispherical(0, 0)
         else
-            return [plugin.x, plugin.y, 1]
+            return hemispherical(plugin.x, plugin.y)
     }
 }

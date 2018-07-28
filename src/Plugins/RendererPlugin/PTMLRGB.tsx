@@ -24,7 +24,6 @@ export default class PTMLRGB extends BaseNode {
                 shader={shaders.noise}
                 uniforms={{ iGlobalTime: props.appState.uptime }}
             />
-
         let btf = props.appState.btf()
         return <Node
             shader={shaders.ptmlrgb}
