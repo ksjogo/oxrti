@@ -1,13 +1,13 @@
 import React from 'react'
-import { Shaders, Node } from 'gl-react'
 import { Surface } from 'gl-react-dom'
 import Component from '../../View/Component'
 import { ComponentHook } from '../../Hook'
 import PTMLRGB from './PTMLRGB'
-import BaseNode from './BaseNode'
+import { IRendererPlugin } from './RendererPlugin'
 
 export default Component<{
 }>(function Stack (props) {
+
     let Func = new PTMLRGB().render
     let current = <Func />
 
@@ -17,8 +17,11 @@ export default Component<{
     })
 
     let btf = props.appState.btf()
-    let plugin = props.appState.plugins.get('RendererPlugin') as any
-    return <Surface height={plugin.elementHeight} width={plugin.elementWidth}>
-        {current}
-    </Surface>
+    let plugin = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
+    return <div>
+        {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}
+        <Surface height={plugin.elementHeight} width={plugin.elementWidth}>
+            {current}
+        </Surface>
+    </div>
 })

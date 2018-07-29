@@ -14,6 +14,7 @@ const AppStateData = types.model({
   plugins: types.late(() => types.optional(types.map(Plugin), {})),
   hooks: types.optional(types.map(HookManager), {}),
   currentFile: '',
+  loadingTextures: 0,
 })
 
 export type PluginLoader = (name: string) => Plugin
@@ -112,6 +113,16 @@ class AppStateController extends shim(AppStateData) {
         manager.insert(hookReference, priority)
       }
     }
+  }
+
+  @action
+  textureIsLoading () {
+    this.loadingTextures++
+  }
+
+  @action
+  textureLoaded () {
+    this.loadingTextures--
   }
 
   /**

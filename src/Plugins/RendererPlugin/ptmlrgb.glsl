@@ -15,7 +15,6 @@ uniform vec3 lightPosition;
 
 
 void main() {
-            //vec3 pointPos = vec3(uv,0);
             vec3 pointPos = vec3(0,0,0);     
             vec3 toLight = normalize(lightPosition - pointPos);
 

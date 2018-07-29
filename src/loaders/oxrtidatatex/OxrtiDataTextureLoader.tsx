@@ -7,9 +7,10 @@ type TextureAndSize = {
     width: number,
     height: number,
 }
-import { sha1 } from 'crypto-hash'
 import { TexForRender } from '../../BTFFile'
+import { IAppState } from '../../State/AppState'
 
+let appState: IAppState = null
 /**
  *  Allow direct texture loading from an in memory btf file
  */
@@ -25,6 +26,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
     }
 
     loadNoCache (config: TexForRender): { promise: Promise<TextureAndSize>, dispose: Function } {
+        appState.textureIsLoading()
         let gl = this.gl
         let promise = createImageBitmap(config.data).then(img => {
             let texture = gl.createTexture()
@@ -35,6 +37,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+            appState.textureLoaded()
             return { texture, width: img.width, height: img.height }
         })
         return {
@@ -45,6 +48,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
     }
 }
 
-export function Registrator () {
+export function Registrator (state: IAppState) {
+    appState = state
     globalRegistry.add(OxrtiDataTextureLoader)
 }

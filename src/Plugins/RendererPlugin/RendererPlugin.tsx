@@ -6,10 +6,10 @@ import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
 import RenderHooks from '../../View/RenderHooks'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles } from '@material-ui/core'
-import OxrtiDataTextureLoader, { Registrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
+import { Theme, createStyles, Typography } from '@material-ui/core'
+import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
+import Dropzone from 'react-dropzone'
 import { BTFMetadataDisplay } from '../../View/JSONDisplay'
-Registrator()
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
@@ -18,6 +18,11 @@ const RendererModel = Plugin.props({
 })
 
 class RendererController extends shim(RendererModel, Plugin) {
+    load (appState) {
+        super.load(appState)
+        OxrtiTextureRegistrator(appState)
+    }
+
     hooks () {
         return {
             Tabs: {
@@ -34,6 +39,10 @@ class RendererController extends shim(RendererModel, Plugin) {
                     component: BTFMetadataDisplay,
                     priority: 0,
                 },
+                Open: {
+                    component: Upload,
+                    priority: 100,
+                },
             },
         }
     }
@@ -42,6 +51,11 @@ class RendererController extends shim(RendererModel, Plugin) {
     onResize (contentRect: ContentRect) {
         this.elementHeight = contentRect.bounds.height
         this.elementWidth = contentRect.bounds.width
+    }
+
+    @action
+    onDrop (files: File[]) {
+        //
     }
 }
 
@@ -54,6 +68,11 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
         height: 0,
         'padding-bottom': '100%',
+    },
+    dropzone: {
+        border: '1px solid ' + theme.palette.primary.main,
+        width: '100%',
+        height: '50px',
     },
 })
 
@@ -75,4 +94,14 @@ const RendererView = Component(function RendererView (props, classes) {
             <RenderHooks name='ViewerSide' />
         </Grid>
     </Grid>
+}, styles)
+
+const Upload = Component(function Upload (props, classes) {
+    return <div>
+        <h3>Open</h3>
+        <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+            <div>Try dropping some files here, or click to select files to upload.</div>
+        </Dropzone>
+    </div>
+
 }, styles)
