@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography'
 
 const RotationModel = Plugin.props({
     title: 'Rotation',
-    angle: 0,
+    rad: 0,
 })
 
 class RotationController extends shim(RotationModel, Plugin) {
@@ -38,7 +38,7 @@ class RotationController extends shim(RotationModel, Plugin) {
 
     @action
     onSlider (event, value) {
-        this.angle = value
+        this.rad = value
     }
 }
 
@@ -53,7 +53,7 @@ const RotationComponent = Component(function RotationNode (props) {
         }}
         uniforms={{
             children: props.children,
-            angle: this.angle / 360 * Math.PI * 2,
+            angle: this.rad,
         }} />
 })
 
@@ -79,6 +79,6 @@ const CentererComponent = Component(function RotationNode (props) {
 const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <h3>Rotation</h3>
-        <Slider value={this.angle} onChange={this.onSlider} min={-180} max={180} />
+        <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
     </div>
 })

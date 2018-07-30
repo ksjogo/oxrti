@@ -49,7 +49,13 @@ class LightController extends shim(LightControlModel, Plugin) {
         let rect = e.target.getBoundingClientRect()
         let x = (e.clientX - rect.left) / rect.width * 2 - 1
         let y = (rect.bottom - e.clientY) / rect.height * 2 - 1
-        let hemis = hemispherical(x, y)
+
+        let point = [x, y]
+        let rotationPlugin = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
+        if (rotationPlugin) {
+            point = rotate(point, rotationPlugin.rad)
+        }
+        let hemis = hemispherical(point[0], point[1])
         this.x = hemis[0]
         this.y = hemis[1]
     }
@@ -102,8 +108,15 @@ const SliderComponent = Component(function RotationSlider (props) {
 })
 
 import shader from './hemisphere.glsl'
+import { toTex, rotate } from '../../Math'
+import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
+    let point = [this.x, this.y]
+    let rotationPlugin = props.appState.plugins.get('RotationPlugin') as IRotationPlugin
+    if (rotationPlugin) {
+        point = rotate(point, -rotationPlugin.rad)
+    }
     return <Surface
         className={classes.dragger}
         width={150}
@@ -116,7 +129,7 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
             frag: shader,
         }}
             uniforms={{
-                point: [this.x / 2 + 0.5, this.y / 2 + 0.5],
+                point: toTex(point),
                 fromColor: this.hemisphereFrom.slice(0),
                 toColor: this.hemisphereTo.slice(0),
             }} />
