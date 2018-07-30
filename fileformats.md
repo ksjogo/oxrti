@@ -11,19 +11,16 @@ A BTF file is a ZIP file containing the following:
 	* A **manifest** file in XML format, named `manifest.xml`. The manifest contains all information about the <abbr title="Bidirectional Reflectance Distribution Function">BRDF</abbr>/<abbr title="Bidirectional Scattering Distribution Function">BSDF</abbr> model being used, including the names for the available **channels** (e.g. `R`, `G` and `B` for the 3-channel RGB), the names of the necessary **coefficients** (e.g. bi-quadratic coefficients) and the **image file format** for each channel.
 	* A single folder named `data`, with sub-folders having names in 1-to-1 correspondence with the channels specified in the manifest.
 	* Within each channel folder, greyscale image files having names in 1-to-1 correspondence with the coefficients specified in the manifest, each in the image file format specified in the manifest for the corresponding channel.
-For example, if one is working with RGB format (3-channels named `R`, `G` and `B`)  in the PTM model (five coefficients `a2`, `b2`, `a1`, `b1` and `c`, specifying a bi-quadratic) using 16-bit greyscale bitmaps, the file `/data/B/a2.bmp` is the texture encoding the `a2` coefficient for the blue channel of each point in texture space.
+For example, if one is working with RGB format (3-channels named `R`, `G` and `B`)  in the PTM model (five coefficients `a2`, `b2`, `a1`, `b1` and `c`, specifying a bi-quadratic) using 16-bit greyscale bitmaps, the file `/data/B/a2.bmp` is the texture encoding the `a2` coefficient for the blue channel of each point in texture space. 
 
 
 Manifest
 --------
 
 The manifest for the BTF file format is an XML file with root element `root`. The `root` element has a mandatory child element tagged `data`, with the option of additional child elements (with different tags) left open to future extensions of the format. 
-	* The `data` element has exactly two child elements, tagged `channels` and `coefficients` respectively. The `data` element has two attributes, named `width` and `height`, with values in the positive integers describing the dimensions of the BTDF. 
-		* The `channels` element has a single attribute `model`, with value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF colour model used by the BTF file. The `channels` element has an arbitrary number of child elements, each named `channel`, depending on the specific colour model.
-			* Each `channel` element has a single attribute `name`, with value a non-empty alphanumeric string no longer than 255 characters and unique amongst the `channel` elements. The `channel` elements have no child elements nor content.
-		* The `coefficients` element has a single attribute `model`, with value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF approximation model used by the BTF file. The `coefficients` element has an arbitrary number of child elements, each named `coefficient`, depending on the specific colour model.
-			* Each `coefficient` element has two attributes, `name` and `format`. The `name` attribute has value a non-empty alphanumeric string no longer than 255 characters and unique among the `coefficient` elements. The `format` attribute has value a non-empty alphanumeric string uniquely identifying the image file format used to store the channel values. The `coefficient` elements have no child elements nor content.
-
+	* The `data` element has an arbitrary number of child elements, all tagged `channel`. The `data` element has three attributes, named `width`, `height` and `channel-model`. The `width` and `height` attributes have values in the positive integers describing the dimensions of the BTDF. The `channel-model` attribute has value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF colour model used by the BTF file (see [Options](#Options) section below).
+	* Each `channel` element has an arbitrary number of child elements, all tagged `coefficient`, as well as two attributes, `name` and `coefficient-model`. The `name` attribute has value a non-empty alphanumeric string no longer than 255 characters and unique amongst the `channel` elements. The `coefficient-model` attribute has value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF approximation model used by the BTF file (see [Options](#Options) section below).
+	* Each `coefficient` element has two attributes, `name` and `format`. The `name` attribute has value a non-empty alphanumeric string no longer than 255 characters and unique among the `coefficient` child children of a given `channel` element. The `format` attribute has value a non-empty alphanumeric string uniquely identifying the image file format used to store the channel values (see [Options](#Options) section below). The `coefficient` elements have no child elements nor content.
 
 Textures
 --------
@@ -34,11 +31,13 @@ Each image file `/data/CHAN/COEFF.EXT` has the same dimensions specified by the 
 Options
 -------
 
-At present, the following values are defined for attribute `model` of element `channels`.
+At present, the following values are defined for attribute `channel-model` of element `channels`.
 	* `RGB`: the 3-channel RGB colour model, with channels named `R`, `G` and `B`. This colour model is currently under implementation.
+	* `LRGB`: the 4-channel LRGB colour model, with channels named `L`, `R`, `G` and `B`. This colour model is currently under implementation.
 	* `SPECTRAL`: the spectral radiance model, with an arbitrary non-zero number of channels named either all by wavelength (format `---nm`, with `---` an arbitrary non-zero number) or all by frequency format `---Hz`, with `---` an arbitrary non-zero number. This colour model is planned for future implementation.
 
 At present, the following values are defined for attribute `model` of element coefficients, where the ending character `*` is to be replaced by an arbitrary number greater than or equal to 1.
+	* `flat`: flat approximation model (no dependence on light position). This approximation model is currently under implementation.
 	* `RTIpoly*`: order-`*` polynomial approximation model for <abbr title="Reflectance Transformation Imaging">RTI</abbr> (single view-point BRDF). This approximation model is currently under implementation.
 	* `RTIharmonic*`: order-`*` hemispherical harmonic approximation model for <abbr title="Reflectance Transformation Imaging">RTI</abbr> (single view-point BRDF). This approximation model is currently under implementation.
 	* `BRDFpoly*`: order-`*` polynomial approximation model for BRDFs. This approximation model is planned for future implementation.
