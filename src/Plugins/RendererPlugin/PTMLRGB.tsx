@@ -3,14 +3,10 @@ import React from 'react'
 import Component from '../../View/Component'
 import { Shaders, Node } from 'gl-react'
 
-import noise from './noise.glsl'
 import standard from './ptmlrgb.glsl'
 import { PTMFormatMetadata } from '../PTMConverterPlugin/PTMConverterStrategy'
 
 const shaders = Shaders.create({
-    noise: {
-        frag: noise,
-    },
     ptmlrgb: {
         frag: standard,
     },
@@ -19,11 +15,6 @@ const shaders = Shaders.create({
 export default class PTMLRGB extends BaseNode {
     render = Component(props => {
         this.appState = props.appState
-        if (!props.appState.btf())
-            return <Node
-                shader={shaders.noise}
-                uniforms={{ iGlobalTime: props.appState.uptime }}
-            />
         let btf = props.appState.btf()
         return <Node
             shader={shaders.ptmlrgb}

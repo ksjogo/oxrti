@@ -115,6 +115,8 @@ const TypedShaders: {
 const TypedNode: React.StatelessComponent<{
     uniforms?: any,
     uniformOptions?: any,
+    width?: number,
+    height?: number,
     shader: any,
 }> = Node
 

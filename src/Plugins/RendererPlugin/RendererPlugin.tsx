@@ -90,7 +90,7 @@ const RendererView = Component(function RendererView (props, classes) {
             <Measure bounds onResize={this.onResize.bind(this)}>
                 {({ measureRef }) =>
                     <div ref={measureRef} className={classes.stack} style={{
-                        paddingBottom: aspect,
+                        // paddingBottom: aspect,
                     }}>
                         <Stack />
                     </div>
