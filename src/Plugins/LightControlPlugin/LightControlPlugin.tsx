@@ -3,7 +3,7 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
 // oxrti default imports ->
 import { Surface } from 'gl-react-dom'
-import { Typography } from '@material-ui/core'
+import { Typography, Theme, createStyles } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 
@@ -82,6 +82,12 @@ const { Plugin: LightControlPlugin, Component } = PluginCreator(LightController,
 export default LightControlPlugin
 export type ILightControlPlugin = typeof LightControlPlugin.Type
 
+const styles = (theme: Theme) => createStyles({
+    dragger: {
+        padding: '20px',
+    },
+})
+
 const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <h3>Light</h3>
@@ -99,6 +105,7 @@ import shader from './hemisphere.glsl'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
     return <Surface
+        className={classes.dragger}
         width={150}
         height={150}
         onMouseLeave={this.onMouseLeave}
@@ -114,4 +121,4 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
                 toColor: this.hemisphereTo.slice(0),
             }} />
     </Surface>
-})
+}, styles)

@@ -1,5 +1,4 @@
 import JSZip from 'jszip'
-import { observable } from 'mobx'
 export type BTFCache = { [key: string]: BTFFile }
 export type Channels = { [key: string]: Channel }
 export type Channel = { [key: string]: Coefficent }
@@ -26,20 +25,32 @@ export default class BTFFile {
     height: number = 0
     name: string = ''
     formatMetadata: object = {}
+    format: 'LRGBPTM' = 'LRGBPTM'
 
     channels: Channels
 
-    constructor () {
-        //
+    constructor (manifest: any) {
+        this.name = manifest.name
+        this.format = manifest.format
+        this.width = manifest.width
+        this.height = manifest.height
+        this.formatMetadata = manifest.formatMetadata
+        this.channels = manifest.data
     }
 
     generateManifest () {
         return JSONY({
-            data: null,
+            name: this.name,
+            format: this.format,
             width: this.width,
             height: this.height,
-            name: this.name,
+            formatMetadata: this.formatMetadata,
+            data: this.formatChannels(),
         })
+    }
+
+    formatChannels () {
+        return this.channels
     }
 
     async generateZip () {
@@ -77,8 +88,16 @@ export default class BTFFile {
 
 export async function fromZip (data) {
     let archive = await JSZip.loadAsync(data)
-    let manifest = archive.file('manifest.json')
-    //    manifest.async('blob')
-    let state = archive.file('oxrti.json')
-
+    let dataFolder = archive.folder('data')
+    let manifest = JSON.parse(await archive.file('manifest.json').async('text'))
+    for (const channelName in manifest.data) {
+        let channelFolder = dataFolder.folder(channelName)
+        for (const coefficentName in manifest.data[channelName]) {
+            let coefficent = manifest.data[channelName][coefficentName]
+            let data = await channelFolder.file(`${coefficentName}.${coefficent.fileformat}`).async('blob')
+            coefficent.data = data
+        }
+    }
+    let btf = new BTFFile(manifest)
+    return btf
 }

@@ -9,7 +9,7 @@ File Structure
 
 A BTF file is a ZIP file containing the following:
 
-* A **manifest** file in XML format, named `manifest.xml`. The manifest contains all information about the <abbr title="Bidirectional Reflectance Distribution Function">BRDF</abbr>/<abbr title="Bidirectional Scattering Distribution Function">BSDF</abbr> model being used, including the names for the available **channels** (e.g. `R`, `G` and `B` for the 3-channel RGB), the names of the necessary **coefficients** (e.g. bi-quadratic coefficients) and the **image file format** for each channel.
+* A **manifest** file in JSON format, named `manifest.json`. The manifest contains all information about the <abbr title="Bidirectional Reflectance Distribution Function">BRDF</abbr>/<abbr title="Bidirectional Scattering Distribution Function">BSDF</abbr> model being used, including the names for the available **channels** (e.g. `R`, `G` and `B` for the 3-channel RGB), the names of the necessary **coefficients** (e.g. bi-quadratic coefficients) and the **image file format** for each channel.
 
 * A single folder named `data`, with sub-folders having names in 1-to-1 correspondence with the channels specified in the manifest.
 
@@ -19,10 +19,14 @@ A BTF file is a ZIP file containing the following:
 Manifest
 --------
 
-The manifest for the BTF file format is an XML file with root element `root`. The `root` element has a mandatory child element tagged `data`, with the option of additional child elements (with different tags) left open to future extensions of the format. 
-* The `data` element has exactly two child elements, tagged `channels` and `coefficients` respectively. The `data` element has two attributes, named `width` and `height`, with values in the positive integers describing the dimensions of the BTDF. 
-* The `channels` element has a single attribute `model`, with value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF colour model used by the BTF file. The `channels` element has an arbitrary number of child elements, each named `channel`, depending on the specific colour model.
-* Each `channel` element has a single attribute `name`, with value a non-empty alphanumeric string no longer than 255 characters and unique amongst the `channel` elements. The `channel` elements have no child elements nor content.
+The manifest for the BTF file format is an JSON file with an dictionary as root element. The `root` element has following mandatory child elements:
+* `data`, which contains the description of the bundled channels and coefficents
+* `width` and `height` with values in the positive integers describing the dimensions of the BTDF. 
+
+`data` has an arbitrary number of child elements `channel`, names depending on the specific colour model.
+
+* A `channel` has an attribute `model`, with value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF colour model used by the BTF file. The model also 
+
 * The `coefficients` element has a single attribute `model`, with value a non-empty alphanumeric string uniquely identifying the BRDF/BSDF approximation model used by the BTF file. The `coefficients` element has an arbitrary number of child elements, each named `coefficient`, depending on the specific colour model.
 * Each `coefficient` element has two attributes, `name` and `format`. The `name` attribute has value a non-empty alphanumeric string no longer than 255 characters and unique among the `coefficient` elements. The `format` attribute has value a non-empty alphanumeric string uniquely identifying the image file format used to store the channel values. The `coefficient` elements have no child elements nor content.
 

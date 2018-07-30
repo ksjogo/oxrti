@@ -16,7 +16,7 @@ test_script:
   - npm --version
   # run tests
   - npm test
-  - npm run-script electronbuild
+  # - npm run-script electronbuild
 
 #we are not really building for ms
 build: off

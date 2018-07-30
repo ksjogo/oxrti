@@ -10,6 +10,8 @@ import { Theme, createStyles, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataDisplay } from '../../View/JSONDisplay'
+import { readAsArrayBuffer } from 'promise-file-reader'
+import { fromZip } from '../../BTFFile'
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
@@ -54,8 +56,13 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     @action
-    onDrop (files: File[]) {
-        //
+    async onDrop (files: File[]) {
+        let file = files[0]
+        if (!file.name.endsWith('.btf.zip'))
+            return alert('Only .btf.zip is supported.')
+        let content = await readAsArrayBuffer(file) as ArrayBuffer
+        let btf = await fromZip(content)
+        this.appState.loadFile(btf)
     }
 }
 
