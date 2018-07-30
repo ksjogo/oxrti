@@ -18,7 +18,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
         return {
             ViewerRender: {
                 Zoom: {
-                    priority: 20,
+                    priority: -20,
                     component: ZoomComponent,
                 },
             },
