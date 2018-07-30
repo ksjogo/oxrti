@@ -29,7 +29,9 @@ export default class BTFFile {
 
     channels: Channels
 
-    constructor (manifest: any) {
+    constructor (manifest?: any) {
+        if (!manifest)
+            return
         this.name = manifest.name
         this.format = manifest.format
         this.width = manifest.width
