@@ -7,6 +7,8 @@ import { Typography, Theme, createStyles } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 
+const RenderPadding = 20
+
 const LightControlModel = Plugin.props({
     title: 'LightControl',
     x: 0,
@@ -47,8 +49,8 @@ class LightController extends shim(LightControlModel, Plugin) {
     @action
     updatePosition (e) {
         let rect = e.target.getBoundingClientRect()
-        let x = (e.clientX - rect.left) / rect.width * 2 - 1
-        let y = (rect.bottom - e.clientY) / rect.height * 2 - 1
+        let x = (e.clientX - rect.left) / (rect.width) * 2 - 1
+        let y = (rect.bottom - e.clientY) / (rect.height) * 2 - 1
 
         let point = [x, y]
         let rotationPlugin = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
@@ -90,7 +92,7 @@ export type ILightControlPlugin = typeof LightControlPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     dragger: {
-        padding: '20px',
+        padding: `${RenderPadding}px`,
     },
 })
 

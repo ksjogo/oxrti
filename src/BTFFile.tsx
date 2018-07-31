@@ -51,6 +51,15 @@ export default class BTFFile {
         })
     }
 
+    conciseManifest () {
+        return JSONY({
+            name: this.name,
+            format: this.format,
+            width: this.width,
+            height: this.height,
+        })
+    }
+
     formatChannels () {
         return this.channels
     }

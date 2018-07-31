@@ -34,5 +34,26 @@ let BTFMetadataDisplay = Component(function BTFMetadata (props) {
         return <div />
 })
 
+let BTFMetadataConciseDisplay = Component(function BTFMetadata (props) {
+    if (props.appState.btf())
+        return <div>
+            <h3>Metadata</h3>
+            <JSONDisplay
+                json={props.appState.btf().conciseManifest()}
+                style={{
+                    'fontFamily': 'monospace',
+                    'cursor': 'default',
+                    'backgroundColor': 'rgba(0, 0, 0, 0)',
+                    'position': 'relative',
+                    'padding': '10px',
+                    'borderRadius': '3px',
+                    'margin': '10px 0px',
+                }} />
+
+        </div>
+    else
+        return <div />
+})
+
 export default JSONDisplay
-export { JSONDisplay, BTFMetadataDisplay }
+export { JSONDisplay, BTFMetadataDisplay, BTFMetadataConciseDisplay }

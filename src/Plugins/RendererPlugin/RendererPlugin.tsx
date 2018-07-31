@@ -9,7 +9,7 @@ import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
-import { BTFMetadataDisplay } from '../../View/JSONDisplay'
+import { BTFMetadataDisplay, BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 
@@ -38,8 +38,8 @@ class RendererController extends shim(RendererModel, Plugin) {
             },
             ViewerSide: {
                 Metadata: {
-                    component: BTFMetadataDisplay,
-                    priority: 0,
+                    component: BTFMetadataConciseDisplay,
+                    priority: 110,
                 },
                 Open: {
                     component: Upload,
