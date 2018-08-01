@@ -70,25 +70,26 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     dragging = false
     lastDragTime = null
-    lastDrag: Point = null
-
+    lastDragTex: Point = null
+    lastDragScreen: Point = null
     @action
     notifyDraggers (e: MouseEvent) {
-        debugger
         let rect = (e.target as any).getBoundingClientRect()
         let newU = (e.clientX - rect.left) / (rect.width)
         let newV = (rect.bottom - e.clientY) / (rect.height)
-        let next: Point = [newU, newV]
+        let nextScreen: Point = [newU, newV]
+        let nextTex = nextScreen
 
         this.appState.hookForEachReverse('ViewerRender', (hook: RendererHook) => {
-            next = hook.inversePoint(next)
+            nextTex = hook.inversePoint(nextTex)
         })
 
         this.appState.hookForEach('ViewerDrag', (hook: FunctionHook<Dragger>) => {
-            return hook.func(this.lastDrag, next)
+            return hook.func(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
         })
 
-        this.lastDrag = next
+        this.lastDragScreen = nextScreen
+        this.lastDragTex = nextTex
     }
 
     @action
@@ -107,6 +108,8 @@ class RendererController extends shim(RendererModel, Plugin) {
     onMouseDown (e: MouseEvent) {
         this.dragging = true
         this.lastDragTime = new Date()
+        this.lastDragScreen = null
+        this.lastDragTex = null
         this.notifyDraggers(e)
     }
 

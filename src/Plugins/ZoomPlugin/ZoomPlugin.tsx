@@ -6,7 +6,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import Typography from '@material-ui/core/Typography'
-import { Point } from '../../Math'
+import { Point, translate } from '../../Math'
 
 const ZoomModel = Plugin.props({
     title: 'Zoom',
@@ -46,8 +46,12 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     }
 
     @action
-    dragger (last, next) {
-        return false
+    dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) {
+        if (oldScreen) {
+            this.panX += nextScreen[0] - oldScreen[0]
+            this.panY += nextScreen[1] - oldScreen[1]
+        }
+        return true
     }
 
     @action
@@ -65,8 +69,11 @@ class ZoomController extends shim(ZoomModel, Plugin) {
         this.panY = value
     }
 
-    undoZoomAndPan (point: Point) {
-        return point
+    undoZoomAndPan (point: Point): Point {
+        return [
+            (point[0] - this.panX - 0.5) / this.scale + 0.5,
+            (point[1] - this.panY - 0.5) / this.scale + 0.5,
+        ]
     }
 }
 

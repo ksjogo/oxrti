@@ -21,3 +21,7 @@ export function toTex (nums: Point): Point {
 export function fromTex (nums: Point): Point {
     return nums.map(x => x * 2 - 1) as Point
 }
+
+export function translate (point: Point, by: Point): Point {
+    return [point[0] + by[0], point[1] + by[1]]
+}

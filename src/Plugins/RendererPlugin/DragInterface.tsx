@@ -1,3 +1,3 @@
 import { Point } from '../../Math'
 
-export type Dragger = (old: Point, next: Point) => boolean
+export type Dragger = (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) => boolean
