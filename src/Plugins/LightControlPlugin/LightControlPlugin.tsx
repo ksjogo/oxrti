@@ -43,16 +43,16 @@ class LightController extends shim(LightControlModel, Plugin) {
         return hemispherical(this.x, this.y)
     }
 
-    // dragging as from https://gl-react-cookbook.surge.sh/paint
     // volatile
     dragging = false
+    // dragging as from https://gl-react-cookbook.surge.sh/paint
     @action
-    updatePosition (e) {
-        let rect = e.target.getBoundingClientRect()
+    updatePosition (e: MouseEvent) {
+        let rect = (e.target as any).getBoundingClientRect()
         let x = (e.clientX - rect.left) / (rect.width) * 2 - 1
         let y = (rect.bottom - e.clientY) / (rect.height) * 2 - 1
 
-        let point = [x, y]
+        let point: Point = [x, y]
         let rotationPlugin = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
         if (rotationPlugin) {
             point = rotate(point, rotationPlugin.rad)
@@ -68,14 +68,14 @@ class LightController extends shim(LightControlModel, Plugin) {
     }
 
     @action
-    onMouseMove (e) {
+    onMouseMove (e: MouseEvent) {
         if (this.dragging) {
             this.updatePosition(e)
         }
     }
 
     @action
-    onMouseDown (e) {
+    onMouseDown (e: MouseEvent) {
         this.dragging = true
         this.updatePosition(e)
     }
@@ -110,11 +110,11 @@ const SliderComponent = Component(function RotationSlider (props) {
 })
 
 import shader from './hemisphere.glsl'
-import { toTex, rotate } from '../../Math'
+import { toTex, rotate, Point } from '../../Math'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
-    let point = [this.x, this.y]
+    let point: Point = [this.x, this.y]
     let rotationPlugin = props.appState.plugins.get('RotationPlugin') as IRotationPlugin
     if (rotationPlugin) {
         point = rotate(point, -rotationPlugin.rad)

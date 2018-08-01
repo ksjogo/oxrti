@@ -20,7 +20,7 @@ const HookManagerData = types.model({
     stack: types.optional(types.array(HookEntry), []),
 })
 
-export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => void
+export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => boolean | void
 export type HookMapper<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 export type HookFind<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 /**
@@ -65,11 +65,23 @@ class HookManagerCode extends shim(HookManagerData) {
     }
 
     forEach (iterator: HookIterator, name: HookName, appState: IAppState) {
-        this.stack.forEach(hook => {
+        for (let i = 0; i < this.stack.length; i++) {
+            let hook = this.stack[i]
             let instance = hook.name.split('$')
             let plugin = appState.plugins.get(instance[0])
-            iterator(plugin.hook(name, instance[2]), hook.name)
-        })
+            if (iterator(plugin.hook(name, instance[2]), hook.name))
+                break
+        }
+    }
+
+    forEachReverse (iterator: HookIterator, name: HookName, appState: IAppState) {
+        for (let i = this.stack.length - 1; i >= 0; i--) {
+            let hook = this.stack[i]
+            let instance = hook.name.split('$')
+            let plugin = appState.plugins.get(instance[0])
+            if (iterator(plugin.hook(name, instance[2]), hook.name))
+                break
+        }
     }
 
     map<S> (mapper: HookMapper<S>, name: HookName, appState: IAppState): S[] {

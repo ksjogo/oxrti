@@ -6,6 +6,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import Typography from '@material-ui/core/Typography'
+import { Point } from '../../Math'
 
 const ZoomModel = Plugin.props({
     title: 'Zoom',
@@ -22,6 +23,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                 Zoom: {
                     priority: -20,
                     component: ZoomNode,
+                    inversePoint: this.undoZoomAndPan,
                 },
             },
             ViewerSide: {
@@ -34,7 +36,18 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                     priority: 20,
                 },
             },
+            ViewerDrag: {
+                Pan: {
+                    func: this.dragger,
+                    priority: -10,
+                },
+            },
         }
+    }
+
+    @action
+    dragger (last, next) {
+        return false
     }
 
     @action
@@ -50,6 +63,10 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     @action
     onSliderY (event, value) {
         this.panY = value
+    }
+
+    undoZoomAndPan (point: Point) {
+        return point
     }
 }
 

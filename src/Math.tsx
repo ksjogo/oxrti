@@ -1,3 +1,5 @@
+export type Point = [number, number]
+
 export function normalize (nums: number[]) {
     let length = 0
     for (let num of nums)
@@ -5,16 +7,17 @@ export function normalize (nums: number[]) {
     return nums.map(num => num / length)
 }
 
-export function rotate (nums: number[], rad: number) {
+export function rotate (nums: Point, rad: number) {
     return [
         nums[0] * Math.cos(rad) + nums[1] * -Math.sin(rad),
         nums[0] * Math.sin(rad) + nums[1] * Math.cos(rad),
-    ]
+    ] as Point
 }
 
-export function toTex (nums: number[] | number) {
-    if (typeof nums === 'number')
-        return nums / 2 + 0.5
-    else
-        return nums.map(x => x / 2 + 0.5)
+export function toTex (nums: Point): Point {
+    return nums.map(x => x / 2 + 0.5) as Point
+}
+
+export function fromTex (nums: Point): Point {
+    return nums.map(x => x * 2 - 1) as Point
 }

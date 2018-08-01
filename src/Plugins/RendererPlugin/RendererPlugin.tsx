@@ -12,6 +12,9 @@ import Dropzone from 'react-dropzone'
 import { BTFMetadataDisplay, BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
+import { Dragger } from './DragInterface'
+import { FunctionHook, RendererHooks, RendererHook } from '../../Hook'
+import { Point } from '../../Math'
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
@@ -64,6 +67,53 @@ class RendererController extends shim(RendererModel, Plugin) {
         let btf = await fromZip(content)
         this.appState.loadFile(btf)
     }
+
+    dragging = false
+    lastDragTime = null
+    lastDrag: Point = null
+
+    @action
+    notifyDraggers (e: MouseEvent) {
+        debugger
+        let rect = (e.target as any).getBoundingClientRect()
+        let newU = (e.clientX - rect.left) / (rect.width)
+        let newV = (rect.bottom - e.clientY) / (rect.height)
+        let next: Point = [newU, newV]
+
+        this.appState.hookForEachReverse('ViewerRender', (hook: RendererHook) => {
+            next = hook.inversePoint(next)
+        })
+
+        this.appState.hookForEach('ViewerDrag', (hook: FunctionHook<Dragger>) => {
+            return hook.func(this.lastDrag, next)
+        })
+
+        this.lastDrag = next
+    }
+
+    @action
+    onMouseLeave () {
+        this.dragging = false
+    }
+
+    @action
+    onMouseMove (e: MouseEvent) {
+        if (this.dragging) {
+            this.notifyDraggers(e)
+        }
+    }
+
+    @action
+    onMouseDown (e: MouseEvent) {
+        this.dragging = true
+        this.lastDragTime = new Date()
+        this.notifyDraggers(e)
+    }
+
+    @action
+    onMouseUp () {
+        this.dragging = false
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -92,7 +142,12 @@ const RendererView = Component(function RendererView (props, classes) {
                     <div ref={measureRef} className={classes.stack} style={{
                         // paddingBottom: aspect,
                     }}>
-                        <Stack />
+                        <Stack
+                            onMouseLeave={this.onMouseLeave}
+                            onMouseMove={this.onMouseMove}
+                            onMouseDown={this.onMouseDown}
+                            onMouseUp={this.onMouseUp}
+                        />
                     </div>
                 }
             </Measure>

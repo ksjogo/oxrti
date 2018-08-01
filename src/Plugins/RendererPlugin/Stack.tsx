@@ -14,6 +14,10 @@ const shaders = Shaders.create({
 })
 
 export default Component<{
+    onMouseLeave: (e: MouseEvent) => void,
+    onMouseMove: (e: MouseEvent) => void,
+    onMouseDown: (e: MouseEvent) => void,
+    onMouseUp: (e: MouseEvent) => void,
 }>(function Stack (props) {
     let current: JSX.Element
     if (!props.appState.btf()) {
@@ -37,7 +41,13 @@ export default Component<{
     let plugin = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
     return <div>
         {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}
-        <Surface height={plugin.elementHeight} width={plugin.elementWidth}>
+        <Surface
+            height={plugin.elementHeight}
+            width={plugin.elementWidth}
+            onMouseLeave={props.onMouseLeave}
+            onMouseMove={props.onMouseMove}
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}>>
             {current}
         </Surface>
     </div>

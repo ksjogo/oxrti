@@ -138,6 +138,18 @@ class AppStateController extends shim(AppStateData) {
   }
 
   /**
+   * Iterate over a given hookname in reverse order
+   * @param name of the hook
+   * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
+   */
+  hookForEachReverse (name: HookName, iterator: HookIterator): void {
+    let manager = this.hooks.get(name)
+    if (!manager)
+      return
+    manager.forEachReverse(iterator, name, this)
+  }
+
+  /**
    * Map over a given hookname
    * @param name of the hook
    * @param mapper function, will be called with each concrete hook instance, could be multiple from one plugin
