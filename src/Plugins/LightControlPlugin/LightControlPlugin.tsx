@@ -33,14 +33,24 @@ class LightController extends shim(LightControlModel, Plugin) {
     @action
     onSliderX (event, value) {
         this.x = value
+        this.fixHemis()
     }
+
     @action
     onSliderY (event, value) {
         this.y = value
+        this.fixHemis()
     }
 
     hemisphericalCoords () {
         return hemispherical(this.x, this.y)
+    }
+
+    @action
+    fixHemis () {
+        let hemis = this.hemisphericalCoords()
+        this.x = hemis[0]
+        this.y = hemis[1]
     }
 
     // volatile
