@@ -52,7 +52,6 @@ class RotationController extends shim(RotationModel, Plugin) {
     }
 
     undoCurrentCenterer (point: Point): Point {
-        debugger
         let size = this.centererSizes()
         let maxDim = this.maxDims(size[0], size[1])
 

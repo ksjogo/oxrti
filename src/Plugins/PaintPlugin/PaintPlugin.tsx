@@ -13,13 +13,17 @@ import { observable } from 'mobx'
 const PaintModel = Plugin.props({
     title: 'Paint',
     enabled: false,
-    drawing: false,
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,
+    layers: 2,
+    activeLayer: 0,
+    layersVisible: types.optional(types.array(types.boolean), observable.array([true, false])),
 })
 
 class PaintController extends shim(PaintModel, Plugin) {
+    drawing = false
+
     hooks () {
         return {
             ViewerRender: {
@@ -79,30 +83,34 @@ const PaintNode = Component(function PaintNode (props) {
     let height = btf ? btf.data.height : DummyRenderSize
     let brush = this.brushRadius / width
     return <Node
-        shader={{ frag: mixerShader }}
-        uniformsOptions={{
-            painted: { interpolation: 'nearest' },
+        shader={{
+            // we need to recompile the shader for different layer amounts
+            frag: mixerShader.replace(/\[X\]/gi, `[${this.layers}]`).replace('< layerCount', `< ${this.layers}`),
         }}
         uniforms={{
             children: props.children,
+            layerVisibility: this.layersVisible.slice(),
         }}
         width={width}
         height={height}
     >
-        <Bus uniform='painted'>
-            <Node
-                width={width}
-                height={height}
-                shader={{
-                    frag: paintShader,
-                }}
-                clear={null}
-                uniforms={{
-                    drawing: this.drawing,
-                    color: this.color.slice(),
-                    center: this.center.slice(),
-                    brushRadius: brush,
-                }} />
-        </Bus>
+        {// map all layers into the `layer` uniform of the mixer shader
+            this.layersVisible.map((visible, index) => {
+                return <Bus uniform={'layer'} key={`layer${index}`} >
+                    <Node
+                        width={width}
+                        height={height}
+                        shader={{
+                            frag: paintShader,
+                        }}
+                        clear={null}
+                        uniforms={{
+                            drawing: this.drawing && this.activeLayer === index,
+                            color: this.color.slice(),
+                            center: this.center.slice(),
+                            brushRadius: brush,
+                        }} />
+                </Bus>
+            })}
     </Node >
 })

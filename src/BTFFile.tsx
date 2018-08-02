@@ -115,7 +115,6 @@ export default class BTFFile {
 }
 
 export async function fromZip (zipData) {
-    debugger
     let archive = await JSZip.loadAsync(zipData)
     let dataFolder = archive.folder('data')
     let manifest = JSON.parse(await archive.file('manifest.json').async('text'))

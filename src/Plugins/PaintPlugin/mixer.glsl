@@ -2,10 +2,20 @@ precision highp float;
 varying vec2 uv;
 
 uniform sampler2D children;
-uniform sampler2D painted;
+
+uniform bool layerVisibility[X];
+
+uniform sampler2D layer[X];
+
 void main()
 {  
      vec4 base = texture2D(children, uv);
-     vec4 painted = texture2D(painted, uv);
-     gl_FragColor = mix(base, painted, painted.a);
+
+    for(int i=0; i < layerCount; i++) {
+        if (layerVisibility[i]) {
+            vec4 paint = texture2D(layer[i], uv);
+            base = mix(base, paint, paint.a);
+        }
+    }
+     gl_FragColor = base;
   }
