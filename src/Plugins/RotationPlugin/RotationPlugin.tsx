@@ -52,6 +52,7 @@ class RotationController extends shim(RotationModel, Plugin) {
     }
 
     undoCurrentCenterer (point: Point): Point {
+        debugger
         let size = this.centererSizes()
         let maxDim = this.maxDims(size[0], size[1])
 
@@ -60,7 +61,8 @@ class RotationController extends shim(RotationModel, Plugin) {
         let uWidth = 1.0 - 2.0 * uOffset
         let vWidth = 1.0 - 2.0 * vOffset
 
-        return [(point[0] - uOffset) / uWidth, (point[1] - vOffset) / vWidth]
+        point = [(point[0] - uOffset) / uWidth, (point[1] - vOffset) / vWidth]
+        return point
     }
 
     maxDims (width: number, height: number) {
@@ -71,7 +73,7 @@ class RotationController extends shim(RotationModel, Plugin) {
         let btf = this.appState.btf()
         let height = btf ? btf.data.height : DummyRenderSize
         let width = btf ? btf.data.width : DummyRenderSize
-        return [height, width]
+        return [width, height]
     }
 }
 
@@ -91,7 +93,7 @@ const RotationComponent = Component(function RotationNode (props) {
 })
 
 const CentererComponent = Component(function RotationNode (props) {
-    let [height, width] = this.centererSizes()
+    let [width, height] = this.centererSizes()
     let maxDims = this.maxDims(width, height)
     return <ShaderNode
         width={maxDims}
