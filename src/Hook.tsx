@@ -21,7 +21,7 @@ export type FunctionHook<P = any> = HookBase & {
 export type ConfigHook<P = any> = HookBase & P
 
 export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
-    inversePoint: (point: Point) => Point,
+    inversePoint?: (point: Point) => Point,
 }
 
 type Hooks<P> = { [key: string]: P }

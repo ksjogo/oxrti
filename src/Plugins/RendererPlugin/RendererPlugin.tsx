@@ -81,7 +81,8 @@ class RendererController extends shim(RendererModel, Plugin) {
         let nextTex = nextScreen
 
         this.appState.hookForEachReverse('ViewerRender', (hook: RendererHook) => {
-            nextTex = hook.inversePoint(nextTex)
+            if (hook.inversePoint)
+                nextTex = hook.inversePoint(nextTex)
         })
 
         this.appState.hookForEach('ViewerDrag', (hook: FunctionHook<Dragger>) => {

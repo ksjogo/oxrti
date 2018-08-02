@@ -117,6 +117,7 @@ const TypedNode: React.StatelessComponent<{
     uniformOptions?: any,
     width?: number,
     height?: number,
+    clear?: boolean,
     shader: any,
 }> = Node
 

@@ -47,7 +47,9 @@ export default Component<{
             onMouseLeave={props.onMouseLeave}
             onMouseMove={props.onMouseMove}
             onMouseDown={props.onMouseDown}
-            onMouseUp={props.onMouseUp}>>
+            onMouseUp={props.onMouseUp}
+            webglContextAttributes={{ preserveDrawingBuffer: true }}
+        >
             {current}
         </Surface>
     </div>

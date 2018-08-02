@@ -1,5 +1,7 @@
 export type Point = [number, number]
 
+export const DummyRenderSize = 300
+
 export function normalize (nums: number[]) {
     let length = 0
     for (let num of nums)

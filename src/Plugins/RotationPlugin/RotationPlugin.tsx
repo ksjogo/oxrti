@@ -7,7 +7,7 @@ import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
 import Typography from '@material-ui/core/Typography'
-import { Point, fromTex, rotate, toTex } from '../../Math'
+import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Math'
 
 const RotationModel = Plugin.props({
     title: 'Rotation',
@@ -69,8 +69,8 @@ class RotationController extends shim(RotationModel, Plugin) {
 
     centererSizes () {
         let btf = this.appState.btf()
-        let height = btf ? btf.height : 300
-        let width = btf ? btf.width : 300
+        let height = btf ? btf.height : DummyRenderSize
+        let width = btf ? btf.width : DummyRenderSize
         return [height, width]
     }
 }
