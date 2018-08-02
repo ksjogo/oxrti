@@ -7,6 +7,7 @@
       "es6",
       "dom"
     ],
+    "resolveJsonModule": true,
     "allowJs": true,
     "sourceMap": true,
     "noImplicitThis": true,
