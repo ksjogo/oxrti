@@ -26,6 +26,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         if (format !== FORMAT)
             return Promise.reject(`Prefix ${format} is not supported, only ${FORMAT} is currently!`)
 
+        this.channelModel = 'LRGB'
         let widthAndHeight = this.readTillNewLine()
         let split = widthAndHeight.split(' ')
         this.width = parseInt(split[0], 10)
@@ -66,23 +67,10 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 let p = ((y * this.width) + x)
                 let index = p // * 3
 
-                // flip image upside down if format LRGB
-                // if (this.format === 'PTM_FORMAT_LRGB')
-                //index = (((this.height - 1 - y) * this.width) + x) // * 3
-
-                // flip image horizontally if format JPEG
-                // if (this.format === 'PTM_FORMAT_JPEG_LRGB')
-                //    index = ((y * this.width) + (this.width - 1 - x)) * 3
-
-                // coefficients: first wxhx6 block
                 for (let i = 0; i <= 5; i++)
-                    // coeffHdata[index + c] = ptm->coefficients[p * 6 + c]
-                    // coeffLdata[index + c] = ptm->coefficients[p * 6 + c + 3]
                     this.coeffData[i][index] = this.pixelData[p * 6 + i]
 
-                // rgb: second wxhx3 block
                 for (let i = 0; i <= 2; i++)
-                    // rgbdata[index + c] = ptm->coefficients[num_pixels * 6 + p * 3 + c]
                     this.coeffData[i + 6][index] = this.pixelData[this.pixels * 6 + p * 3 + i]
 
                 if (p % (this.pixels / 100) === 0) {
@@ -96,7 +84,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
     }
 
     async bundleChannels () {
-        let bmps = []
+        let bmps: Blob[] = []
         for (let i = 0; i < this.coeffData.length; i++) {
             let bmpData = {
                 data: this.coeffData[i],
@@ -109,47 +97,59 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
         let channels: Channels = {
             L: {
-                a0: {
-                    data: bmps[0],
-                    fileformat: 'png',
-                },
-                a1: {
-                    data: bmps[1],
-                    fileformat: 'png',
-                },
-                a2: {
-                    data: bmps[2],
-                    fileformat: 'png',
-                },
-                a3: {
-                    data: bmps[3],
-                    fileformat: 'png',
-                },
-                a4: {
-                    data: bmps[4],
-                    fileformat: 'png',
-                },
-                a5: {
-                    data: bmps[5],
-                    fileformat: 'png',
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: bmps[0],
+                        format: 'PNG8',
+                    },
+                    a1: {
+                        data: bmps[1],
+                        format: 'PNG8',
+                    },
+                    a2: {
+                        data: bmps[2],
+                        format: 'PNG8',
+                    },
+                    a3: {
+                        data: bmps[3],
+                        format: 'PNG8',
+                    },
+                    a4: {
+                        data: bmps[4],
+                        format: 'PNG8',
+                    },
+                    a5: {
+                        data: bmps[5],
+                        format: 'PNG8',
+                    },
                 },
             },
             R: {
-                a0: {
-                    data: bmps[6],
-                    fileformat: 'png',
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: bmps[6],
+                        format: 'PNG8',
+                    },
                 },
             },
             G: {
-                a0: {
-                    data: bmps[7],
-                    fileformat: 'png',
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: bmps[7],
+                        format: 'PNG8',
+                    },
                 },
             },
             B: {
-                a0: {
-                    data: bmps[8],
-                    fileformat: 'png',
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: bmps[8],
+                        format: 'PNG8',
+                    },
                 },
             },
         }

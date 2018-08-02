@@ -69,8 +69,8 @@ class RotationController extends shim(RotationModel, Plugin) {
 
     centererSizes () {
         let btf = this.appState.btf()
-        let height = btf ? btf.height : DummyRenderSize
-        let width = btf ? btf.width : DummyRenderSize
+        let height = btf ? btf.data.height : DummyRenderSize
+        let width = btf ? btf.data.width : DummyRenderSize
         return [height, width]
     }
 }

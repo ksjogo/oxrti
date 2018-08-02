@@ -1,10 +1,25 @@
 import JSZip from 'jszip'
 export type BTFCache = { [key: string]: BTFFile }
+
+export type ChannelModel = 'RGB' | 'LRGB' | 'SPECTRAL'
+export type CoefficentModel = 'flat' | string
+export type FileFormat = 'BMP8' | 'BMP16' | 'BMP24' | 'BMP32' | 'PNG8' | 'PNG16' | 'PNG24' | 'PNG32' | 'PNG42' | 'PNG64'
 export type Channels = { [key: string]: Channel }
-export type Channel = { [key: string]: Coefficent }
+export type Channel = {
+    coefficents: { [key: string]: Coefficent },
+    coefficentModel: CoefficentModel,
+}
 export type Coefficent = {
     data: Blob,
-    fileformat: string,
+    format: FileFormat,
+}
+
+export type Data = {
+    width: number,
+    height: number,
+    channelModel: ChannelModel,
+    channels: Channels,
+    formatExtra: any,
 }
 
 export type TexForRender = {
@@ -21,92 +36,97 @@ function JSONY (thing) {
 
 export default class BTFFile {
     oxrtiState: object = {}
-    width: number = 0
-    height: number = 0
+    data: Data = {
+        width: 0,
+        height: 0,
+        channelModel: null,
+        channels: {},
+        formatExtra: {},
+    }
     name: string = ''
-    formatMetadata: object = {}
-    format: 'LRGBPTM' = 'LRGBPTM'
-
-    channels: Channels
 
     constructor (manifest?: any) {
         if (!manifest)
             return
+
         this.name = manifest.name
-        this.format = manifest.format
-        this.width = manifest.width
-        this.height = manifest.height
-        this.formatMetadata = manifest.formatMetadata
-        this.channels = manifest.data
+        this.data = manifest.data
     }
 
     generateManifest () {
-        return JSONY({
+        let manifest = {
             name: this.name,
-            format: this.format,
-            width: this.width,
-            height: this.height,
-            formatMetadata: this.formatMetadata,
-            data: this.formatChannels(),
-        })
+            data: this.data,
+        }
+        manifest.data.channels = this.formatChannels(manifest.data.channels)
+        return JSONY(manifest)
     }
 
     conciseManifest () {
         return JSONY({
             name: this.name,
-            format: this.format,
-            width: this.width,
-            height: this.height,
+            format: this.data.channelModel,
+            width: this.data.width,
+            height: this.data.height,
         })
     }
 
-    formatChannels () {
-        return this.channels
+    formatChannels (channels: Channels) {
+        return channels
     }
 
-    async generateZip () {
-        let zip = new JSZip()
-
-        let dataFolder = zip.folder('data')
-        for (const channelName in this.channels) {
-            let channelFolder = dataFolder.folder(channelName)
-            for (const coefficentName in this.channels[channelName]) {
-                let coefficent = this.channels[channelName][coefficentName]
-                channelFolder.file(`${coefficentName}.${coefficent.fileformat}`, coefficent.data)
-            }
-        }
-        zip.file('manifest.json', this.generateManifest())
-        zip.file('oxrti.json', JSONY(this.oxrtiState))
-        return zip.generateAsync({ type: 'blob' })
-    }
-
+    /**
+     * Generate a unique tex container which the gl-react loader will cache
+     * @param channel
+     * @param coefficent
+     */
     texForRender (channel: string, coefficent: string): TexForRender {
-        let co = this.channels[channel][coefficent]
+        let co = this.data.channels[channel].coefficents[coefficent]
         // return 'data:image/png;base64,' + co.data.toString('base64')
         return {
             data: co.data,
-            width: this.width,
-            height: this.height,
+            width: this.data.width,
+            height: this.data.height,
             type: 'oxrti',
             ident: this.name + channel + coefficent,
         }
     }
 
     aspectRatio () {
-        return this.width / this.height
+        return this.data.width / this.data.height
+    }
+
+    async generateZip () {
+        let zip = new JSZip()
+
+        let dataFolder = zip.folder('data')
+        for (const channelName in this.data.channels) {
+            let channelFolder = dataFolder.folder(channelName)
+            for (const coefficentName in this.data.channels[channelName].coefficents) {
+                let coefficent = this.data.channels[channelName].coefficents[coefficentName]
+                let fileformat = coefficent.format.toLowerCase().substring(0, 3)
+                channelFolder.file(`${coefficentName}.${fileformat}`, coefficent.data)
+            }
+        }
+        zip.file('manifest.json', this.generateManifest())
+        zip.file('oxrti.json', JSONY(this.oxrtiState))
+        return zip.generateAsync({ type: 'blob' })
     }
 }
 
-export async function fromZip (data) {
-    let archive = await JSZip.loadAsync(data)
+export async function fromZip (zipData) {
+    debugger
+    let archive = await JSZip.loadAsync(zipData)
     let dataFolder = archive.folder('data')
     let manifest = JSON.parse(await archive.file('manifest.json').async('text'))
-    for (const channelName in manifest.data) {
+    let data: Data = manifest.data as Data
+    for (const channelName in data.channels) {
         let channelFolder = dataFolder.folder(channelName)
-        for (const coefficentName in manifest.data[channelName]) {
-            let coefficent = manifest.data[channelName][coefficentName]
-            let data = await channelFolder.file(`${coefficentName}.${coefficent.fileformat}`).async('blob')
-            coefficent.data = data
+        for (const coefficentName in data.channels[channelName].coefficents) {
+            let coefficent = data.channels[channelName].coefficents[coefficentName]
+            let fileformat = coefficent.format.toLowerCase().substring(0, 3)
+            let imageData = await channelFolder.file(`${coefficentName}.${fileformat}`).async('blob')
+            coefficent.data = imageData
         }
     }
     let btf = new BTFFile(manifest)

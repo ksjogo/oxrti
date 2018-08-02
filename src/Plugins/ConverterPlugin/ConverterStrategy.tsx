@@ -1,5 +1,5 @@
 import IConverterUI from './ConverterUI'
-import BTFFile, { Channels } from '../../BTFFile'
+import BTFFile, { Channels, ChannelModel } from '../../BTFFile'
 
 export default abstract class ConverterStrategy {
     fileBuffer: ArrayBuffer
@@ -11,12 +11,13 @@ export default abstract class ConverterStrategy {
     height = 0
     output: BTFFile
     formatMetadata: object
+    channelModel: ChannelModel = null
 
     get pixels () {
         return this.width * this.height
     }
 
-    constructor (content: ArrayBuffer, ui: IConverterUI) {
+    constructor(content: ArrayBuffer, ui: IConverterUI) {
         this.ui = ui
         this.fileBuffer = content
         this.inputBuffer = Buffer.from(content)
@@ -55,9 +56,10 @@ export default abstract class ConverterStrategy {
         await this.ui.setProgress(0)
         await this.ui.setMessage('Parsing metadata.')
         await this.parseMetadata()
-        this.output.width = this.width
-        this.output.height = this.height
-        this.output.formatMetadata = this.formatMetadata
+        this.output.data.channelModel = this.channelModel
+        this.output.data.width = this.width
+        this.output.data.height = this.height
+        this.output.data.formatExtra = this.formatMetadata
         await this.preparePixelData()
         await this.ui.setMessage('Reading pixels.')
         await this.readPixels()
@@ -66,7 +68,7 @@ export default abstract class ConverterStrategy {
             throw new Error('we missed some data!')
         await this.ui.setMessage('Bundling channels.')
         await this.ui.setProgress(0)
-        this.output.channels = await this.bundleChannels()
+        this.output.data.channels = await this.bundleChannels()
         return Promise.resolve(this.output)
     }
 

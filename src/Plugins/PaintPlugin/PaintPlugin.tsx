@@ -75,9 +75,9 @@ import { Shaders, Node, GLSL, Bus } from 'gl-react'
 
 const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
-    let brush = this.brushRadius / (btf ? btf.width : DummyRenderSize)
-    let width = btf ? btf.width : DummyRenderSize
-    let height = btf ? btf.height : DummyRenderSize
+    let width = btf ? btf.data.width : DummyRenderSize
+    let height = btf ? btf.data.height : DummyRenderSize
+    let brush = this.brushRadius / width
     return <Node
         shader={{ frag: mixerShader }}
         uniformsOptions={{

@@ -18,8 +18,8 @@ export default class PTMLRGB extends BaseNode {
         let btf = props.appState.btf()
         return <Node
             shader={shaders.ptmlrgb}
-            width={btf.width}
-            height={btf.height}
+            width={btf.data.width}
+            height={btf.data.height}
             uniforms={{
                 lightPosition: this.lightPos(),
                 texR: btf.texForRender('R', 'a0'),
@@ -31,8 +31,8 @@ export default class PTMLRGB extends BaseNode {
                 texL3: btf.texForRender('L', 'a3'),
                 texL4: btf.texForRender('L', 'a4'),
                 texL5: btf.texForRender('L', 'a5'),
-                biases: (btf.formatMetadata as PTMFormatMetadata).biases,
-                scales: (btf.formatMetadata as PTMFormatMetadata).scales,
+                biases: (btf.data.formatExtra as PTMFormatMetadata).biases,
+                scales: (btf.data.formatExtra as PTMFormatMetadata).scales,
             }} />
     })
 }
