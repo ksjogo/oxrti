@@ -4,19 +4,18 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 // oxrti default imports ->
 
 import { Point, DummyRenderSize } from '../../Math'
-import { Switch } from '@material-ui/core'
+import { Switch, Theme, createStyles } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
 import { observable } from 'mobx'
-import { Typography, Grid, Theme, createStyles } from '@material-ui/core'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
-import { action as act } from 'mobx'
+import TrashIcon from '@material-ui/icons/Delete'
 
 const PaintModel = Plugin.props({
     title: 'Paint',
@@ -134,6 +133,9 @@ const PaintUI = Component(function PaintUI (props, classes) {
                             onChange={this.handleVisibility(index)}
                             checked={visible}
                         />
+                        {/* <IconButton aria-label='Trash'>
+                            <TrashIcon />
+                        </IconButton> */}
                     </ListItemSecondaryAction>
                 </ListItem>
             ))}

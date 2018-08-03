@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@material-ui/core": "^1.4.0",
+    "@material-ui/icons": "^2.0.0",
     "@material-ui/lab": "^1.0.0-alpha.6",
     "@types/async": "^2.0.49",
     "@types/electron-devtools-installer": "^2.0.3",
@@ -98,5 +99,8 @@
     "main": {
       "sourceDirectory": "src/electron"
     }
+  },
+  "dependencies": {
+    "react-tappable": "^1.0.4"
   }
 }
