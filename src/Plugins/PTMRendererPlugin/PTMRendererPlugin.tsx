@@ -3,6 +3,7 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 // oxrti default imports ->
 import PTMLRGB from './PTMLRGB'
+import PTMRGB from './PTMRGB'
 import { ChannelModel } from '../../BTFFile'
 
 const PTMRendererModel = Plugin.props({
@@ -16,6 +17,10 @@ class PTMRendererController extends shim(PTMRendererModel, Plugin) {
                 LRGB: {
                     channelModel: 'LRGB' as ChannelModel,
                     node: new PTMLRGB(),
+                },
+                RGB: {
+                    channelModel: 'RGB' as ChannelModel,
+                    node: new PTMRGB(),
                 },
             },
         }
