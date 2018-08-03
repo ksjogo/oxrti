@@ -9,20 +9,30 @@ import { Switch } from '@material-ui/core'
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
 import { observable } from 'mobx'
+import { Typography, Grid, Theme, createStyles } from '@material-ui/core'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
+import Checkbox from '@material-ui/core/Checkbox'
+import IconButton from '@material-ui/core/IconButton'
+import { action as act } from 'mobx'
 
 const PaintModel = Plugin.props({
     title: 'Paint',
-    enabled: false,
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,
-    layers: 3,
     activeLayer: 0,
     layersVisible: types.optional(types.array(types.boolean), observable.array([true, true, true])),
 })
 
 class PaintController extends shim(PaintModel, Plugin) {
     drawing = false
+
+    layerCount () {
+        return this.layersVisible.length
+    }
 
     hooks () {
         return {
@@ -49,7 +59,7 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     @action
     dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) {
-        if (this.enabled) {
+        if (this.activeLayer !== -1) {
             this.drawing = true
             this.center[0] = nextTex[0]
             this.center[1] = nextTex[1]
@@ -58,9 +68,31 @@ class PaintController extends shim(PaintModel, Plugin) {
     }
 
     @action
-    onToggle (event, value) {
-        this.enabled = value
-        this.drawing = false
+    setActiveLayer (value) {
+        this.activeLayer = value
+    }
+
+    @action
+    setDrawing (value) {
+        this.drawing = value
+    }
+
+    handleActiveLayer (index) {
+        return (event) => {
+            this.setDrawing(false)
+            this.setActiveLayer(this.activeLayer === index ? -1 : index)
+        }
+    }
+
+    @action
+    setVisibility (index, value) {
+        this.layersVisible[index] = value
+    }
+
+    handleVisibility (index) {
+        return (event, value) => {
+            this.setVisibility(index, value)
+        }
     }
 }
 
@@ -68,12 +100,46 @@ const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintM
 export default PaintPlugin
 export type IZoomPlugin = typeof PaintPlugin.Type
 
-const PaintUI = Component(function PaintUI (props) {
+const styles = (theme: Theme) => createStyles({
+    root: {
+        width: '100%',
+        maxWidth: 360,
+        backgroundColor: theme.palette.background.paper,
+    },
+    active: {
+        backgroundColor: theme.palette.action.active,
+    },
+})
+
+const PaintUI = Component(function PaintUI (props, classes) {
     return <div>
         <h3>Paint</h3>
-        <Switch checked={this.enabled} onChange={this.onToggle} />
+        <List>
+            {this.layersVisible.map((visible, index) => (
+                <ListItem
+                    key={index}
+                    role={undefined}
+                    dense
+                    button
+                    onClick={this.handleActiveLayer(index)}
+                >
+                    <Checkbox
+                        checked={this.activeLayer === index}
+                        tabIndex={-1}
+                        disableRipple
+                    />
+                    <ListItemText primary={`Layer ${index + 1}`} />
+                    <ListItemSecondaryAction>
+                        <Switch
+                            onChange={this.handleVisibility(index)}
+                            checked={visible}
+                        />
+                    </ListItemSecondaryAction>
+                </ListItem>
+            ))}
+        </List>
     </div>
-})
+}, styles)
 
 import { Shaders, Node, GLSL, Bus } from 'gl-react'
 
@@ -85,7 +151,7 @@ const PaintNode = Component(function PaintNode (props) {
     return <Node
         shader={{
             // we need to recompile the shader for different layer amounts
-            frag: mixerShader.replace(/\[X\]/gi, `[${this.layers}]`).replace('< layerCount', `< ${this.layers}`),
+            frag: mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', `< ${this.layerCount()}`),
         }}
         uniforms={{
             children: props.children,
