@@ -1,8 +1,7 @@
 import React from 'react'
 import { Surface } from 'gl-react-dom'
 import Component from '../../View/Component'
-import { ComponentHook } from '../../Hook'
-import PTMLRGB from './PTMLRGB'
+import { ComponentHook, BaseNodeConfig } from '../../Hook'
 import { IRendererPlugin } from './RendererPlugin'
 import { Shaders, Node } from 'gl-react'
 
@@ -20,24 +19,30 @@ export default Component<{
     onMouseUp: (e: MouseEvent) => void,
 }>(function Stack (props) {
     let current: JSX.Element
-    if (!props.appState.btf()) {
+    let btf = props.appState.btf()
+
+    if (btf) {
+        props.appState.hookForEach('RendererForModel', (hook: BaseNodeConfig) => {
+            if (hook.channelModel === btf.data.channelModel) {
+                let Func = hook.node.render
+                current = <Func />
+            }
+        })
+    }
+    if (!current) {
         current = <Node
             height={300}
             width={300}
             shader={shaders.noise}
             uniforms={{ iGlobalTime: props.appState.uptime }}
         />
-
-    } else {
-        let Func = new PTMLRGB().render
-        current = <Func />
     }
+
     props.appState.hookForEach('ViewerRender', (hook: ComponentHook) => {
         let Func = hook.component
         current = <Func>{current}</Func>
     })
 
-    let btf = props.appState.btf()
     let plugin = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
     return <div>
         {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}

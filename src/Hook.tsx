@@ -4,6 +4,10 @@ import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategy
 import { Dragger } from './Plugins/RendererPlugin/DragInterface'
 import { Point } from './Math'
 import { Renderer } from 'react-dom'
+import { ChannelModel } from './BTFFile'
+import BaseNode from './Plugins/RendererPlugin/BaseNode'
+
+export { ChannelModel }
 
 export type HookBase = {
     priority?: number,
@@ -24,6 +28,11 @@ export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
     inversePoint?: (point: Point) => Point,
 }
 
+export type BaseNodeConfig = {
+    channelModel: ChannelModel,
+    node: BaseNode,
+}
+
 type Hooks<P> = { [key: string]: P }
 
 export type ComponentHooks<P = PluginComponentType> = Hooks<ComponentHook<P>>
@@ -38,6 +47,7 @@ export type HookConfig = {
     Test?: FunctionHooks,
     Tabs?: ConfigHooks<TabConfig>,
     ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,
+    RendererForModel?: ConfigHooks<BaseNodeConfig>,
 }
 
 type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof T]

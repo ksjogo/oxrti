@@ -7,5 +7,6 @@
     "RendererPlugin",
     "SettingsPlugin",
     "PTMConverterPlugin",
+    "PTMRendererPlugin",
     "LightControlPlugin"
 ]

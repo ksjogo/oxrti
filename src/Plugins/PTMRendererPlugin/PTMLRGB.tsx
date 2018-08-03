@@ -1,4 +1,4 @@
-import BaseNode from './BaseNode'
+import BaseNode from '../RendererPlugin/BaseNode'
 import React from 'react'
 import Component from '../../View/Component'
 import { Shaders, Node } from 'gl-react'
