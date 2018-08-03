@@ -8,7 +8,7 @@ uniform float scales[6];
 uniform vec3 lightPosition;
 
 
-float channelLum(sampler2D[2] coeffsTexs, vec3 tangentSpaceLight) {
+float channelLum(sampler2D[2] coeffsTexs, vec3 toLight) {
    	float a0 = texture2D(coeffsTexs[0], uv).x;
     float a1 = texture2D(coeffsTexs[0], uv).y;
     float a2 = texture2D(coeffsTexs[0], uv).z;
@@ -23,8 +23,8 @@ float channelLum(sampler2D[2] coeffsTexs, vec3 tangentSpaceLight) {
 	a4 = (a4 * 255.0 - biases[4]) * scales[4];
 	a5 = (a5 * 255.0 - biases[5]) * scales[5];
 	
-    float Lu = tangentSpaceLight.x;
-    float Lv = tangentSpaceLight.y;
+    float Lu = toLight.x;
+    float Lv = toLight.y;
 
 	float lum = (
 		a0 * Lu * Lu +
@@ -41,23 +41,9 @@ void main() {
             vec3 pointPos = vec3(0,0,0);     
             vec3 toLight = normalize(lightPosition - pointPos);
 
-            vec3 pointNormal = vec3(0,0,1);
-            vec3 pointTangent = vec3(1,0,0);
-            vec3 pointBinormal = vec3(0,1,0);
-
-
-            vec3 tangentSpaceLight= vec3(
-                dot(toLight, pointTangent),
-                dot(toLight, pointBinormal),
-                dot(toLight, pointNormal)
-            );
-
-            tangentSpaceLight.xy = normalize(tangentSpaceLight.xy);
-            tangentSpaceLight.xy *= (1.0-tangentSpaceLight.z);
-
-            float R = channelLum(texR, tangentSpaceLight);
-            float G = channelLum(texG, tangentSpaceLight);
-            float B = channelLum(texB, tangentSpaceLight);
+            float R = channelLum(texR, toLight);
+            float G = channelLum(texG, toLight);
+            float B = channelLum(texB, toLight);
 
             gl_FragColor = vec4(R,G,B,1.0);
 }

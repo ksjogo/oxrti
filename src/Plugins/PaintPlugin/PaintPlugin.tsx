@@ -22,7 +22,7 @@ const PaintModel = Plugin.props({
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,
-    activeLayer: 0,
+    activeLayer: -1,
     layersVisible: types.optional(types.array(types.boolean), observable.array([true, true, true])),
 })
 

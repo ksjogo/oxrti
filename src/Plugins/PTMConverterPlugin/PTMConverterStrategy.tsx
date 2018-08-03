@@ -99,20 +99,24 @@ export default class PTMConverterStrategy extends ConverterStrategy {
          * pixels times [a_0, a_1, a_2, a_3, a_4, a_5] for each color
          */
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels * 3))
-        for (let y = 0; y < this.height; ++y)
+        for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 for (let color = 0; color <= 2; color++) {
                     let index = ((y * this.width) + x)
                     let pointer = index + this.pixels * color
 
-                    for (let i = 0; i <= 5; i++)
-                        this.coeffData[color * 2 + Math.floor(i / 3)][index * 3 + (i % 3)] = this.pixelData[pointer * 6 + i]
-
-                    if (index % (this.pixels / 100) === 0) {
-                        await this.ui.setProgress(index / this.pixels * 100 + 1)
+                    for (let i = 0; i <= 5; i++) {
+                        let bucket = color * 2 + Math.floor(i / 3)
+                        let outputIndex = index * 3 + (i % 3)
+                        let inputIndex = pointer * 6 + i
+                        this.coeffData[bucket][outputIndex] = this.pixelData[inputIndex]
                     }
                 }
             }
+            if (y % (this.height / 100) === 0) {
+                await this.ui.setProgress(y / this.height * 100 + 1)
+            }
+        }
     }
 
     async readSuffix () {
@@ -129,7 +133,6 @@ export default class PTMConverterStrategy extends ConverterStrategy {
     }
 
     async bundleChannelsRGB () {
-        debugger
         for (let i = 0; i < this.coeffData.length; i++) {
             let bmpData = {
                 data: this.coeffData[i],

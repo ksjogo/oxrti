@@ -6,6 +6,7 @@ import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
+import SafeGLIInspector from '../../View/SafeGLIInspector'
 
 const RenderPadding = 20
 
@@ -114,7 +115,9 @@ const SliderComponent = Component(function RotationSlider (props) {
         <Typography>Pos Y</Typography>
         <Slider default={0} value={this.y} onChange={this.onSliderY} min={-1} max={1} />
         <Typography>Hemispherical</Typography>
-        <HemisphereComponent />
+        <SafeGLIInspector>
+            <HemisphereComponent />
+        </SafeGLIInspector>
         <p>x: {this.hemisphericalCoords()[0]} <br />y: {this.hemisphericalCoords()[1]}<br />z: {this.hemisphericalCoords()[2]}</p>
     </div>
 })

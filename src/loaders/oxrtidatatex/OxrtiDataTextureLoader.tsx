@@ -34,7 +34,19 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
             // gl R8 not supported in webgl context v1
             // LUMINACE seems to work fine so far
             // TOFIX: allow for 16-bit
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, img)
+            let type: number
+            switch (config.format) {
+                case 'PNG8':
+                    type = gl.LUMINANCE
+                    break
+                case 'PNG24':
+                    type = gl.RGB
+                    break
+                default:
+                    throw new Error(`Currently unsupported fileformat ${config.format}`)
+                    break
+            }
+            gl.texImage2D(gl.TEXTURE_2D, 0, type, type, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
             appState.textureLoaded()

@@ -28,6 +28,7 @@ export type TexForRender = {
     width: number,
     height: number,
     ident: string,
+    format: FileFormat,
 }
 
 function JSONY (thing) {
@@ -89,6 +90,7 @@ export default class BTFFile {
             height: this.data.height,
             type: 'oxrti',
             ident: this.name + channel + coefficent,
+            format: co.format,
         }
     }
 

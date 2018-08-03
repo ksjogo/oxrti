@@ -12,6 +12,7 @@ A BTF file is a ZIP file containing the following:
 * A single folder named `data`, with sub-folders having names in 1-to-1 correspondence with the channels specified in the manifest.
 * Within each channel folder, greyscale image files having names in 1-to-1 correspondence with the coefficients specified in the manifest, each in the image file format specified in the manifest for the corresponding channel.
 For example, if one is working with RGB format (3-channels named `R`, `G` and `B`)  in the PTM model (five coefficients `a2`, `b2`, `a1`, `b1` and `c`, specifying a bi-quadratic) using 16-bit greyscale bitmaps, the file `/data/B/a2.bmp` is the texture encoding the `a2` coefficient for the blue channel of each point in texture space. 
+* The datafiles are all in reversed scanline order (meaning from bottom to top), to keep aligned with the original PTM format and allow easier loading into WebGL.
 
 
 Manifest

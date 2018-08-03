@@ -48,7 +48,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
 
     @action
     async setProgress (progress: number) {
-        this.progress = progress
+        this.progress = Math.trunc(progress)
         await sleep(0)
     }
 
