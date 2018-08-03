@@ -2,8 +2,8 @@ export default abstract class Writer {
     width = 0
     height = 0
     inputBuffer: Buffer
-    inputElementSize: 8 | 16
-    constructor (config: { width: number, height: number, data: Buffer, elementSize: 8 | 16 }) {
+    inputElementSize: number
+    constructor (config: { width: number, height: number, data: Buffer, elementSize: number }) {
         this.inputBuffer = config.data
         this.width = config.width
         this.height = config.height

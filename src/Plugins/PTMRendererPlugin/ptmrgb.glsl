@@ -1,20 +1,20 @@
 precision highp float;
 varying vec2 uv;
-uniform sampler2D texR[6];
-uniform sampler2D texG[6];
-uniform sampler2D texB[6];
+uniform sampler2D texR[2];
+uniform sampler2D texG[2];
+uniform sampler2D texB[2];
 uniform float biases[6];
 uniform float scales[6];
 uniform vec3 lightPosition;
 
 
-float channelLum(sampler2D[6] coeffsTexs, vec3 tangentSpaceLight) {
+float channelLum(sampler2D[2] coeffsTexs, vec3 tangentSpaceLight) {
    	float a0 = texture2D(coeffsTexs[0], uv).x;
-    float a1 = texture2D(coeffsTexs[1], uv).x;
-    float a2 = texture2D(coeffsTexs[2], uv).x;
-    float a3 = texture2D(coeffsTexs[3], uv).x;
-    float a4 = texture2D(coeffsTexs[4], uv).x;
-    float a5 = texture2D(coeffsTexs[5], uv).x;
+    float a1 = texture2D(coeffsTexs[0], uv).y;
+    float a2 = texture2D(coeffsTexs[0], uv).z;
+    float a3 = texture2D(coeffsTexs[1], uv).x;
+    float a4 = texture2D(coeffsTexs[1], uv).y;
+    float a5 = texture2D(coeffsTexs[1], uv).z;
 			
 	a0 = (a0 * 255.0 - biases[0]) * scales[0];
 	a1 = (a1 * 255.0 - biases[1]) * scales[1];

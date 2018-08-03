@@ -13,7 +13,7 @@ const shaders = Shaders.create({
     },
 })
 
-const coeffs = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5']
+const coeffs = ['a0a1a2', 'a3a4a5']
 function mapper (btf: BTFFile, name: string) {
     return coeffs.map(c => {
         return btf.texForRender(name, c)

@@ -61,7 +61,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             this.coeffNames = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
             return this.readPixelsLRGB()
         } else {
-            this.coeffNames = ['R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'B0', 'B1', 'B2', 'B3', 'B4', 'B5']
+            this.coeffNames = ['R0R1R2', 'R3R4R5', 'G0G1G2', 'G3G4G5', 'B0B1B2', 'B3B4B5']
             return this.readPixelsRGB()
         }
     }
@@ -98,7 +98,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
          * The block contains of
          * pixels times [a_0, a_1, a_2, a_3, a_4, a_5] for each color
          */
-        this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
+        this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels * 3))
         for (let y = 0; y < this.height; ++y)
             for (let x = 0; x < this.width; ++x) {
                 for (let color = 0; color <= 2; color++) {
@@ -106,7 +106,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                     let pointer = index + this.pixels * color
 
                     for (let i = 0; i <= 5; i++)
-                        this.coeffData[color * 6 + i][index] = this.pixelData[pointer * 6 + i]
+                        this.coeffData[color * 2 + Math.floor(i / 3)][index * 3 + (i % 3)] = this.pixelData[pointer * 6 + i]
 
                     if (index % (this.pixels / 100) === 0) {
                         await this.ui.setProgress(index / this.pixels * 100 + 1)
@@ -121,6 +121,70 @@ export default class PTMConverterStrategy extends ConverterStrategy {
 
     bmps: Blob[] = []
     async bundleChannels () {
+        if (this.channelModel === 'LRGB') {
+            return this.bundleChannelsLRGB()
+        } else {
+            return this.bundleChannelsRGB()
+        }
+    }
+
+    async bundleChannelsRGB () {
+        debugger
+        for (let i = 0; i < this.coeffData.length; i++) {
+            let bmpData = {
+                data: this.coeffData[i],
+                width: this.width,
+                height: this.height,
+                elementSize: 24,
+            }
+            this.bmps.push(new PNGWriter(bmpData).encode())
+            await this.ui.setProgress(((i + 1) / this.coeffData.length) * 100)
+        }
+        let channels: Channels = {
+            R: {
+                coefficentModel: 'RGB',
+                coefficents: {
+                    a0a1a2: {
+                        data: this.bmps[0],
+                        format: 'PNG24',
+                    },
+                    a3a4a5: {
+                        data: this.bmps[1],
+                        format: 'PNG24',
+                    },
+                },
+            },
+            G: {
+                coefficentModel: 'RGB',
+                coefficents: {
+                    a0a1a2: {
+                        data: this.bmps[2],
+                        format: 'PNG24',
+                    },
+                    a3a4a5: {
+                        data: this.bmps[3],
+                        format: 'PNG24',
+                    },
+                },
+            },
+            B: {
+                coefficentModel: 'RGB',
+                coefficents: {
+                    a0a1a2: {
+                        data: this.bmps[4],
+                        format: 'PNG24',
+                    },
+                    a3a4a5: {
+                        data: this.bmps[5],
+                        format: 'PNG24',
+                    },
+                },
+            },
+        }
+        return Promise.resolve(channels)
+    }
+
+    async bundleChannelsLRGB () {
         for (let i = 0; i < this.coeffData.length; i++) {
             let bmpData = {
                 data: this.coeffData[i],
@@ -131,107 +195,6 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             this.bmps.push(new PNGWriter(bmpData).encode())
             await this.ui.setProgress(((i + 1) / this.coeffData.length) * 100)
         }
-        if (this.channelModel === 'LRGB') {
-            return this.bundleChannelsLRGB()
-        } else {
-            return this.bundleChannelsRGB()
-        }
-    }
-
-    async bundleChannelsRGB () {
-        let channels: Channels = {
-            R: {
-                coefficentModel: 'LRGB',
-                coefficents: {
-                    a0: {
-                        data: this.bmps[0],
-                        format: 'PNG8',
-                    },
-                    a1: {
-                        data: this.bmps[1],
-                        format: 'PNG8',
-                    },
-                    a2: {
-                        data: this.bmps[2],
-                        format: 'PNG8',
-                    },
-                    a3: {
-                        data: this.bmps[3],
-                        format: 'PNG8',
-                    },
-                    a4: {
-                        data: this.bmps[4],
-                        format: 'PNG8',
-                    },
-                    a5: {
-                        data: this.bmps[5],
-                        format: 'PNG8',
-                    },
-                },
-            },
-            G: {
-                coefficentModel: 'LRGB',
-                coefficents: {
-                    a0: {
-                        data: this.bmps[6],
-                        format: 'PNG8',
-                    },
-                    a1: {
-                        data: this.bmps[7],
-                        format: 'PNG8',
-                    },
-                    a2: {
-                        data: this.bmps[8],
-                        format: 'PNG8',
-                    },
-                    a3: {
-                        data: this.bmps[9],
-                        format: 'PNG8',
-                    },
-                    a4: {
-                        data: this.bmps[10],
-                        format: 'PNG8',
-                    },
-                    a5: {
-                        data: this.bmps[11],
-                        format: 'PNG8',
-                    },
-                },
-            },
-            B: {
-                coefficentModel: 'LRGB',
-                coefficents: {
-                    a0: {
-                        data: this.bmps[12],
-                        format: 'PNG8',
-                    },
-                    a1: {
-                        data: this.bmps[13],
-                        format: 'PNG8',
-                    },
-                    a2: {
-                        data: this.bmps[14],
-                        format: 'PNG8',
-                    },
-                    a3: {
-                        data: this.bmps[15],
-                        format: 'PNG8',
-                    },
-                    a4: {
-                        data: this.bmps[16],
-                        format: 'PNG8',
-                    },
-                    a5: {
-                        data: this.bmps[17],
-                        format: 'PNG8',
-                    },
-                },
-            },
-        }
-        return Promise.resolve(channels)
-    }
-
-    async bundleChannelsLRGB () {
         let channels: Channels = {
             L: {
                 coefficentModel: 'LRGB',
