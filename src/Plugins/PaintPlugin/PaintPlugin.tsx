@@ -16,9 +16,9 @@ const PaintModel = Plugin.props({
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,
-    layers: 2,
+    layers: 3,
     activeLayer: 0,
-    layersVisible: types.optional(types.array(types.boolean), observable.array([true, false])),
+    layersVisible: types.optional(types.array(types.boolean), observable.array([true, true, true])),
 })
 
 class PaintController extends shim(PaintModel, Plugin) {
@@ -96,7 +96,7 @@ const PaintNode = Component(function PaintNode (props) {
     >
         {// map all layers into the `layer` uniform of the mixer shader
             this.layersVisible.map((visible, index) => {
-                return <Bus uniform={'layer'} key={`layer${index}`} >
+                return <Bus uniform={'layer'} key={`layer${index}`} index={index} >
                     <Node
                         width={width}
                         height={height}
