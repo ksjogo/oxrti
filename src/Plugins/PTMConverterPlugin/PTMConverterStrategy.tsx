@@ -8,13 +8,12 @@ export type PTMFormatMetadata = {
 }
 
 const PREFIX = 'PTM_1.2'
-const FORMAT = 'PTM_FORMAT_LRGB'
+const FORMATS = ['PTM_FORMAT_LRGB', 'PTM_FORMAT_RGB']
 /**
  * Implementing PTM Converting according to http://www.hpl.hp.com/research/ptm/downloads/PtmFormat12.pdf
  */
 export default class PTMConverterStrategy extends ConverterStrategy {
 
-    format = FORMAT
     formatMetadata: PTMFormatMetadata
 
     async parseMetadata () {
@@ -23,10 +22,14 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             return Promise.reject(`Prefix ${prefix} is not supported, only ${PREFIX} is!`)
 
         let format = this.readTillNewLine()
-        if (format !== FORMAT)
-            return Promise.reject(`Prefix ${format} is not supported, only ${FORMAT} is currently!`)
+        if (FORMATS.indexOf(format) === -1)
+            return Promise.reject(`Prefix ${format} is not supported, only ${FORMATS} are currently!`)
 
-        this.channelModel = 'LRGB'
+        if (format === FORMATS[0])
+            this.channelModel = 'LRGB'
+        else
+            this.channelModel = 'RGB'
+
         let widthAndHeight = this.readTillNewLine()
         let split = widthAndHeight.split(' ')
         this.width = parseInt(split[0], 10)
@@ -50,14 +53,25 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
     }
 
-    coeffNames = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
     coeffData: Buffer[]
+    coeffNames: string[] = null
+
     async readPixels () {
+        if (this.channelModel === 'LRGB') {
+            this.coeffNames = ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
+            return this.readPixelsLRGB()
+        } else {
+            this.coeffNames = ['R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'B0', 'B1', 'B2', 'B3', 'B4', 'B5']
+            return this.readPixelsRGB()
+        }
+    }
+
+    async readPixelsLRGB () {
         /**
          * The block contains of
          * pixels times [a_0, a_1, a_2, a_3, a_4, a_5]
          * and then
-         *  pixels times [R, G, B]
+         * pixels times [R, G, B]
          */
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
         // orientated at http://www.tobias-franke.eu/projects/ptm/
@@ -79,12 +93,34 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             }
     }
 
+    async readPixelsRGB () {
+        /**
+         * The block contains of
+         * pixels times [a_0, a_1, a_2, a_3, a_4, a_5] for each color
+         */
+        this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
+        for (let y = 0; y < this.height; ++y)
+            for (let x = 0; x < this.width; ++x) {
+                for (let color = 0; color <= 2; color++) {
+                    let index = ((y * this.width) + x)
+                    let pointer = index + this.pixels * color
+
+                    for (let i = 0; i <= 5; i++)
+                        this.coeffData[color * 6 + i][index] = this.pixelData[pointer * 6 + i]
+
+                    if (index % (this.pixels / 100) === 0) {
+                        await this.ui.setProgress(index / this.pixels * 100 + 1)
+                    }
+                }
+            }
+    }
+
     async readSuffix () {
         //
     }
 
+    bmps: Blob[] = []
     async bundleChannels () {
-        let bmps: Blob[] = []
         for (let i = 0; i < this.coeffData.length; i++) {
             let bmpData = {
                 data: this.coeffData[i],
@@ -92,44 +128,43 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 height: this.height,
                 elementSize: 8 as 8 | 16,
             }
-            bmps.push(new PNGWriter(bmpData).encode())
+            this.bmps.push(new PNGWriter(bmpData).encode())
             await this.ui.setProgress(((i + 1) / this.coeffData.length) * 100)
         }
+        if (this.channelModel === 'LRGB') {
+            return this.bundleChannelsLRGB()
+        } else {
+            return this.bundleChannelsRGB()
+        }
+    }
+
+    async bundleChannelsRGB () {
         let channels: Channels = {
-            L: {
-                coefficentModel: 'LRGB',
-                coefficents: {
-                    a0: {
-                        data: bmps[0],
-                        format: 'PNG8',
-                    },
-                    a1: {
-                        data: bmps[1],
-                        format: 'PNG8',
-                    },
-                    a2: {
-                        data: bmps[2],
-                        format: 'PNG8',
-                    },
-                    a3: {
-                        data: bmps[3],
-                        format: 'PNG8',
-                    },
-                    a4: {
-                        data: bmps[4],
-                        format: 'PNG8',
-                    },
-                    a5: {
-                        data: bmps[5],
-                        format: 'PNG8',
-                    },
-                },
-            },
             R: {
                 coefficentModel: 'LRGB',
                 coefficents: {
                     a0: {
-                        data: bmps[6],
+                        data: this.bmps[0],
+                        format: 'PNG8',
+                    },
+                    a1: {
+                        data: this.bmps[1],
+                        format: 'PNG8',
+                    },
+                    a2: {
+                        data: this.bmps[2],
+                        format: 'PNG8',
+                    },
+                    a3: {
+                        data: this.bmps[3],
+                        format: 'PNG8',
+                    },
+                    a4: {
+                        data: this.bmps[4],
+                        format: 'PNG8',
+                    },
+                    a5: {
+                        data: this.bmps[5],
                         format: 'PNG8',
                     },
                 },
@@ -138,7 +173,27 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 coefficentModel: 'LRGB',
                 coefficents: {
                     a0: {
-                        data: bmps[7],
+                        data: this.bmps[6],
+                        format: 'PNG8',
+                    },
+                    a1: {
+                        data: this.bmps[7],
+                        format: 'PNG8',
+                    },
+                    a2: {
+                        data: this.bmps[8],
+                        format: 'PNG8',
+                    },
+                    a3: {
+                        data: this.bmps[9],
+                        format: 'PNG8',
+                    },
+                    a4: {
+                        data: this.bmps[10],
+                        format: 'PNG8',
+                    },
+                    a5: {
+                        data: this.bmps[11],
                         format: 'PNG8',
                     },
                 },
@@ -147,7 +202,89 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 coefficentModel: 'LRGB',
                 coefficents: {
                     a0: {
-                        data: bmps[8],
+                        data: this.bmps[12],
+                        format: 'PNG8',
+                    },
+                    a1: {
+                        data: this.bmps[13],
+                        format: 'PNG8',
+                    },
+                    a2: {
+                        data: this.bmps[14],
+                        format: 'PNG8',
+                    },
+                    a3: {
+                        data: this.bmps[15],
+                        format: 'PNG8',
+                    },
+                    a4: {
+                        data: this.bmps[16],
+                        format: 'PNG8',
+                    },
+                    a5: {
+                        data: this.bmps[17],
+                        format: 'PNG8',
+                    },
+                },
+            },
+        }
+        return Promise.resolve(channels)
+    }
+
+    async bundleChannelsLRGB () {
+        let channels: Channels = {
+            L: {
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: this.bmps[0],
+                        format: 'PNG8',
+                    },
+                    a1: {
+                        data: this.bmps[1],
+                        format: 'PNG8',
+                    },
+                    a2: {
+                        data: this.bmps[2],
+                        format: 'PNG8',
+                    },
+                    a3: {
+                        data: this.bmps[3],
+                        format: 'PNG8',
+                    },
+                    a4: {
+                        data: this.bmps[4],
+                        format: 'PNG8',
+                    },
+                    a5: {
+                        data: this.bmps[5],
+                        format: 'PNG8',
+                    },
+                },
+            },
+            R: {
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: this.bmps[6],
+                        format: 'PNG8',
+                    },
+                },
+            },
+            G: {
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: this.bmps[7],
+                        format: 'PNG8',
+                    },
+                },
+            },
+            B: {
+                coefficentModel: 'LRGB',
+                coefficents: {
+                    a0: {
+                        data: this.bmps[8],
                         format: 'PNG8',
                     },
                 },
