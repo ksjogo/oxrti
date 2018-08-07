@@ -4,9 +4,10 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator } from './HookManager'
-import { HookConfig, HookName } from '../Hook'
+import { ConfigHook, HookConfig, HookName } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
+import { TabConfig } from '../View/Tabs'
 
 const AppStateData = types.model({
   uptime: 0,
@@ -88,7 +89,17 @@ class AppStateController extends shim(AppStateData) {
   }
 
   @action switchTab (event, index) {
+    let oldTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', this.activeTab)
+    let newTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', index)
+    oldTab.beforeFocusLose && oldTab.beforeFocusLose()
+    newTab.beforeFocusGain && newTab.beforeFocusGain()
+
     this.activeTab = index
+
+    setTimeout(() => {
+      oldTab.afterFocusLose && oldTab.afterFocusLose()
+      newTab.afterFocusGain && newTab.afterFocusGain()
+    }, 10)
   }
 
   /**

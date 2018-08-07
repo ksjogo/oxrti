@@ -22,6 +22,11 @@ export type Data = {
     formatExtra: any,
 }
 
+export type AnnotationLayer = {
+    name: string,
+    texture: Blob,
+}
+
 export type TexForRender = {
     type: 'oxrti',
     data: Blob,
@@ -44,6 +49,7 @@ export default class BTFFile {
         channels: {},
         formatExtra: {},
     }
+    layers: AnnotationLayer[] = []
     name: string = ''
 
     constructor (manifest?: any) {
@@ -52,6 +58,7 @@ export default class BTFFile {
 
         this.name = manifest.name
         this.data = manifest.data
+        this.layers = manifest.layers
     }
 
     generateManifest () {
@@ -94,6 +101,18 @@ export default class BTFFile {
         }
     }
 
+    annotationTexForRender (name: string): TexForRender {
+        let layer = this.layers.find(layer => layer.name === name)
+        return {
+            data: layer.texture,
+            width: this.data.width,
+            height: this.data.height,
+            type: 'oxrti',
+            ident: this.name + name,
+            format: 'PNG32',
+        }
+    }
+
     aspectRatio () {
         return this.data.width / this.data.height
     }
@@ -110,8 +129,13 @@ export default class BTFFile {
                 channelFolder.file(`${coefficentName}.${fileformat}`, coefficent.data)
             }
         }
+        let layerFolder = zip.folder('layers')
+        for (const layer of this.layers) {
+            layerFolder.file(`${layer.name}.png`, layer.texture)
+        }
         zip.file('manifest.json', this.generateManifest())
-        zip.file('oxrti.json', JSONY(this.oxrtiState))
+        zip.file('oxrti_state.json', JSONY(this.oxrtiState))
+        zip.file('oxrti_layers.json', JSONY(this.layers))
         return zip.generateAsync({ type: 'blob' })
     }
 }
@@ -119,8 +143,8 @@ export default class BTFFile {
 export async function fromZip (zipData) {
     let archive = await JSZip.loadAsync(zipData)
     let dataFolder = archive.folder('data')
-    let manifest = JSON.parse(await archive.file('manifest.json').async('text'))
-    let data: Data = manifest.data as Data
+    let manifest = JSON.parse(await archive.file('manifest.json').async('text')) as BTFFile
+    let data = manifest.data
     for (const channelName in data.channels) {
         let channelFolder = dataFolder.folder(channelName)
         for (const coefficentName in data.channels[channelName].coefficents) {
@@ -130,6 +154,15 @@ export async function fromZip (zipData) {
             coefficent.data = imageData
         }
     }
+
+    let layersConfig = JSON.parse(await archive.file('oxrti_layers.json').async('text')) as AnnotationLayer[]
+    let layerFolder = zipData.folder('layers')
+    for (const layer of layersConfig) {
+        let layerData = await layerFolder.file(`${layer.name}.png`).async('blob')
+        layer.texture = layerData
+    }
+    manifest.layers = layersConfig
+
     let btf = new BTFFile(manifest)
     return btf
 }

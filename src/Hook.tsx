@@ -40,12 +40,20 @@ export type FunctionHooks<P = any> = Hooks<FunctionHook<P>>
 export type ConfigHooks<P = any> = Hooks<ConfigHook<P>>
 export type RendererHooks<P = PluginComponentType> = Hooks<RendererHook<P>>
 
+export type TabsConfig = ConfigHooks<TabConfig>
+export type ViewerTabFocusHook = {
+    beforeGain?: () => void,
+    beforeLose?: () => void,
+}
+export type ViewerTabFocusHooks = ConfigHooks<ViewerTabFocusHook>
+
 export type HookConfig = {
+    ViewerTabFocus?: ViewerTabFocusHooks,
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
     ViewerDrag?: FunctionHooks<Dragger>,
     Test?: FunctionHooks,
-    Tabs?: ConfigHooks<TabConfig>,
+    Tabs?: TabsConfig,
     ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,
     RendererForModel?: ConfigHooks<BaseNodeConfig>,
 }

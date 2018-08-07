@@ -31,16 +31,19 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         let promise = createImageBitmap(config.data).then(img => {
             let texture = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
-            // gl R8 not supported in webgl context v1
-            // LUMINACE seems to work fine so far
-            // TOFIX: allow for 16-bit
             let type: number
             switch (config.format) {
                 case 'PNG8':
+                    // gl R8 not supported in webgl context v1
+                    // LUMINACE seems to work fine so far
                     type = gl.LUMINANCE
                     break
+                // TOFIX: allow for 16-bit
                 case 'PNG24':
                     type = gl.RGB
+                    break
+                case 'PNG32':
+                    type = gl.RGBA
                     break
                 default:
                     throw new Error(`Currently unsupported fileformat ${config.format}`)

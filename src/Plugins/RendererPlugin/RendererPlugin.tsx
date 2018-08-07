@@ -13,7 +13,7 @@ import { BTFMetadataDisplay, BTFMetadataConciseDisplay } from '../../View/JSONDi
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { Dragger } from './DragInterface'
-import { FunctionHook, RendererHooks, RendererHook } from '../../Hook'
+import { FunctionHook, ViewerTabFocusHook, RendererHooks, RendererHook } from '../../Hook'
 import { Point } from '../../Math'
 
 const RendererModel = Plugin.props({
@@ -31,12 +31,14 @@ class RendererController extends shim(RendererModel, Plugin) {
     hooks () {
         return {
             Tabs: {
-                Converter: {
+                Renderer: {
                     priority: 20,
                     content: RendererView,
                     tab: {
                         label: 'Viewer',
                     },
+                    beforeFocusGain: this.beforeFocusGain,
+                    beforeFocusLose: this.beforeFocusLose,
                 },
             },
             ViewerSide: {
@@ -50,6 +52,20 @@ class RendererController extends shim(RendererModel, Plugin) {
                 },
             },
         }
+    }
+
+    @action
+    beforeFocusGain () {
+        this.appState.hookForEach('ViewerTabFocus', (config: ViewerTabFocusHook) => {
+            config.beforeGain && config.beforeGain()
+        })
+    }
+
+    @action
+    beforeFocusLose () {
+        this.appState.hookForEach('ViewerTabFocus', (config: ViewerTabFocusHook) => {
+            config.beforeLose && config.beforeLose()
+        })
     }
 
     @action

@@ -5,7 +5,6 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
-import Typography from '@material-ui/core/Typography'
 import { Point, translate } from '../../Math'
 
 const ZoomModel = Plugin.props({
@@ -104,7 +103,7 @@ const Zoom = Component(function ZoomSlider (props) {
 const Pan = Component(function PanSlider (props) {
     return <div>
         <h3>Pan</h3>
-        <Slider default={0} value={this.panX} onChange={this.onSliderX} min={-1} max={1} />
-        <Slider default={0} value={this.panY} onChange={this.onSliderY} min={-1} max={1} />
+        <Slider value={this.panX} onChange={this.onSliderX} min={-1} max={1} />
+        <Slider value={this.panY} onChange={this.onSliderY} min={-1} max={1} />
     </div>
 })

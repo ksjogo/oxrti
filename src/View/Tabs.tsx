@@ -5,4 +5,8 @@ export type TabConfig = {
     content: PluginComponentType
     tab: TabProps,
     padding?: number,
+    beforeFocusGain?: () => void,
+    afterFocusGain?: () => void,
+    beforeFocusLose?: () => void,
+    afterFocusLose?: () => void,
 }

@@ -35,6 +35,12 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     hooks () {
         return {
+            ViewerTabFocus: {
+                Paint: {
+                    beforeGain: this.beforeFocusGain,
+                    beforeLose: this.beforeFocusLose,
+                },
+            },
             ViewerRender: {
                 PaintNode: {
                     priority: 100,
@@ -54,6 +60,16 @@ class PaintController extends shim(PaintModel, Plugin) {
                 },
             },
         }
+    }
+
+    @action
+    beforeFocusGain () {
+        console.log('before gain')
+    }
+
+    @action
+    beforeFocusLose () {
+        console.log('before lose')
     }
 
     @action

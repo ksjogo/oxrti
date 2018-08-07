@@ -111,9 +111,9 @@ const SliderComponent = Component(function RotationSlider (props) {
     return <div>
         <h3>Light</h3>
         <Typography>Pos X</Typography>
-        <Slider default={0} value={this.x} onChange={this.onSliderX} min={-1} max={1} />
+        <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
         <Typography>Pos Y</Typography>
-        <Slider default={0} value={this.y} onChange={this.onSliderY} min={-1} max={1} />
+        <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
         <Typography>Hemispherical</Typography>
         <SafeGLIInspector>
             <HemisphereComponent />
