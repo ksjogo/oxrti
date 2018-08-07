@@ -4,7 +4,7 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
-import { ConfigHook, HookConfig, HookName } from '../Hook'
+import { ConfigHook, FunctionHook, HookConfig, HookName } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
 import { TabConfig } from '../View/Tabs'
@@ -31,15 +31,23 @@ class AppStateController extends shim(AppStateData) {
   btf () {
 
     if (this.currentFile === '')
-      return this.defaultBtf
+      return this.filecache[''] || this.defaultBtf
 
     return this.filecache[this.currentFile]
   }
 
   @action
+  setCurrentFile (name: string) {
+    this.currentFile = name
+  }
+
+  @action
   loadFile (file: BTFFile) {
     this.filecache[file.name] = file
-    this.currentFile = file.name
+    this.setCurrentFile(file.name)
+    this.hookForEach('PostLoad', (hook: FunctionHook) => {
+      hook.func()
+    })
   }
 
   theme () {

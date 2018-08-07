@@ -41,7 +41,10 @@ function JSONY (thing) {
     return JSON.stringify(thing, null, 2)
 }
 
+let IDC = 0
+
 export default class BTFFile {
+    id: number
     oxrtiState: object = {}
     data: Data = {
         width: DummyRenderSize,
@@ -58,6 +61,7 @@ export default class BTFFile {
         if (!manifest)
             return
 
+        this.id = IDC++
         this.name = manifest.name
         this.data = manifest.data
         this.layers = manifest.layers
@@ -105,7 +109,7 @@ export default class BTFFile {
             width: this.data.width,
             height: this.data.height,
             type: 'oxrti',
-            ident: this.name + channel + coefficent,
+            ident: this.name + channel + coefficent + this.id,
             format: co.format,
         }
     }
@@ -119,7 +123,7 @@ export default class BTFFile {
             width: this.data.width,
             height: this.data.height,
             type: 'oxrti',
-            ident: this.name + name,
+            ident: this.name + name + this.id,
             format: 'PNG32',
         }
     }
@@ -167,7 +171,7 @@ export async function fromZip (zipData) {
     }
 
     let layersConfig = JSON.parse(await archive.file('oxrti_layers.json').async('text')) as AnnotationLayer[]
-    let layerFolder = zipData.folder('layers')
+    let layerFolder = archive.folder('layers')
     for (const layer of layersConfig) {
         let layerData = await layerFolder.file(`${layer.name}.png`).async('blob')
         layer.texture = layerData

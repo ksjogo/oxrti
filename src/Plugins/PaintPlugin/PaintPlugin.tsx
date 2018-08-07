@@ -72,6 +72,11 @@ class PaintController extends shim(PaintModel, Plugin) {
                     func: this.exportLayers,
                 },
             },
+            PostLoad: {
+                Layers: {
+                    func: this.importLayers,
+                },
+            },
         }
     }
 
@@ -176,7 +181,20 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     @action
     onDraw () {
-        this.setInitialized(true)
+        if (this.appState.loadingTextures === 0)
+            this.setInitialized(true)
+    }
+
+    @action
+    importLayers () {
+        let btf = this.appState.btf()
+        this.layers = observable.array(btf.layers.map(layer => {
+            return LayerConfig.create({
+                visible: true,
+                name: layer.name,
+            })
+        }))
+        this.initialized = false
     }
 }
 
@@ -262,7 +280,7 @@ const PaintNode = Component(function PaintNode (props) {
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {
-                    return <Bus uniform={'layer'} key={`layer${index}`} index={index} >
+                    return <Bus uniform={'layer'} key={`${btf.id}_layer${index}`} index={index} >
                         <Node
                             ref={this.handleRef(index)}
                             width={width}
