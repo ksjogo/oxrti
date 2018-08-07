@@ -1,4 +1,5 @@
 import JSZip from 'jszip'
+import { DummyRenderSize } from './Math'
 export type BTFCache = { [key: string]: BTFFile }
 
 export type ChannelModel = 'RGB' | 'LRGB' | 'SPECTRAL'
@@ -43,12 +44,13 @@ function JSONY (thing) {
 export default class BTFFile {
     oxrtiState: object = {}
     data: Data = {
-        width: 0,
-        height: 0,
+        width: DummyRenderSize,
+        height: DummyRenderSize,
         channelModel: null,
         channels: {},
         formatExtra: {},
     }
+
     layers: AnnotationLayer[] = []
     name: string = ''
 
@@ -59,6 +61,14 @@ export default class BTFFile {
         this.name = manifest.name
         this.data = manifest.data
         this.layers = manifest.layers
+    }
+
+    zipName () {
+        return `${this.name || 'noise'}.btf.zip`
+    }
+
+    isDefault () {
+        return this.name === ''
     }
 
     generateManifest () {
@@ -90,7 +100,6 @@ export default class BTFFile {
      */
     texForRender (channel: string, coefficent: string): TexForRender {
         let co = this.data.channels[channel].coefficents[coefficent]
-        // return 'data:image/png;base64,' + co.data.toString('base64')
         return {
             data: co.data,
             width: this.data.width,
@@ -103,6 +112,8 @@ export default class BTFFile {
 
     annotationTexForRender (name: string): TexForRender {
         let layer = this.layers.find(layer => layer.name === name)
+        if (!layer)
+            return null
         return {
             data: layer.texture,
             width: this.data.width,

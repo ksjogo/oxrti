@@ -27,3 +27,19 @@ export function fromTex (nums: Point): Point {
 export function translate (point: Point, by: Point): Point {
     return [point[0] + by[0], point[1] + by[1]]
 }
+
+import ndarray from 'ndarray'
+import ops from 'ndarray-ops'
+import PNGWriter from './Plugins/ConverterPlugin/PNGWriter'
+import { write } from 'fs'
+
+export async function Node2PNG (paintNode: any, width: number, height: number, canvas = document.createElement('canvas')): Promise<Blob> {
+    const captured = paintNode.capture() as ndarray
+    const writer = new PNGWriter({
+        width: width,
+        height: height,
+        data: Buffer.from(captured.data as Uint8Array),
+        elementSize: 32,
+    })
+    return Promise.resolve(writer.encode())
+}

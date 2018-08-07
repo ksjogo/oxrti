@@ -14,7 +14,7 @@ let JSONDisplay = Component<{ json: object | string, style?: any }>(function JSO
 })
 
 let BTFMetadataDisplay = Component(function BTFMetadata (props) {
-    if (props.appState.btf())
+    if (!props.appState.btf().isDefault())
         return <div>
             <h3>Metadata</h3>
             <JSONDisplay
@@ -35,7 +35,7 @@ let BTFMetadataDisplay = Component(function BTFMetadata (props) {
 })
 
 let BTFMetadataConciseDisplay = Component(function BTFMetadata (props) {
-    if (props.appState.btf())
+    if (!props.appState.btf().isDefault())
         return <div>
             <h3>Metadata</h3>
             <JSONDisplay

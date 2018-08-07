@@ -3,7 +3,7 @@ import { shim, action, mst } from 'classy-mst'
 export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
-import HookManager, { HookMapper, HookIterator } from './HookManager'
+import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
 import { ConfigHook, HookConfig, HookName } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
@@ -26,10 +26,13 @@ class AppStateController extends shim(AppStateData) {
   // volatile cache
   // as we don't want to preserve files inside the state tree
   filecache: BTFCache
+  defaultBtf = new BTFFile()
 
   btf () {
+
     if (this.currentFile === '')
-      return null
+      return this.defaultBtf
+
     return this.filecache[this.currentFile]
   }
 
@@ -88,17 +91,24 @@ class AppStateController extends shim(AppStateData) {
     this.loadHooks(name, instance.hooks())
   }
 
-  @action switchTab (event, index) {
-    let oldTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', this.activeTab)
-    let newTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', index)
-    oldTab.beforeFocusLose && oldTab.beforeFocusLose()
-    newTab.beforeFocusGain && newTab.beforeFocusGain()
-
+  @action
+  setActiveTab (index: number) {
     this.activeTab = index
 
-    setTimeout(() => {
-      oldTab.afterFocusLose && oldTab.afterFocusLose()
-      newTab.afterFocusGain && newTab.afterFocusGain()
+  }
+
+  @action
+  async switchTab (event, index) {
+    let oldTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', this.activeTab)
+    let newTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', index)
+    oldTab.beforeFocusLose && await oldTab.beforeFocusLose()
+    newTab.beforeFocusGain && await newTab.beforeFocusGain()
+
+    this.setActiveTab(index)
+
+    setTimeout(async () => {
+      oldTab.afterFocusLose && await oldTab.afterFocusLose()
+      newTab.afterFocusGain && await newTab.afterFocusGain()
     }, 10)
   }
 
@@ -146,6 +156,13 @@ class AppStateController extends shim(AppStateData) {
     if (!manager)
       return
     manager.forEach(iterator, name, this)
+  }
+
+  async asyncHookForEach (name: HookName, iterator: AsyncHookIterator): Promise<void> {
+    let manager = this.hooks.get(name)
+    if (!manager)
+      return
+    await manager.asyncForEach(iterator, name, this)
   }
 
   /**

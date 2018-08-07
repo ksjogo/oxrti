@@ -3,7 +3,7 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
 // oxrti default imports ->
 
-import { Point, DummyRenderSize } from '../../Math'
+import { Point, Node2PNG } from '../../Math'
 import { Switch, Theme, createStyles } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
@@ -67,16 +67,24 @@ class PaintController extends shim(PaintModel, Plugin) {
                     priority: 100,
                 },
             },
+            PreDownload: {
+                Layers: {
+                    func: this.exportLayers,
+                },
+            },
         }
     }
 
     @action
-    beforeFocusGain () {
+    async beforeFocusGain () {
+        this.drawing = false
         console.log('before gain')
     }
 
     @action
-    beforeFocusLose () {
+    async beforeFocusLose () {
+        this.drawing = false
+        await this.exportLayers()
         console.log('before lose')
     }
 
@@ -152,6 +160,24 @@ class PaintController extends shim(PaintModel, Plugin) {
             this.refs[index] = node
         }
     }
+
+    @action
+    async exportLayers () {
+        let btf = this.appState.btf()
+        let canvas = document.createElement('canvas')
+        btf.layers = await Promise.all(this.layers.map(async (layer, index) => {
+            let data = await Node2PNG(this.refs[index], btf.data.width, btf.data.height, canvas)
+            return {
+                name: layer.name,
+                texture: data,
+            }
+        }))
+    }
+
+    @action
+    onDraw () {
+        this.setInitialized(true)
+    }
 }
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
@@ -207,10 +233,10 @@ import { Shaders, Node, GLSL, Bus } from 'gl-react'
 
 const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
-    let width = btf ? btf.data.width : DummyRenderSize
-    let height = btf ? btf.data.height : DummyRenderSize
+    let width = btf.data.width
+    let height = btf.data.height
     let brush = this.brushRadius / width
-    this.setInitialized(true)
+    // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
             shader={{
@@ -220,7 +246,9 @@ const PaintNode = Component(function PaintNode (props) {
                 children: props.children,
             }} />
     else
+        // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
+            onDraw={this.onDraw}
             shader={{
                 // we need to recompile the shader for different layer amounts
                 frag: mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`),

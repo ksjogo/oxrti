@@ -52,6 +52,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
             gl.texImage2D(gl.TEXTURE_2D, 0, type, type, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+            // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, beforeFlip)
             appState.textureLoaded()
             return { texture, width: img.width, height: img.height }
         })

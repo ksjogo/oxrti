@@ -15,6 +15,7 @@ import { fromZip } from '../../BTFFile'
 import { Dragger } from './DragInterface'
 import { FunctionHook, ViewerTabFocusHook, RendererHooks, RendererHook } from '../../Hook'
 import { Point } from '../../Math'
+import DownloadBTF from '../../View/DownloadBTF'
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
@@ -50,21 +51,25 @@ class RendererController extends shim(RendererModel, Plugin) {
                     component: Upload,
                     priority: 100,
                 },
+                Download: {
+                    component: DownloadBTF,
+                    priority: 99,
+                },
             },
         }
     }
 
     @action
-    beforeFocusGain () {
-        this.appState.hookForEach('ViewerTabFocus', (config: ViewerTabFocusHook) => {
-            config.beforeGain && config.beforeGain()
+    async beforeFocusGain () {
+        this.appState.asyncHookForEach('ViewerTabFocus', async (config: ViewerTabFocusHook) => {
+            config.beforeGain && await config.beforeGain()
         })
     }
 
     @action
-    beforeFocusLose () {
-        this.appState.hookForEach('ViewerTabFocus', (config: ViewerTabFocusHook) => {
-            config.beforeLose && config.beforeLose()
+    async beforeFocusLose () {
+        this.appState.asyncHookForEach('ViewerTabFocus', async (config: ViewerTabFocusHook) => {
+            config.beforeLose && await config.beforeLose()
         })
     }
 

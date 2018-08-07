@@ -22,6 +22,8 @@ export type FunctionHook<P = any> = HookBase & {
     func: P,
 }
 
+export type AsyncFunctionHook<P = void> = FunctionHook<() => Promise<P>>
+
 export type ConfigHook<P = any> = HookBase & P
 
 export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
@@ -52,6 +54,7 @@ export type HookConfig = {
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
     ViewerDrag?: FunctionHooks<Dragger>,
+    PreDownload?: Hooks<AsyncFunctionHook>
     Test?: FunctionHooks,
     Tabs?: TabsConfig,
     ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,

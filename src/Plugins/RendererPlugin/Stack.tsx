@@ -4,6 +4,7 @@ import Component from '../../View/Component'
 import { ComponentHook, BaseNodeConfig } from '../../Hook'
 import { IRendererPlugin } from './RendererPlugin'
 import { Shaders, Node } from 'gl-react'
+import { DummyRenderSize } from '../../Math'
 
 import noise from './noise.glsl'
 const shaders = Shaders.create({
@@ -21,7 +22,7 @@ export default Component<{
     let current: JSX.Element
     let btf = props.appState.btf()
 
-    if (btf) {
+    if (!btf.isDefault()) {
         props.appState.hookForEach('RendererForModel', (hook: BaseNodeConfig) => {
             if (hook.channelModel === btf.data.channelModel) {
                 let Func = hook.node.render
@@ -31,8 +32,8 @@ export default Component<{
     }
     if (!current) {
         current = <Node
-            height={300}
-            width={300}
+            height={DummyRenderSize}
+            width={DummyRenderSize}
             shader={shaders.noise}
             uniforms={{ iGlobalTime: props.appState.uptime }}
         />

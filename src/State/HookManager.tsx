@@ -21,12 +21,14 @@ const HookManagerData = types.model({
 })
 
 export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => boolean | void
+export type AsyncHookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => Promise<boolean | void>
 export type HookMapper<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 export type HookFind<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
 /**
  * Manage the rendering stack for the main viewer component
  */
 class HookManagerCode extends shim(HookManagerData) {
+
     /**
      * Add some component into the rendering stack
      * @param name of the Rendering Layer in `Plugin:Component` form
@@ -70,6 +72,16 @@ class HookManagerCode extends shim(HookManagerData) {
             let instance = hook.name.split('$')
             let plugin = appState.plugins.get(instance[0])
             if (iterator(plugin.hook(name, instance[2]), hook.name))
+                break
+        }
+    }
+
+    async asyncForEach (iterator: AsyncHookIterator, name: HookName, appState: IAppState): Promise<void> {
+        for (let i = 0; i < this.stack.length; i++) {
+            let hook = this.stack[i]
+            let instance = hook.name.split('$')
+            let plugin = appState.plugins.get(instance[0])
+            if (await iterator(plugin.hook(name, instance[2]), hook.name))
                 break
         }
     }

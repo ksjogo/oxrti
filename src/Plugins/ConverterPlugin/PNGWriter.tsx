@@ -6,9 +6,13 @@ export default class PNGWriter extends Writer {
         let colorType: ColorType = 0
         switch (this.inputElementSize) {
             case 8:
+                colorType = 0
                 break
             case 24:
                 colorType = 2
+                break
+            case 32:
+                colorType = 6
         }
         let options = {
             width: this.width,
