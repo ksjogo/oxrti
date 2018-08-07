@@ -8,6 +8,8 @@ import { Switch, Theme, createStyles } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
+import initShader from './init.glsl'
+
 import { observable } from 'mobx'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -17,20 +19,26 @@ import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
 
+let LayerConfig = types.model({
+    visible: types.boolean,
+    name: types.string,
+})
+
 const PaintModel = Plugin.props({
     title: 'Paint',
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,
     activeLayer: -1,
-    layersVisible: types.optional(types.array(types.boolean), observable.array([true, true, true])),
+    layers: types.optional(types.array(LayerConfig), []),
 })
 
 class PaintController extends shim(PaintModel, Plugin) {
     drawing = false
+    initialized = false
 
     layerCount () {
-        return this.layersVisible.length
+        return this.layers.length
     }
 
     hooks () {
@@ -101,12 +109,47 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     @action
     setVisibility (index, value) {
-        this.layersVisible[index] = value
+        this.layers[index].visible = value
     }
 
     handleVisibility (index) {
         return (event, value) => {
             this.setVisibility(index, value)
+        }
+    }
+
+    @action
+    deleteLayer (index: number) {
+        console.log(index)
+    }
+
+    handleDelete (index) {
+        return (event) => {
+            this.deleteLayer(index)
+        }
+    }
+
+    @action
+    setInitialized (value) {
+        this.initialized = value
+    }
+
+    @action
+    addLayer (e) {
+        if (this.layers.length >= 15)
+            return alert('Max 15 layers supported due to WebGL implementation limits.')
+
+        this.layers.push(LayerConfig.create({
+            visible: true,
+            name: `${this.layers.length}`,
+        }))
+    }
+
+    refs: { [key: number]: Node } = {}
+
+    handleRef (index: number) {
+        return (node: Node) => {
+            this.refs[index] = node
         }
     }
 }
@@ -129,8 +172,9 @@ const styles = (theme: Theme) => createStyles({
 const PaintUI = Component(function PaintUI (props, classes) {
     return <div>
         <h3>Paint</h3>
+        <button onClick={this.addLayer}>Add Layer</button>
         <List>
-            {this.layersVisible.map((visible, index) => (
+            {this.layers.map((layer, index) => (
                 <ListItem
                     key={index}
                     role={undefined}
@@ -147,11 +191,11 @@ const PaintUI = Component(function PaintUI (props, classes) {
                     <ListItemSecondaryAction>
                         <Switch
                             onChange={this.handleVisibility(index)}
-                            checked={visible}
+                            checked={layer.visible}
                         />
-                        {/* <IconButton aria-label='Trash'>
+                        <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
                             <TrashIcon />
-                        </IconButton> */}
+                        </IconButton>
                     </ListItemSecondaryAction>
                 </ListItem>
             ))}
@@ -166,35 +210,49 @@ const PaintNode = Component(function PaintNode (props) {
     let width = btf ? btf.data.width : DummyRenderSize
     let height = btf ? btf.data.height : DummyRenderSize
     let brush = this.brushRadius / width
-    return <Node
-        shader={{
-            // we need to recompile the shader for different layer amounts
-            frag: mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', `< ${this.layerCount()}`),
-        }}
-        uniforms={{
-            children: props.children,
-            layerVisibility: this.layersVisible.slice(),
-        }}
-        width={width}
-        height={height}
-    >
-        {// map all layers into the `layer` uniform of the mixer shader
-            this.layersVisible.map((visible, index) => {
-                return <Bus uniform={'layer'} key={`layer${index}`} index={index} >
-                    <Node
-                        width={width}
-                        height={height}
-                        shader={{
-                            frag: paintShader,
-                        }}
-                        clear={null}
-                        uniforms={{
-                            drawing: this.drawing && this.activeLayer === index,
-                            color: this.color.slice(),
-                            center: this.center.slice(),
-                            brushRadius: brush,
-                        }} />
-                </Bus>
-            })}
-    </Node >
+    this.setInitialized(true)
+    if (this.layers.length === 0)
+        return <Node
+            shader={{
+                frag: initShader,
+            }}
+            uniforms={{
+                children: props.children,
+            }} />
+    else
+        return <Node
+            shader={{
+                // we need to recompile the shader for different layer amounts
+                frag: mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`),
+            }}
+            uniforms={{
+                children: props.children,
+                layerVisibility: this.layers.map(l => l.visible),
+            }}
+            width={width}
+            height={height}
+        >
+            {// map all layers into the `layer` uniform of the mixer shader
+                this.layers.map((layer, index) => {
+                    return <Bus uniform={'layer'} key={`layer${index}`} index={index} >
+                        <Node
+                            ref={this.handleRef(index)}
+                            width={width}
+                            height={height}
+                            shader={{
+                                frag: this.initialized ? paintShader : initShader,
+                            }}
+                            clear={null}
+                            uniforms={
+                                this.initialized ? {
+                                    drawing: this.drawing && this.activeLayer === index,
+                                    color: this.color.slice(),
+                                    center: this.center.slice(),
+                                    brushRadius: brush,
+                                } : {
+                                        children: btf.annotationTexForRender(layer.name),
+                                    }} />
+                    </Bus>
+                })}
+        </Node >
 })
