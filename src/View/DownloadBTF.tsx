@@ -2,12 +2,12 @@ import { IAppState } from '../State/AppState'
 import Component from './Component'
 import React from 'react'
 import FileSaver from 'file-saver'
-import { AsyncFunctionHook } from '../Hook'
+import { FunctionHook } from '../Hook'
 
 function download (appState: IAppState) {
     return async (e) => {
-        await appState.asyncHookForEach('PreDownload', async (hook: AsyncFunctionHook) => {
-            await hook.func()
+        appState.asyncHookForEach('PreDownload', async (hook: FunctionHook) => {
+            hook.func()
         })
 
         let btf = appState.btf()

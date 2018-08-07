@@ -18,10 +18,12 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
+import uniqid from 'uniqid'
 
 let LayerConfig = types.model({
     visible: types.boolean,
     name: types.string,
+    id: types.string,
 })
 
 const PaintModel = Plugin.props({
@@ -33,6 +35,9 @@ const PaintModel = Plugin.props({
     layers: types.optional(types.array(LayerConfig), []),
 })
 
+/**
+ * This plugin allows the overlay of multiple paint layers onto
+ */
 class PaintController extends shim(PaintModel, Plugin) {
     drawing = false
     initialized = false
@@ -80,19 +85,24 @@ class PaintController extends shim(PaintModel, Plugin) {
         }
     }
 
+    /**
+     * Import layers from btf if we were tabbed out/int
+     */
     @action
     async beforeFocusGain () {
         this.drawing = false
-        console.log('before gain')
+        this.importLayers()
     }
 
     @action
     async beforeFocusLose () {
         this.drawing = false
         await this.exportLayers()
-        console.log('before lose')
     }
 
+    /**
+     * The shaders do the actual drawing, so we just update their uniforms
+     */
     @action
     dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) {
         if (this.activeLayer !== -1) {
@@ -131,9 +141,15 @@ class PaintController extends shim(PaintModel, Plugin) {
         }
     }
 
+    /**
+     * Delete a layer, we need to export/import to cache bust the gl-react uniforms
+     * @param index to be removed
+     */
     @action
     deleteLayer (index: number) {
-        console.log(index)
+        this.activeLayer = -1
+        this.exportLayers(index)
+        this.importLayers()
     }
 
     handleDelete (index) {
@@ -152,31 +168,35 @@ class PaintController extends shim(PaintModel, Plugin) {
         if (this.layers.length >= 15)
             return alert('Max 15 layers supported due to WebGL implementation limits.')
 
+        // texture will be empty automatically
         this.layers.push(LayerConfig.create({
             visible: true,
             name: `${this.layers.length}`,
+            id: uniqid(),
         }))
     }
 
-    refs: { [key: number]: Node } = {}
-
-    handleRef (index: number) {
+    refs: { [key: string]: Node } = {}
+    handleRef (id: string) {
         return (node: Node) => {
-            this.refs[index] = node
+            this.refs[id] = node
         }
     }
 
     @action
-    async exportLayers () {
+    exportLayers (skipIndex = -1) {
         let btf = this.appState.btf()
-        let canvas = document.createElement('canvas')
-        btf.layers = await Promise.all(this.layers.map(async (layer, index) => {
-            let data = await Node2PNG(this.refs[index], btf.data.width, btf.data.height, canvas)
+        let layers = this.layers.map(layer => {
+            let data = Node2PNG(this.refs[layer.id], btf.data.width, btf.data.height)
             return {
                 name: layer.name,
                 texture: data,
+                id: uniqid(), // update id to cache bust old annotation states
             }
-        }))
+        })
+        if (skipIndex !== -1)
+            layers.splice(skipIndex, 1)
+        btf.layers = layers
     }
 
     @action
@@ -185,6 +205,7 @@ class PaintController extends shim(PaintModel, Plugin) {
             this.setInitialized(true)
     }
 
+    key = null
     @action
     importLayers () {
         let btf = this.appState.btf()
@@ -192,9 +213,19 @@ class PaintController extends shim(PaintModel, Plugin) {
             return LayerConfig.create({
                 visible: true,
                 name: layer.name,
+                id: layer.id,
             })
         }))
         this.initialized = false
+        // update our mixer key to cache bust
+        this.key = uniqid()
+    }
+
+    /**
+     * Adapted shader to have fixed unrollable loops for the WebGL compiler
+     */
+    mixerShader () {
+        return mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`)
     }
 }
 
@@ -213,6 +244,9 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
+/**
+ * List of layers
+ */
 const PaintUI = Component(function PaintUI (props, classes) {
     return <div>
         <h3>Paint</h3>
@@ -231,7 +265,7 @@ const PaintUI = Component(function PaintUI (props, classes) {
                         tabIndex={-1}
                         disableRipple
                     />
-                    <ListItemText primary={`Layer ${index + 1}`} />
+                    <ListItemText primary={`${layer.id}`} />
                     <ListItemSecondaryAction>
                         <Switch
                             onChange={this.handleVisibility(index)}
@@ -249,6 +283,9 @@ const PaintUI = Component(function PaintUI (props, classes) {
 
 import { Shaders, Node, GLSL, Bus } from 'gl-react'
 
+/**
+ * Actual painting node inside the render stack
+ */
 const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
     let width = btf.data.width
@@ -266,10 +303,10 @@ const PaintNode = Component(function PaintNode (props) {
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
+            key={this.key}
             onDraw={this.onDraw}
             shader={{
-                // we need to recompile the shader for different layer amounts
-                frag: mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`),
+                frag: this.mixerShader(),
             }}
             uniforms={{
                 children: props.children,
@@ -280,9 +317,9 @@ const PaintNode = Component(function PaintNode (props) {
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {
-                    return <Bus uniform={'layer'} key={`${btf.id}_layer${index}`} index={index} >
+                    return <Bus uniform={'layer'} key={`${layer.id}`} index={index} >
                         <Node
-                            ref={this.handleRef(index)}
+                            ref={this.handleRef(layer.id)}
                             width={width}
                             height={height}
                             shader={{
@@ -290,13 +327,15 @@ const PaintNode = Component(function PaintNode (props) {
                             }}
                             clear={null}
                             uniforms={
+                                // and then write on it
                                 this.initialized ? {
                                     drawing: this.drawing && this.activeLayer === index,
                                     color: this.color.slice(),
                                     center: this.center.slice(),
                                     brushRadius: brush,
                                 } : {
-                                        children: btf.annotationTexForRender(layer.name),
+                                        // clear is null, so we initially grap the loaded texture
+                                        children: btf.annotationTexForRender(layer.id),
                                     }} />
                     </Bus>
                 })}

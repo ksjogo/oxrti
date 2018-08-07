@@ -31,7 +31,7 @@ export function translate (point: Point, by: Point): Point {
 import ndarray from 'ndarray'
 import PNGWriter from './Plugins/ConverterPlugin/PNGWriter'
 
-export async function Node2PNG (paintNode: any, width: number, height: number, canvas = document.createElement('canvas')): Promise<Blob> {
+export function Node2PNG (paintNode: any, width: number, height: number, canvas = document.createElement('canvas')): Blob {
     const captured = paintNode.capture() as ndarray
     const writer = new PNGWriter({
         width: width,
@@ -39,5 +39,5 @@ export async function Node2PNG (paintNode: any, width: number, height: number, c
         data: Buffer.from(captured.data as Uint8Array),
         elementSize: 32,
     })
-    return Promise.resolve(writer.encode())
+    return writer.encode()
 }

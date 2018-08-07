@@ -24,6 +24,7 @@ export type Data = {
 }
 
 export type AnnotationLayer = {
+    id: string,
     name: string,
     texture: Blob,
 }
@@ -114,8 +115,8 @@ export default class BTFFile {
         }
     }
 
-    annotationTexForRender (name: string): TexForRender {
-        let layer = this.layers.find(layer => layer.name === name)
+    annotationTexForRender (id: string, cacheBust: number = null): TexForRender {
+        let layer = this.layers.find(layer => layer.id === id)
         if (!layer)
             return null
         return {
@@ -123,7 +124,7 @@ export default class BTFFile {
             width: this.data.width,
             height: this.data.height,
             type: 'oxrti',
-            ident: this.name + name + this.id,
+            ident: id,
             format: 'PNG32',
         }
     }

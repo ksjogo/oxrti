@@ -54,7 +54,7 @@ export type HookConfig = {
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
     ViewerDrag?: FunctionHooks<Dragger>,
-    PreDownload?: Hooks<AsyncFunctionHook>
+    PreDownload?: FunctionHooks,
     PostLoad?: FunctionHooks,
     Test?: FunctionHooks,
     Tabs?: TabsConfig,

@@ -98,7 +98,7 @@ function renderApp (App, state) {
  */
 function uptimer () {
     state.uptimer()
-    setTimeout(uptimer, 1000)
+    // setTimeout(uptimer, 1000)
 }
 
 /**
