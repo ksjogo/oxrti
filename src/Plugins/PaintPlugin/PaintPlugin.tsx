@@ -20,6 +20,7 @@ import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
 import uniqid from 'uniqid'
 import { ChromePicker } from 'react-color'
+import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from '@attently/riek'
 
 let LayerConfig = types.model({
     visible: types.boolean,
@@ -257,6 +258,17 @@ class PaintController extends shim(PaintModel, Plugin) {
     handleColorChange (color) {
         this.color = observable.array([color.rgb.r / 255, color.rgb.g / 255, color.rgb.b / 255, color.rgb.a])
     }
+
+    @action
+    setLayerName (index, name) {
+        this.layers[index].name = name
+    }
+
+    handleLayerName (index) {
+        return (change) => {
+            this.setLayerName(index, change.name)
+        }
+    }
 }
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
@@ -290,13 +302,19 @@ const PaintUI = Component(function PaintUI (props, classes) {
                         role={undefined}
                         dense
                         button
-                        onClick={this.handleActiveLayer(index)}
                     >
                         <Checkbox
+                            onClick={this.handleActiveLayer(index)}
                             checked={this.activeLayer === index}
                             tabIndex={-1}
                             disableRipple
                         />
+                        <ListItemText>
+                            <RIEInput
+                                value={layer.name}
+                                change={this.handleLayerName(index)}
+                                propName='name' />
+                        </ListItemText>
                         {/* <ListItemText primary={`${layer.id}`} /> */}
                         <ListItemSecondaryAction>
                             <Switch

@@ -25,7 +25,7 @@ class LightController extends shim(LightControlModel, Plugin) {
             ViewerSide: {
                 Rotation: {
                     component: SliderComponent,
-                    priority: 0,
+                    priority: 90,
                 },
             },
         }
@@ -113,11 +113,12 @@ const SliderComponent = Component(function RotationSlider (props) {
             <Typography variant='headline' component='h3'>
                 Light Control
           </Typography>
+            {/*
             <Typography>Pos X</Typography>
             <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
             <Typography>Pos Y</Typography>
             <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
-            <Typography>Hemispherical</Typography>
+            <Typography>Hemispherical</Typography> */}
             <SafeGLIInspector>
                 <HemisphereComponent />
             </SafeGLIInspector>
@@ -136,21 +137,25 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
     if (rotationPlugin) {
         point = rotate(point, -rotationPlugin.rad)
     }
-    return <Surface
-        className={classes.dragger}
-        width={150}
-        height={150}
-        onMouseLeave={this.onMouseLeave}
-        onMouseMove={this.onMouseMove}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}>
-        <ShaderNode shader={{
-            frag: shader,
-        }}
-            uniforms={{
-                point: toTex(point),
-                fromColor: this.hemisphereFrom.slice(0),
-                toColor: this.hemisphereTo.slice(0),
-            }} />
-    </Surface>
+    return <div style={{
+        marginLeft: '65px',
+    }}>
+        <Surface
+            className={classes.dragger}
+            width={150}
+            height={150}
+            onMouseLeave={this.onMouseLeave}
+            onMouseMove={this.onMouseMove}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}>
+            <ShaderNode shader={{
+                frag: shader,
+            }}
+                uniforms={{
+                    point: toTex(point),
+                    fromColor: this.hemisphereFrom.slice(0),
+                    toColor: this.hemisphereTo.slice(0),
+                }} />
+        </Surface>
+    </div>
 }, styles)
