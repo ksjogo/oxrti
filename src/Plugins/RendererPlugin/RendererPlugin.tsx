@@ -148,13 +148,15 @@ const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
         <Measure bounds onResize={this.onResize.bind(this)}>
             {({ measureRef }) =>
-                <div ref={measureRef} className={classes.stack + ' ' + classes.content}>
-                    <Stack
-                        onMouseLeave={this.onMouseLeave}
-                        onMouseMove={this.onMouseMove}
-                        onMouseDown={this.onMouseDown}
-                        onMouseUp={this.onMouseUp}
-                    />
+                <div ref={measureRef} className={classes.content}>
+                    <div className={classes.stack}>
+                        <Stack
+                            onMouseLeave={this.onMouseLeave}
+                            onMouseMove={this.onMouseMove}
+                            onMouseDown={this.onMouseDown}
+                            onMouseUp={this.onMouseUp}
+                        />
+                    </div>
                 </div>
             }
         </Measure>

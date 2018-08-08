@@ -45,11 +45,17 @@ export default Component<{
     })
 
     let plugin = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
-    return <div>
+    let size = Math.min(plugin.elementHeight, plugin.elementWidth)
+    let marginXP = plugin.elementWidth > plugin.elementHeight
+    let margin = Math.abs((plugin.elementHeight - plugin.elementWidth) / 2)
+    return <div style={{
+        marginLeft: marginXP ? margin : 0,
+        marginTop: !marginXP ? margin : 0,
+    }}>
         {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}
         <Surface
-            height={plugin.elementHeight}
-            width={plugin.elementWidth}
+            height={size}
+            width={size}
             onMouseLeave={props.onMouseLeave}
             onMouseMove={props.onMouseMove}
             onMouseDown={props.onMouseDown}
