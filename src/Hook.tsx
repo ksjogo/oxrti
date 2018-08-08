@@ -49,11 +49,16 @@ export type ViewerTabFocusHook = {
 }
 export type ViewerTabFocusHooks = ConfigHooks<ViewerTabFocusHook>
 
+export type DraggerConfig = {
+    dragger: Dragger,
+    draggerLeft?: () => void,
+}
+
 export type HookConfig = {
     ViewerTabFocus?: ViewerTabFocusHooks,
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
-    ViewerDrag?: FunctionHooks<Dragger>,
+    ViewerDrag?: ConfigHooks<DraggerConfig>,
     PreDownload?: FunctionHooks,
     PostLoad?: FunctionHooks,
     Test?: FunctionHooks,

@@ -37,7 +37,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
             },
             ViewerDrag: {
                 Pan: {
-                    func: this.dragger,
+                    dragger: this.dragger,
                     priority: -10,
                 },
             },

@@ -4,7 +4,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 // oxrti default imports ->
 
 import { Point, Node2PNG } from '../../Math'
-import { Switch, Theme, createStyles } from '@material-ui/core'
+import { Switch, Theme, createStyles, Button, Popover } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
@@ -19,6 +19,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
 import uniqid from 'uniqid'
+import { ChromePicker } from 'react-color'
 
 let LayerConfig = types.model({
     visible: types.boolean,
@@ -39,6 +40,8 @@ const PaintModel = Plugin.props({
  * This plugin allows the overlay of multiple paint layers onto
  */
 class PaintController extends shim(PaintModel, Plugin) {
+    showColorPicker = false
+
     drawing = false
     initialized = false
 
@@ -68,7 +71,8 @@ class PaintController extends shim(PaintModel, Plugin) {
             },
             ViewerDrag: {
                 Pan: {
-                    func: this.dragger,
+                    dragger: this.dragger,
+                    draggerLeft: this.draggerLeft,
                     priority: 100,
                 },
             },
@@ -111,6 +115,11 @@ class PaintController extends shim(PaintModel, Plugin) {
             this.center[1] = nextTex[1]
             return true
         }
+    }
+
+    @action
+    draggerLeft () {
+        this.drawing = false
     }
 
     @action
@@ -227,6 +236,27 @@ class PaintController extends shim(PaintModel, Plugin) {
     mixerShader () {
         return mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`)
     }
+
+    anchorEl
+    @action
+    switchColorPicker (e) {
+        this.anchorEl = e.target
+        this.showColorPicker = !this.showColorPicker
+    }
+
+    displayColor (text = false) {
+        if (text)
+            return (this.color[0] + this.color[1] + this.color[2]) < 1.5 ? 'white' : 'black'
+        else
+            return `rgb(${this.color.map((e, i) => {
+                return i === 3 ? e : e * 255
+            }).join(',')})`
+    }
+
+    @action
+    handleColorChange (color) {
+        this.color = observable.array([color.rgb.r / 255, color.rgb.g / 255, color.rgb.b / 255, color.rgb.a])
+    }
 }
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
@@ -250,7 +280,29 @@ const styles = (theme: Theme) => createStyles({
 const PaintUI = Component(function PaintUI (props, classes) {
     return <div>
         <h3>Paint</h3>
-        <button onClick={this.addLayer}>Add Layer</button>
+        <Button onClick={this.addLayer}>Add Layer</Button>
+        <Button style={{
+            backgroundColor: this.displayColor(),
+            color: this.displayColor(true),
+            textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
+        }} onClick={this.switchColorPicker}>Pick Color</Button>
+        <Popover
+            anchorEl={this.anchorEl}
+            open={this.showColorPicker}
+            onClose={this.switchColorPicker}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+            }}>
+            <ChromePicker
+                color={{ r: this.color[0] * 255, g: this.color[1] * 255, b: this.color[2] * 255, a: this.color[3] }}
+                onChange={this.handleColorChange}
+            />
+        </Popover>
         <List>
             {this.layers.map((layer, index) => (
                 <ListItem
@@ -330,8 +382,8 @@ const PaintNode = Component(function PaintNode (props) {
                                 // and then write on it
                                 this.initialized ? {
                                     drawing: this.drawing && this.activeLayer === index,
-                                    color: this.color.slice(),
-                                    center: this.center.slice(),
+                                    color: this.color.slice(0, 4),
+                                    center: this.center.slice(0, 3),
                                     brushRadius: brush,
                                 } : {
                                         // clear is null, so we initially grap the loaded texture

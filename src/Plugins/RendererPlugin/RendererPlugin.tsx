@@ -13,7 +13,7 @@ import { BTFMetadataDisplay, BTFMetadataConciseDisplay } from '../../View/JSONDi
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { Dragger } from './DragInterface'
-import { FunctionHook, ViewerTabFocusHook, RendererHooks, RendererHook } from '../../Hook'
+import { DraggerConfig, ViewerTabFocusHook, ConfigHook, RendererHook } from '../../Hook'
 import { Point } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 
@@ -106,8 +106,8 @@ class RendererController extends shim(RendererModel, Plugin) {
                 nextTex = hook.inversePoint(nextTex)
         })
 
-        this.appState.hookForEach('ViewerDrag', (hook: FunctionHook<Dragger>) => {
-            return hook.func(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
+        this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
+            return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
         })
 
         this.lastDragScreen = nextScreen
@@ -117,9 +117,11 @@ class RendererController extends shim(RendererModel, Plugin) {
     @action
     onMouseLeave () {
         this.dragging = false
+        this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
+            return hook.draggerLeft && hook.draggerLeft()
+        })
     }
 
-    @action
     onMouseMove (e: MouseEvent) {
         if (this.dragging) {
             this.notifyDraggers(e)
