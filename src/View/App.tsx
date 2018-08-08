@@ -6,19 +6,20 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
 import Component from './Component'
-import Theme from './Theme'
+import { default as DefaultTheme } from './Theme'
 import { ConfigHook } from '../Hook'
 import { TabConfig } from './Tabs'
-import { isUndefined } from 'util'
+import AppStyles from './AppStyles'
 
-export default hot(module)(Component(function App (props) {
+export default hot(module)(Component(function App (props, classes) {
     let currentTab = props.appState.hookPick<ConfigHook<TabConfig>>('Tabs', props.appState.activeTab)
     let CurrentRender = currentTab.content
     let padding = currentTab.padding !== undefined ? currentTab.padding : 24
     return (
-        <MuiThemeProvider theme={Theme}>
-            <AppBar position='static'>
-                <Tabs value={props.appState.activeTab}
+        <MuiThemeProvider theme={DefaultTheme}>
+            <AppBar position='sticky' className={classes.appBar}>
+                <Tabs
+                    value={props.appState.activeTab}
                     onChange={props.appState.switchTab} >
                     {props.appState.hookMap('Tabs', (hook: ConfigHook<TabConfig>, fullName) => {
                         return <Tab {...hook.tab} key={fullName} />
@@ -30,4 +31,4 @@ export default hot(module)(Component(function App (props) {
             </Typography>
         </MuiThemeProvider>
     )
-}))
+}, AppStyles))

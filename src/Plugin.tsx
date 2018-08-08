@@ -1,6 +1,6 @@
 import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import Component, { ComponentProps, PluginComponentType } from './View/Component'
+import { ComponentProps, PluginComponentType } from './View/Component'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
 import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
@@ -75,12 +75,12 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     function SubComponent (inner: innerType, styles?: any): PluginComponentType {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         if (!styles) {
-            return Component(function (props) {
+            return inject('appState')(observer(function (props) {
                 let plugin = (props.appState.plugins.get(name)) as any
                 // actual rendering function
                 // allow this so all code inside a plugin can just refer to this
                 return inner.apply(plugin, [props])
-            })
+            }))
         } else {
             // material ui needs an extra hoc wrapper
             // and slightly different observer ordering

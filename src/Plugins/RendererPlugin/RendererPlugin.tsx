@@ -4,16 +4,14 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 // oxrti default imports ->
 import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
-import RenderHooks from '../../View/RenderHooks'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Typography } from '@material-ui/core'
+import { Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
-import { BTFMetadataDisplay, BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
+import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
-import { Dragger } from './DragInterface'
-import { DraggerConfig, ViewerTabFocusHook, ConfigHook, RendererHook } from '../../Hook'
+import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook } from '../../Hook'
 import { Point } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 
@@ -33,6 +31,7 @@ class RendererController extends shim(RendererModel, Plugin) {
         return {
             Tabs: {
                 Renderer: {
+                    padding: 0,
                     priority: 20,
                     content: RendererView,
                     tab: {
@@ -50,10 +49,6 @@ class RendererController extends shim(RendererModel, Plugin) {
                 Open: {
                     component: Upload,
                     priority: 100,
-                },
-                Download: {
-                    component: DownloadBTF,
-                    priority: 99,
                 },
             },
         }
@@ -147,12 +142,42 @@ const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, 
 export default RendererPlugin
 export type IRendererPlugin = typeof RendererPlugin.Type
 
-const styles = (theme: Theme) => createStyles({
-    stack: {
-        width: '100%',
-        height: 0,
-        'padding-bottom': '100%',
-    },
+import AppStyles, { DrawerWidth } from '../../View/AppStyles'
+
+const RendererView = Component(function RendererView (props, classes) {
+    return <div className={classes.container}>
+        <Measure bounds onResize={this.onResize.bind(this)}>
+            {({ measureRef }) =>
+                <div ref={measureRef} className={classes.stack + ' ' + classes.content}>
+                    <Stack
+                        onMouseLeave={this.onMouseLeave}
+                        onMouseMove={this.onMouseMove}
+                        onMouseDown={this.onMouseDown}
+                        onMouseUp={this.onMouseUp}
+                    />
+                </div>
+            }
+        </Measure>
+        <Drawer
+            anchor='right'
+            variant='permanent'
+            className={`${classes.drawer} fixDrawer`}
+        >
+            <div className={classes.toolbar} />
+            <List>
+                {props.appState.hookMap('ViewerSide', (hook: ComponentHook, fullName: string) => {
+                    let Func = hook.component
+                    return <ListItem key={fullName} >
+                        <Func />
+                    </ListItem>
+                })}
+            </List>
+        </Drawer>
+    </div>
+
+}, AppStyles)
+
+const UploadStyles = (theme: Theme) => createStyles({
     dropzone: {
         border: '1px solid ' + theme.palette.primary.main,
         width: '100%',
@@ -160,37 +185,15 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const RendererView = Component(function RendererView (props, classes) {
-    let aspect = props.appState.btf() ? `${100 / props.appState.btf().aspectRatio()}%` : '100%'
-    return <Grid container spacing={16}>
-        <Grid item xs={8}>
-            <Measure bounds onResize={this.onResize.bind(this)}>
-                {({ measureRef }) =>
-                    <div ref={measureRef} className={classes.stack} style={{
-                        // paddingBottom: aspect,
-                    }}>
-                        <Stack
-                            onMouseLeave={this.onMouseLeave}
-                            onMouseMove={this.onMouseMove}
-                            onMouseDown={this.onMouseDown}
-                            onMouseUp={this.onMouseUp}
-                        />
-                    </div>
-                }
-            </Measure>
-        </Grid>
-        <Grid item xs={4}>
-            <RenderHooks name='ViewerSide' />
-        </Grid>
-    </Grid>
-}, styles)
-
 const Upload = Component(function Upload (props, classes) {
-    return <div>
-        <h3>Open</h3>
-        <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
-            <div>Try dropping some files here, or click to select files to upload.</div>
-        </Dropzone>
-    </div>
-
-}, styles)
+    return <Card>
+        <CardContent>
+            <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+                <div>Try dropping some files here, or click to select files to upload.</div>
+            </Dropzone>
+        </CardContent>
+        <CardActions>
+            <DownloadBTF />
+        </CardActions>
+    </Card>
+}, UploadStyles)

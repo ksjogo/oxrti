@@ -6,6 +6,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import { Point, translate } from '../../Math'
+import { Card, CardContent, Typography } from '@material-ui/core'
 
 const ZoomModel = Plugin.props({
     title: 'Zoom',
@@ -26,13 +27,9 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                 },
             },
             ViewerSide: {
-                Pan: {
-                    component: Pan,
-                    priority: 21,
-                },
                 Zoom: {
                     component: Zoom,
-                    priority: 20,
+                    priority: 21,
                 },
             },
             ViewerDrag: {
@@ -94,16 +91,17 @@ const ZoomNode = Component(function ZoomNode (props) {
 })
 
 const Zoom = Component(function ZoomSlider (props) {
-    return <div>
-        <h3>Zoom</h3>
-        <Slider value={this.scale} onChange={this.onSlider} min={0} max={10} />
-    </div>
-})
-
-const Pan = Component(function PanSlider (props) {
-    return <div>
-        <h3>Pan</h3>
-        <Slider value={this.panX} onChange={this.onSliderX} min={-1} max={1} />
-        <Slider value={this.panY} onChange={this.onSliderY} min={-1} max={1} />
-    </div>
+    return <Card style={{ width: '100%' }} >
+        <CardContent>
+            <Typography variant='headline' component='h3'>
+                Zoom
+          </Typography>
+            <Slider value={this.scale} onChange={this.onSlider} min={0} max={10} />
+            <Typography variant='headline' component='h3'>
+                Pan
+          </Typography>
+            <Slider value={this.panX} onChange={this.onSliderX} min={-1} max={1} />
+            <Slider value={this.panY} onChange={this.onSliderY} min={-1} max={1} />
+        </CardContent>
+    </Card>
 })

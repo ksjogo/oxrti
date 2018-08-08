@@ -8,7 +8,7 @@ import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import SafeGLIInspector from '../../View/SafeGLIInspector'
 
-const RenderPadding = 20
+const RenderMargin = 20
 
 const LightControlModel = Plugin.props({
     title: 'LightControl',
@@ -78,7 +78,6 @@ class LightController extends shim(LightControlModel, Plugin) {
         this.dragging = false
     }
 
-    @action
     onMouseMove (e: MouseEvent) {
         if (this.dragging) {
             this.updatePosition(e)
@@ -103,23 +102,28 @@ export type ILightControlPlugin = typeof LightControlPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     dragger: {
-        padding: `${RenderPadding}px`,
+        margin: `${RenderMargin}px`,
     },
 })
+import { Card, CardContent } from '@material-ui/core'
 
 const SliderComponent = Component(function RotationSlider (props) {
-    return <div>
-        <h3>Light</h3>
-        <Typography>Pos X</Typography>
-        <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
-        <Typography>Pos Y</Typography>
-        <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
-        <Typography>Hemispherical</Typography>
-        <SafeGLIInspector>
-            <HemisphereComponent />
-        </SafeGLIInspector>
-        <p>x: {this.hemisphericalCoords()[0]} <br />y: {this.hemisphericalCoords()[1]}<br />z: {this.hemisphericalCoords()[2]}</p>
-    </div>
+    return <Card style={{ width: '100%' }} >
+        <CardContent>
+            <Typography variant='headline' component='h3'>
+                Light Control
+          </Typography>
+            <Typography>Pos X</Typography>
+            <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
+            <Typography>Pos Y</Typography>
+            <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
+            <Typography>Hemispherical</Typography>
+            <SafeGLIInspector>
+                <HemisphereComponent />
+            </SafeGLIInspector>
+            {/*  <p>x: {this.hemisphericalCoords()[0]} <br />y: {this.hemisphericalCoords()[1]}<br />z: {this.hemisphericalCoords()[2]}</p> */}
+        </CardContent>
+    </Card>
 })
 
 import shader from './hemisphere.glsl'

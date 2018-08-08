@@ -4,7 +4,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 // oxrti default imports ->
 
 import { Point, Node2PNG } from '../../Math'
-import { Switch, Theme, createStyles, Button, Popover } from '@material-ui/core'
+import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
@@ -278,59 +278,65 @@ const styles = (theme: Theme) => createStyles({
  * List of layers
  */
 const PaintUI = Component(function PaintUI (props, classes) {
-    return <div>
-        <h3>Paint</h3>
-        <Button onClick={this.addLayer}>Add Layer</Button>
-        <Button style={{
-            backgroundColor: this.displayColor(),
-            color: this.displayColor(true),
-            textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
-        }} onClick={this.switchColorPicker}>Pick Color</Button>
-        <Popover
-            anchorEl={this.anchorEl}
-            open={this.showColorPicker}
-            onClose={this.switchColorPicker}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-            }}>
-            <ChromePicker
-                color={{ r: this.color[0] * 255, g: this.color[1] * 255, b: this.color[2] * 255, a: this.color[3] }}
-                onChange={this.handleColorChange}
-            />
-        </Popover>
-        <List>
-            {this.layers.map((layer, index) => (
-                <ListItem
-                    key={index}
-                    role={undefined}
-                    dense
-                    button
-                    onClick={this.handleActiveLayer(index)}
-                >
-                    <Checkbox
-                        checked={this.activeLayer === index}
-                        tabIndex={-1}
-                        disableRipple
-                    />
-                    <ListItemText primary={`${layer.id}`} />
-                    <ListItemSecondaryAction>
-                        <Switch
-                            onChange={this.handleVisibility(index)}
-                            checked={layer.visible}
+    return <Card style={{ width: '100%' }} >
+        <CardContent>
+            <Typography variant='headline' component='h3'>
+                Overlays
+          </Typography>
+            <List>
+                {this.layers.map((layer, index) => (
+                    <ListItem
+                        key={index}
+                        role={undefined}
+                        dense
+                        button
+                        onClick={this.handleActiveLayer(index)}
+                    >
+                        <Checkbox
+                            checked={this.activeLayer === index}
+                            tabIndex={-1}
+                            disableRipple
                         />
-                        <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
-                            <TrashIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
-                </ListItem>
-            ))}
-        </List>
-    </div>
+                        {/* <ListItemText primary={`${layer.id}`} /> */}
+                        <ListItemSecondaryAction>
+                            <Switch
+                                onChange={this.handleVisibility(index)}
+                                checked={layer.visible}
+                            />
+                            <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                <TrashIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                ))}
+            </List>
+        </CardContent>
+        <CardActions>
+            <Button onClick={this.addLayer}>Add Layer</Button>
+            <Button style={{
+                backgroundColor: this.displayColor(),
+                color: this.displayColor(true),
+                textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
+            }} onClick={this.switchColorPicker}>Pick Color</Button>
+            <Popover
+                anchorEl={this.anchorEl}
+                open={this.showColorPicker}
+                onClose={this.switchColorPicker}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}>
+                <ChromePicker
+                    color={{ r: this.color[0] * 255, g: this.color[1] * 255, b: this.color[2] * 255, a: this.color[3] }}
+                    onChange={this.handleColorChange}
+                />
+            </Popover>
+        </CardActions>
+    </Card>
 }, styles)
 
 import { Shaders, Node, GLSL, Bus } from 'gl-react'

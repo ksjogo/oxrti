@@ -108,9 +108,15 @@ const CentererComponent = Component(function RotationNode (props) {
         }} />
 })
 
+import { Card, CardContent } from '@material-ui/core'
+
 const SliderComponent = Component(function RotationSlider (props) {
-    return <div>
-        <h3>Rotation</h3>
-        <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
-    </div>
+    return <Card style={{ width: '100%' }} >
+        <CardContent>
+            <Typography variant='headline' component='h3'>
+                Rotation
+          </Typography>
+            <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
+        </CardContent>
+    </Card>
 })
