@@ -49,6 +49,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                     throw new Error(`Currently unsupported fileformat ${config.format}`)
                     break
             }
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
             gl.texImage2D(gl.TEXTURE_2D, 0, type, type, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
