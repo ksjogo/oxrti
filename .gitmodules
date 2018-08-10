@@ -2,7 +2,3 @@
 	path = data
 	url = https://github.com/ksjogo/oxrti_data.git
 	branch = master
-[submodule "thesis"]
-	path = thesis
-	url = https://github.com/ksjogo/oxrti_thesis.git
-	branch = master
