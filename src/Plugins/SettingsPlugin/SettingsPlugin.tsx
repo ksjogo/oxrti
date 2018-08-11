@@ -40,7 +40,7 @@ const SettingsView = Component(function SettingsView (props, classes) {
         return nameA.localeCompare(nameB)
     })
     let rendered = plugins.map(([name, controller]) => {
-        return <ListItem>
+        return <ListItem key={name}>
             <Card className={classes.pluginCard}>
                 <CardContent>
                     {name}

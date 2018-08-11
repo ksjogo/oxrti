@@ -1,7 +1,3 @@
 body {
     margin: 0px;
 }
-
-.fixDrawer > :first-child {
-    width: 400px;
-}

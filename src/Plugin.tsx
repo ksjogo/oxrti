@@ -90,7 +90,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
             }))
             return inject('appState')(function (props) {
                 let plugin = (props.appState.plugins.get(name))
-                return <InnerMost plugin={plugin} appState={props.appState} />
+                return <InnerMost plugin={plugin} appState={props.appState} {...props} />
             })
         }
     }

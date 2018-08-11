@@ -102,17 +102,17 @@ export type ILightControlPlugin = typeof LightControlPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     dragger: {
-        margin: `${RenderMargin}px`,
+        // margin: `${RenderMargin}px`,
     },
 })
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Typography variant='headline' component='h3'>
-                Light Control
-          </Typography>
             {/*
+                <Typography variant='headline' component='h3'>
+                Light Control
+                </Typography>
             <Typography>Pos X</Typography>
             <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
             <Typography>Pos Y</Typography>
@@ -137,7 +137,7 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
         point = rotate(point, -rotationPlugin.rad)
     }
     return <div style={{
-        marginLeft: '65px',
+        marginLeft: 'calc(50% - 75px)',
     }}>
         <Surface
             className={classes.dragger}

@@ -1,6 +1,6 @@
 import { createStyles, Theme } from '@material-ui/core'
 
-const DrawerWidth = 400
+const DrawerWidth = 350
 
 const AppStyles = (theme: Theme) => createStyles({
     container: {
@@ -32,7 +32,7 @@ const AppStyles = (theme: Theme) => createStyles({
         width: '100vw',
         height: '100vh',
         'max-height': 'calc(100vh - 48px)',
-        'max-width': 'calc(100vw - 400px)',
+        'max-width': `calc(100vw - ${DrawerWidth}px)`,
     },
 })
 

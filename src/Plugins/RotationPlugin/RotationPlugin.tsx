@@ -6,7 +6,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, Shaders } from '../../
 import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
-import Typography from '@material-ui/core/Typography'
+
 import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Math'
 
 const RotationModel = Plugin.props({
@@ -74,6 +74,11 @@ class RotationController extends shim(RotationModel, Plugin) {
         let width = btf ? btf.data.width : DummyRenderSize
         return [width, height]
     }
+
+    @action
+    resetRotation () {
+        this.rad = 0
+    }
 }
 
 const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')
@@ -108,14 +113,12 @@ const CentererComponent = Component(function RotationNode (props) {
         }} />
 })
 
-import { Card, CardContent } from '@material-ui/core'
+import { Card, CardContent, Button } from '@material-ui/core'
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Typography variant='headline' component='h3'>
-                Rotation
-          </Typography>
+            <Button onClick={this.resetRotation} style={{ marginLeft: '-8px' }}>Rotation</Button>
             <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
         </CardContent>
     </Card>

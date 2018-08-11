@@ -296,9 +296,6 @@ const styles = (theme: Theme) => createStyles({
 const PaintUI = Component(function PaintUI (props, classes) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Typography variant='headline' component='h3'>
-                Layers
-          </Typography>
             <List>
                 {this.layers.map((layer, index) => (
                     <ListItem

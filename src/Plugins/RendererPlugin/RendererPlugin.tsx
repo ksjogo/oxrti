@@ -45,7 +45,7 @@ class RendererController extends shim(RendererModel, Plugin) {
             ViewerSide: {
                 Metadata: {
                     component: BTFMetadataConciseDisplay,
-                    priority: 110,
+                    priority: -110,
                 },
                 Open: {
                     component: Upload,
@@ -199,7 +199,12 @@ const RendererView = Component(function RendererView (props, classes) {
         <Drawer
             anchor='right'
             variant='permanent'
-            className={`${classes.drawer} fixDrawer`}
+            className={classes.drawer}
+            PaperProps={{
+                style: {
+                    width: `${DrawerWidth}px`,
+                },
+            }}
         >
             <div className={classes.toolbar} />
             <List>
