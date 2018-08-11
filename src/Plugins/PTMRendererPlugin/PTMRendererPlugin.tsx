@@ -11,7 +11,7 @@ const PTMRendererModel = Plugin.props({
 })
 
 class PTMRendererController extends shim(PTMRendererModel, Plugin) {
-    hooks () {
+    get hooks () {
         return {
             RendererForModel: {
                 LRGB: {

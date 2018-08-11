@@ -26,7 +26,7 @@ const ConverterModel = Plugin.props({
 
 class ConverterController extends shim(ConverterModel, Plugin) implements IConverterUI {
 
-    hooks () {
+    get hooks () {
         return {
             Tabs: {
                 Converter: {

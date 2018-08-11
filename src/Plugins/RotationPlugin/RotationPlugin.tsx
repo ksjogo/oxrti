@@ -16,7 +16,7 @@ const RotationModel = Plugin.props({
 
 class RotationController extends shim(RotationModel, Plugin) {
 
-    hooks () {
+    get hooks () {
         return {
             ViewerRender: {
                 Centerer: {

@@ -9,7 +9,7 @@ const PTMConverterModel = Plugin.props({
 })
 
 class PTMonverterController extends shim(PTMConverterModel, Plugin) {
-    hooks () {
+    get hooks () {
         return {
             ConverterFileFormat: {
                 PTM: {

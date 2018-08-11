@@ -96,7 +96,7 @@ class AppStateController extends shim(AppStateData) {
     // hook the plugin into the rest of the program
     let instance = this.plugins.get(name)
     instance.load(this)
-    this.loadHooks(name, instance.hooks())
+    this.loadHooks(name, instance.hooks)
   }
 
   @action

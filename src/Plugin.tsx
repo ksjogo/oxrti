@@ -37,12 +37,12 @@ class PluginController extends shim(PluginModel) {
         this.loaded = true
     }
 
-    hooks (): HookConfig {
+    get hooks (): HookConfig {
         return {}
     }
 
     hook (name: HookName, instance: string) {
-        return this.hooks()[name][instance]
+        return this.hooks[name][instance]
     }
 
     componentHook (name: HookName, instance: string): ComponentHook {

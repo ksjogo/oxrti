@@ -10,7 +10,7 @@ const TestModel = Plugin.props({
 })
 
 class TestController extends shim(TestModel, Plugin) {
-    hooks () {
+    get hooks () {
         return {
             Tabs: {
                 Converter: {

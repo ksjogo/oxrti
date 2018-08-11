@@ -20,7 +20,7 @@ const LightControlModel = Plugin.props({
 
 class LightController extends shim(LightControlModel, Plugin) {
 
-    hooks () {
+    get hooks () {
         return {
             ViewerSide: {
                 Rotation: {
@@ -43,13 +43,13 @@ class LightController extends shim(LightControlModel, Plugin) {
         this.fixHemis()
     }
 
-    hemisphericalCoords () {
+    get hemisphericalCoords () {
         return hemispherical(this.x, this.y)
     }
 
     @action
     fixHemis () {
-        let hemis = this.hemisphericalCoords()
+        let hemis = this.hemisphericalCoords
         this.x = hemis[0]
         this.y = hemis[1]
     }

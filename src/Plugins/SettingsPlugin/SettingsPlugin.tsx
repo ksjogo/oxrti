@@ -10,7 +10,7 @@ const SettingsModel = Plugin.props({
 })
 
 class SettingsController extends shim(SettingsModel, Plugin) {
-    hooks () {
+    get hooks () {
         return {
             Tabs: {
                 Converter: {

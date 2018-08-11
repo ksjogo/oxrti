@@ -17,7 +17,7 @@ const ZoomModel = Plugin.props({
 
 class ZoomController extends shim(ZoomModel, Plugin) {
 
-    hooks () {
+    get hooks () {
         return {
             ViewerRender: {
                 Zoom: {

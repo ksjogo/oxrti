@@ -28,7 +28,7 @@ class RendererController extends shim(RendererModel, Plugin) {
         OxrtiTextureRegistrator(appState)
     }
 
-    hooks () {
+    get hooks () {
         return {
             Tabs: {
                 Renderer: {

@@ -46,11 +46,11 @@ class PaintController extends shim(PaintModel, Plugin) {
     drawing = false
     initialized = false
 
-    layerCount () {
+    get layerCount () {
         return this.layers.length
     }
 
-    hooks () {
+    get hooks () {
         return {
             ViewerTabFocus: {
                 Paint: {
@@ -239,7 +239,7 @@ class PaintController extends shim(PaintModel, Plugin) {
      * Adapted shader to have fixed unrollable loops for the WebGL compiler
      */
     mixerShader () {
-        return mixerShader.replace(/\[X\]/gi, `[${this.layerCount()}]`).replace('< layerCount', ` < ${this.layerCount()}`)
+        return mixerShader.replace(/\[X\]/gi, `[${this.layerCount}]`).replace('< layerCount', ` < ${this.layerCount}`)
     }
 
     anchorEl
