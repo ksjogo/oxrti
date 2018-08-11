@@ -5,6 +5,7 @@ import { ComponentHook, BaseNodeConfig } from '../../Hook'
 import { IRendererPlugin } from './RendererPlugin'
 import { Shaders, Node } from 'gl-react'
 import { DummyRenderSize } from '../../Math'
+import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
 
 import noise from './noise.glsl'
 const shaders = Shaders.create({
@@ -13,12 +14,19 @@ const shaders = Shaders.create({
     },
 })
 
+const styles = (theme: Theme) => createStyles({
+    surface: {
+        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    },
+})
+
 export default Component<{
     onMouseLeave: (e: MouseEvent) => void,
     onMouseMove: (e: MouseEvent) => void,
     onMouseDown: (e: MouseEvent) => void,
     onMouseUp: (e: MouseEvent) => void,
-}>(function Stack (props) {
+}>(function Stack (props, classes) {
     let current: JSX.Element
     let btf = props.appState.btf()
 
@@ -54,6 +62,7 @@ export default Component<{
     }}>
         {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}
         <Surface
+            className={classes.surface}
             height={size}
             width={size}
             onMouseLeave={props.onMouseLeave}
@@ -65,4 +74,4 @@ export default Component<{
             {current}
         </Surface>
     </div>
-})
+}, styles)

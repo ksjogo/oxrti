@@ -32,7 +32,7 @@ class RendererController extends shim(RendererModel, Plugin) {
             Tabs: {
                 Renderer: {
                     padding: 0,
-                    priority: 20,
+                    priority: 120,
                     content: RendererView,
                     tab: {
                         label: 'Viewer',
@@ -78,7 +78,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     async onDrop (files: File[]) {
         let file = files[0]
         if (!file.name.endsWith('.btf.zip'))
-            return alert('Only .btf.zip is supported.')
+            return alert('Only .btf.zip is supported. Please use the converter before.')
         let content = await readAsArrayBuffer(file) as ArrayBuffer
         let btf = await fromZip(content)
         this.appState.loadFile(btf)

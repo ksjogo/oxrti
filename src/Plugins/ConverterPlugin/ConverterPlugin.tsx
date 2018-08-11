@@ -5,7 +5,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 
 import Dropzone from 'react-dropzone'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { Typography, Grid, Theme, createStyles } from '@material-ui/core'
+import { Typography, Grid, Theme, Card, Button, createStyles, CardContent, List, ListItem } from '@material-ui/core'
 import path from 'path'
 import ConverterStrategy from './ConverterStrategy'
 import { ConfigHook } from '../../Hook'
@@ -112,27 +112,44 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
         height: '50px',
     },
-    download: {
-        color: 'green',
-        height: '50px',
+    dropcard: {
+        width: '100%',
+        'text-align': 'center',
     },
     progress: {
         transition: 'none',
+        width: 'calc(100% + 2px)',
+    },
+    displayCard: {
         width: '100%',
     },
 })
 
 const ConverterView = Component(function ConverterView (props, classes) {
-    return <Grid container justify='center'>
-        <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
-            <div>Try dropping some files here, or click to select files to upload.</div>
-        </Dropzone>
-        <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
-        <div><p>{this.statusMessage} </p></div>
+    return <List>
+        <ListItem>
+            <Card className={classes.dropcard}>
+                <CardContent>
+                    <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+                        <div>Try dropping some files here, or click to select files to upload.</div>
+                    </Dropzone>
+                    <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
+                    <div><p>{this.statusMessage} </p></div>
+                    {this.dataHref &&
+                        <Button variant='contained' className={classes.download} download={this.zipName} type='application/zip' href={this.dataHref}>
+                            Download {this.zipName}
+                        </Button>}
+                </CardContent>
+            </Card>
+        </ListItem>
         {this.dataHref &&
-            <div>
-                <p><a href={this.dataHref} className={classes.download} download={this.zipName} type='application/zip'>Download {this.zipName}</a></p>
-                <BTFMetadataDisplay />
-            </div>}
-    </Grid>
+            <ListItem>
+                <Card className={classes.displayCard}>
+                    <CardContent>
+                        <BTFMetadataDisplay />
+                    </CardContent>
+                </Card>
+            </ListItem>
+        }
+    </List>
 }, styles)

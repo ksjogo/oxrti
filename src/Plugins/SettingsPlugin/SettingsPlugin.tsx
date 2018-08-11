@@ -1,7 +1,8 @@
 // <- oxrti default imports
 import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-import { Card, CardContent } from '@material-ui/core'
+import { Card, CardContent, List, ListItem, Theme, createStyles, Typography } from '@material-ui/core'
+import JSONDisplay from '../../View/JSONDisplay'
 // oxrti default imports ->
 
 const SettingsModel = Plugin.props({
@@ -28,11 +29,37 @@ const { Plugin: SettingsPlugin, Component } = PluginCreator(SettingsController, 
 export default SettingsPlugin
 export type ISettingsPlugin = typeof SettingsPlugin.Type
 
-const SettingsView = Component(function SettingsView (props) {
-    return <Card>
-        <CardContent>
-            <h1>Settings</h1>
-            <p>Uptime: {props.appState.uptime}</p>
-        </CardContent>
-    </Card>
+const styles = (theme: Theme) => createStyles({
+    pluginCard: {
+        width: '100%',
+    },
 })
+
+const SettingsView = Component(function SettingsView (props, classes) {
+    let plugins = Array.from(props.appState.plugins.entries()).sort(([nameA], [nameB]) => {
+        return nameA.localeCompare(nameB)
+    })
+    let rendered = plugins.map(([name, controller]) => {
+        return <ListItem>
+            <Card className={classes.pluginCard}>
+                <CardContent>
+                    {name}
+                    <JSONDisplay json={
+                        (controller as any).toJSON()
+                    } />
+                </CardContent>
+            </Card>
+        </ListItem>
+    })
+
+    return < Card >
+        <CardContent>
+            <Typography>Uptime: {props.appState.uptime}</Typography>
+            <Typography></Typography>
+            <Typography> Loaded Plugins:  </Typography>
+            <List>
+                {rendered}
+            </List>
+        </CardContent>
+    </Card >
+}, styles)

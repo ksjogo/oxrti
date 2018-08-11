@@ -17,7 +17,7 @@ export default function Component<Props = {}> (inner: SFC<ComponentProps & Props
             return inner.apply(inner, [props, props.classes])
         }))
         return inject('appState')(function (props) {
-            return <InnerMost appState={props.appState} />
+            return <InnerMost appState={props.appState} {...props} />
         })
     }
 
