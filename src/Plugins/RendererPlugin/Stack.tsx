@@ -60,7 +60,6 @@ export default Component<{
         marginLeft: marginXP ? margin : 0,
         marginTop: !marginXP ? margin : 0,
     }}>
-        {props.appState.loadingTextures > 0 && <p>Loading {props.appState.loadingTextures} textures</p>}
         <Surface
             className={classes.surface}
             height={size}

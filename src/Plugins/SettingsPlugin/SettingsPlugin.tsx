@@ -56,7 +56,7 @@ const SettingsView = Component(function SettingsView (props, classes) {
         <CardContent>
             <Typography>Uptime: {props.appState.uptime}</Typography>
             <Typography></Typography>
-            <Typography> Loaded Plugins:  </Typography>
+            <Typography> Loaded Plugins: </Typography>
             <List>
                 {rendered}
             </List>

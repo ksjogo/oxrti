@@ -5,7 +5,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
+import { Theme, createStyles, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
@@ -136,6 +136,14 @@ class RendererController extends shim(RendererModel, Plugin) {
     onMouseUp () {
         this.dragging = false
     }
+
+    centerRef
+    handleCenterRef (measureRef) {
+        return (ref) => {
+            this.centerRef = ref
+            measureRef(ref)
+        }
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -148,7 +156,7 @@ const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
         <Measure bounds onResize={this.onResize.bind(this)}>
             {({ measureRef }) =>
-                <div ref={measureRef} className={classes.content}>
+                <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
                     <div className={classes.stack}>
                         <Stack
                             onMouseLeave={this.onMouseLeave}
@@ -160,6 +168,20 @@ const RendererView = Component(function RendererView (props, classes) {
                 </div>
             }
         </Measure>
+        <Popover
+            anchorEl={this.centerRef}
+            open={props.appState.loadingTextures > 0}
+            anchorOrigin={{
+                vertical: 'center',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'center',
+                horizontal: 'center',
+            }}
+        >
+            <Typography>Loading {props.appState.loadingTextures} textures</Typography>
+        </Popover>
         <Drawer
             anchor='right'
             variant='permanent'
