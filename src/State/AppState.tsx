@@ -10,11 +10,11 @@ import BTFFile, { BTFCache } from '../BTFFile'
 import { TabConfig } from '../View/Tabs'
 
 const AppStateData = types.model({
-  uptime: 0,
   activeTab: 0,
   plugins: types.late(() => types.optional(types.map(Plugin), {})),
   hooks: types.optional(types.map(HookManager), {}),
   currentFile: '',
+  uptime: 0,
   loadingTextures: 0,
 })
 

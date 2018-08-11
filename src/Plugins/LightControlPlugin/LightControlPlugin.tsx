@@ -3,7 +3,7 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
 // oxrti default imports ->
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import SafeGLIInspector from '../../View/SafeGLIInspector'
@@ -105,7 +105,6 @@ const styles = (theme: Theme) => createStyles({
         margin: `${RenderMargin}px`,
     },
 })
-import { Card, CardContent } from '@material-ui/core'
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >

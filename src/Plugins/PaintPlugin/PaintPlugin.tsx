@@ -293,7 +293,7 @@ const PaintUI = Component(function PaintUI (props, classes) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <Typography variant='headline' component='h3'>
-                Overlays
+                Layers
           </Typography>
             <List>
                 {this.layers.map((layer, index) => (
