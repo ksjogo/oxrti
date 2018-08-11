@@ -156,10 +156,14 @@ class PaintController extends shim(PaintModel, Plugin) {
      * @param index to be removed
      */
     @action
-    deleteLayer (index: number) {
+    async deleteLayer (index: number) {
         this.activeLayer = -1
+        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
+        renderer.showPopover('Imp/Exporting Layers into the shaders. Performance will be improved in the future.')
+        await sleep(10)
         this.exportLayers(index)
         this.importLayers()
+        renderer.showPopover()
     }
 
     handleDelete (index) {
@@ -358,6 +362,8 @@ const PaintUI = Component(function PaintUI (props, classes) {
 }, styles)
 
 import { Shaders, Node, GLSL, Bus } from 'gl-react'
+import { sleep } from '../../util'
+import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 
 /**
  * Actual painting node inside the render stack

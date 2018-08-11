@@ -1,6 +1,7 @@
 import React from 'react'
 import { Shaders, Node } from 'gl-react'
 import { Surface } from 'gl-react-dom'
+import { DummyRenderSize } from '../Math'
 
 interface GLViewProps {
     shader: string,
@@ -13,7 +14,7 @@ const GLView: React.SFC<GLViewProps> = (props) => {
             frag: props.shader,
         },
     })
-    return <Surface width={300} height={300}>
+    return <Surface width={DummyRenderSize} height={DummyRenderSize}>
         <Node shader={shaders.shader} uniforms={props.uniforms} />
     </Surface>
 }

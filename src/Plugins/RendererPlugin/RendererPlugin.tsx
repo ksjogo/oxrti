@@ -12,13 +12,14 @@ import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook } from '../../Hook'
-import { Point } from '../../Math'
+import { Point, DummyRenderSize } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 
 const RendererModel = Plugin.props({
     title: 'Renderer',
-    elementHeight: 300,
-    elementWidth: 300,
+    elementHeight: DummyRenderSize,
+    elementWidth: DummyRenderSize,
+    popover: '',
 })
 
 class RendererController extends shim(RendererModel, Plugin) {
@@ -144,6 +145,19 @@ class RendererController extends shim(RendererModel, Plugin) {
             measureRef(ref)
         }
     }
+
+    @action
+    showPopover (text?: string) {
+        this.popover = text ? text : ''
+    }
+
+    get popoverShown () {
+        return this.popover !== '' || this.appState.loadingTextures > 0
+    }
+
+    get popoverText () {
+        return this.popover !== '' ? this.popover : `Loading ${this.appState.loadingTextures} textures`
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -170,7 +184,7 @@ const RendererView = Component(function RendererView (props, classes) {
         </Measure>
         <Popover
             anchorEl={this.centerRef}
-            open={props.appState.loadingTextures > 0}
+            open={this.popoverShown}
             anchorOrigin={{
                 vertical: 'center',
                 horizontal: 'center',
@@ -180,7 +194,7 @@ const RendererView = Component(function RendererView (props, classes) {
                 horizontal: 'center',
             }}
         >
-            <Typography>Loading {props.appState.loadingTextures} textures</Typography>
+            <Typography>{this.popoverText}</Typography>
         </Popover>
         <Drawer
             anchor='right'
