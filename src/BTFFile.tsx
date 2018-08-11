@@ -171,13 +171,18 @@ export async function fromZip (zipData) {
         }
     }
 
-    let layersConfig = JSON.parse(await archive.file('oxrti_layers.json').async('text')) as AnnotationLayer[]
-    let layerFolder = archive.folder('layers')
-    for (const layer of layersConfig) {
-        let layerData = await layerFolder.file(`${layer.name}.png`).async('blob')
-        layer.texture = layerData
+    let layersFile = archive.file('oxrti_layers.json')
+    if (layersFile) {
+        let layersConfig = JSON.parse(await layersFile.async('text')) as AnnotationLayer[]
+        let layerFolder = archive.folder('layers')
+        for (const layer of layersConfig) {
+            let layerData = await layerFolder.file(`${layer.name}.png`).async('blob')
+            layer.texture = layerData
+        }
+        manifest.layers = layersConfig
+    } else {
+        manifest.layers = []
     }
-    manifest.layers = layersConfig
 
     let btf = new BTFFile(manifest)
     return btf
