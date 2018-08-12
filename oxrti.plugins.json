@@ -7,5 +7,6 @@
     "SettingsPlugin",
     "PTMConverterPlugin",
     "PTMRendererPlugin",
-    "LightControlPlugin"
+    "LightControlPlugin",
+    "BookmarksPlugin"
 ]

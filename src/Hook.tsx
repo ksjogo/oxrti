@@ -54,6 +54,12 @@ export type DraggerConfig = {
     draggerLeft?: () => void,
 }
 
+export type BookmarkSaver = {
+    key: string,
+    save: () => (string | number)[],
+    restore: (values: (string | number)[]) => void,
+}
+
 export type HookConfig = {
     ViewerTabFocus?: ViewerTabFocusHooks,
     ViewerRender?: RendererHooks,
@@ -65,6 +71,7 @@ export type HookConfig = {
     Tabs?: TabsConfig,
     ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,
     RendererForModel?: ConfigHooks<BaseNodeConfig>,
+    Bookmarks?: ConfigHooks<BookmarkSaver>,
 }
 
 type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof T]

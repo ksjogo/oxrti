@@ -36,7 +36,23 @@ class RotationController extends shim(RotationModel, Plugin) {
                     priority: 10,
                 },
             },
+            Bookmarks: {
+                Rotation: {
+                    key: 'rotation',
+                    save: this.saveBookmark,
+                    restore: this.restoreBookmark,
+                },
+            },
         }
+    }
+    @action
+    saveBookmark () {
+        return [this.rad]
+    }
+
+    @action
+    restoreBookmark (values) {
+        this.rad = values[0]
     }
 
     @action

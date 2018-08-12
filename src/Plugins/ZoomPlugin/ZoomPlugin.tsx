@@ -38,7 +38,26 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                     priority: -10,
                 },
             },
+            Bookmarks: {
+                Zoom: {
+                    key: 'zoom',
+                    save: this.saveBookmark,
+                    restore: this.restoreBookmark,
+                },
+            },
         }
+    }
+
+    @action
+    saveBookmark () {
+        return [this.scale, this.panX, this.panY]
+    }
+
+    @action
+    restoreBookmark (values) {
+        this.onSlider(null, values[0])
+        this.onSliderX(null, values[1])
+        this.onSliderY(null, values[2])
     }
 
     @action
