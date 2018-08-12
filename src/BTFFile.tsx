@@ -111,7 +111,7 @@ export default class BTFFile {
             width: this.data.width,
             height: this.data.height,
             type: 'oxrti',
-            ident: this.name + channel + coefficent + this.id,
+            ident: this.name + channel + coefficent,
             format: co.format,
         }
     }
@@ -167,8 +167,8 @@ export async function fromZip (zipData) {
         for (const coefficentName in data.channels[channelName].coefficents) {
             let coefficent = data.channels[channelName].coefficents[coefficentName]
             let fileformat = coefficent.format.toLowerCase().substring(0, 3)
-            let imageData = await channelFolder.file(`${coefficentName}.${fileformat}`).async('blob')
-            coefficent.data = imageData
+            let imageData = await channelFolder.file(`${coefficentName}.${fileformat}`).async('arraybuffer')
+            coefficent.data = new Blob([imageData], { type: 'image/png' })
         }
     }
 
@@ -177,8 +177,8 @@ export async function fromZip (zipData) {
         let layersConfig = JSON.parse(await layersFile.async('text')) as AnnotationLayer[]
         let layerFolder = archive.folder('layers')
         for (const layer of layersConfig) {
-            let layerData = await layerFolder.file(`${layer.name}.png`).async('blob')
-            layer.texture = layerData
+            let layerData = await layerFolder.file(`${layer.name}.png`).async('arraybuffer')
+            layer.texture = new Blob([layerData], { type: 'image/png' })
         }
         manifest.layers = layersConfig
     } else {

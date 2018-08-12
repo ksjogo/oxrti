@@ -28,7 +28,8 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
     loadNoCache (config: TexForRender): { promise: Promise<TextureAndSize>, dispose: Function } {
         appState.textureIsLoading()
         let gl = this.gl
-        let promise = createImageBitmap(config.data).then(img => {
+        let data = config.data
+        let promise = createImageBitmap(data).then(img => {
             let texture = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
             let type: number
@@ -56,6 +57,11 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
             // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, beforeFlip)
             appState.textureLoaded()
             return { texture, width: img.width, height: img.height }
+        }).catch((reason) => {
+            alert('Texture failed to load' + reason)
+            console.error(reason)
+            appState.textureLoaded()
+            return { texture: null, width: config.width, height: config.height }
         })
         return {
             promise, dispose: () => {
