@@ -124,7 +124,7 @@ const Zoom = Component(function ZoomSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <Button onClick={this.resetZoom} style={{ marginLeft: '-8px' }}>Zoom</Button>
-            <Slider value={this.scale} onChange={this.onSlider} min={0} max={10} />
+            <Slider value={this.scale} onChange={this.onSlider} min={0} max={30} />
             <Button onClick={this.resetPan} style={{ marginLeft: '-11px' }}>Pan</Button>
             <Slider value={this.panX} onChange={this.onSliderX} min={-1} max={1} />
             <Slider value={this.panY} onChange={this.onSliderY} min={-1} max={1} />
