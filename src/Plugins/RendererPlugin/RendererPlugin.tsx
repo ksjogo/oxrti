@@ -14,6 +14,7 @@ import { fromZip } from '../../BTFFile'
 import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook, FunctionHook } from '../../Hook'
 import { Point, DummyRenderSize } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
+import uniqid from 'uniqid'
 
 const RendererModel = Plugin.props({
 })
@@ -22,6 +23,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     popover = ''
     elementHeight = DummyRenderSize
     elementWidth = DummyRenderSize
+    key = ''
 
     load (appState) {
         super.load(appState)
@@ -93,12 +95,23 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     @action
+    flushBuffers () {
+        this.key = uniqid()
+    }
+
+    @action
     async onDrop (files: File[]) {
+        this.showPopover('Reading File')
+        await sleep(0)
         let file = files[0]
         if (!file.name.endsWith('.btf.zip'))
             return alert('Only .btf.zip is supported. Please use the converter before.')
         let content = await readAsArrayBuffer(file) as ArrayBuffer
+        this.showPopover('Parsing Zip')
         let btf = await fromZip(content)
+        this.showPopover()
+        await sleep(0)
+        //this.flushBuffers()
         this.appState.loadFile(btf, true)
     }
 
@@ -183,6 +196,7 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
 import content from '*.css'
+import { sleep } from '../../util';
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
@@ -191,6 +205,7 @@ const RendererView = Component(function RendererView (props, classes) {
                 <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
                     <div className={classes.stack}>
                         <Stack
+                            key={this.key}
                             onMouseLeave={this.onMouseLeave}
                             onMouseMove={this.onMouseMove}
                             onMouseDown={this.onMouseDown}

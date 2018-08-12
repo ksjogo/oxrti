@@ -33,12 +33,13 @@ export default Component<{
         props.appState.hookForEach('RendererForModel', (hook: BaseNodeConfig) => {
             if (hook.channelModel === btf.data.channelModel) {
                 let Func = hook.node.render
-                current = <Func />
+                current = <Func key={btf.id} />
             }
         })
     }
     if (!current) {
         current = <Node
+            key={btf.id}
             height={DummyRenderSize}
             width={DummyRenderSize}
             shader={shaders.noise}
@@ -48,7 +49,10 @@ export default Component<{
 
     props.appState.hookForEach('ViewerRender', (hook: ComponentHook) => {
         let Func = hook.component
-        current = <Func>{current}</Func>
+        current = <Func
+            // flush layer if the btf file changed
+            key={btf.id}
+        >{current}</Func>
     })
 
     let plugin = props.appState.plugins.get('RendererPlugin') as IRendererPlugin

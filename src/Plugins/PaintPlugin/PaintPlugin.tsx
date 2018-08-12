@@ -372,6 +372,7 @@ const PaintNode = Component(function PaintNode (props) {
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
+            key={this.key}
             shader={{
                 frag: initShader,
             }}

@@ -29,6 +29,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         appState.textureIsLoading()
         let gl = this.gl
         let data = config.data
+        console.log(config)
         let promise = createImageBitmap(data).then(img => {
             let texture = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
@@ -60,7 +61,6 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         }).catch((reason) => {
             alert('Texture failed to load' + reason)
             console.error(reason)
-            console.log(config)
             appState.textureLoaded()
             return { texture: null, width: config.width, height: config.height }
         })
