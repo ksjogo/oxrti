@@ -9,6 +9,9 @@ type TextureAndSize = {
 }
 import { TexForRender } from '../../BTFFile'
 import { IAppState } from '../../State/AppState'
+import pLimit from 'p-limit'
+
+let limiter = pLimit(3)
 
 let appState: IAppState = null
 /**
@@ -29,8 +32,9 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         appState.textureIsLoading()
         let gl = this.gl
         let data = config.data
-        console.log(config)
-        let promise = createImageBitmap(data).then(img => {
+        // console.log(config)
+        // firefox doesn't like 9 big textures and gcs (?) some of them, so we have to limit concurrency
+        let promise = limiter(() => createImageBitmap(data)).then(img => {
             let texture = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
             let type: number
@@ -61,6 +65,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         }).catch((reason) => {
             alert('Texture failed to load' + reason)
             console.error(reason)
+            console.error(config)
             appState.textureLoaded()
             return { texture: null, width: config.width, height: config.height }
         })
