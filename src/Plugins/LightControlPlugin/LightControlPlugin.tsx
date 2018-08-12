@@ -28,7 +28,26 @@ class LightController extends shim(LightControlModel, Plugin) {
                     priority: 90,
                 },
             },
+            Bookmarks: {
+                Rotation: {
+                    key: 'lightcontrol',
+                    save: this.saveBookmark,
+                    restore: this.restoreBookmark,
+                },
+            },
         }
+    }
+
+    @action
+    saveBookmark () {
+        return [this.x, this.y]
+    }
+
+    @action
+    restoreBookmark (values) {
+        this.x = values[0]
+        this.y = values[1]
+        this.fixHemis()
     }
 
     @action
