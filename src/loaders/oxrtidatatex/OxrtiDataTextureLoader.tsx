@@ -60,6 +60,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         }).catch((reason) => {
             alert('Texture failed to load' + reason)
             console.error(reason)
+            console.log(config)
             appState.textureLoaded()
             return { texture: null, width: config.width, height: config.height }
         })
