@@ -7,7 +7,6 @@ import PTMRGB from './PTMRGB'
 import { ChannelModel } from '../../BTFFile'
 
 const PTMRendererModel = Plugin.props({
-    title: 'PTMRenderer',
 })
 
 class PTMRendererController extends shim(PTMRendererModel, Plugin) {

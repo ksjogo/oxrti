@@ -6,7 +6,6 @@ import JSONDisplay from '../../View/JSONDisplay'
 // oxrti default imports ->
 
 const SettingsModel = Plugin.props({
-    title: 'Settings',
 })
 
 class SettingsController extends shim(SettingsModel, Plugin) {

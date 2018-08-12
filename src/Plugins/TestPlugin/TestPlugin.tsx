@@ -5,7 +5,6 @@ import { IAppState } from '../../State/AppState'
 // oxrti default imports ->
 
 const TestModel = Plugin.props({
-    title: 'Test',
     extra: 20,
 })
 

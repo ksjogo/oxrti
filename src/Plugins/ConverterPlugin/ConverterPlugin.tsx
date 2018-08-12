@@ -17,14 +17,13 @@ import { sleep } from '../../util'
 import { BTFMetadataDisplay } from '../../View/JSONDisplay'
 
 const ConverterModel = Plugin.props({
-    title: 'Converter',
-    progress: 0,
-    statusMessage: 'No file.',
-    zipName: '',
-    dataHref: '',
 })
 
 class ConverterController extends shim(ConverterModel, Plugin) implements IConverterUI {
+    progress = 0
+    statusMessage = 'No file.'
+    zipName = ''
+    dataHref = ''
 
     get hooks () {
         return {
@@ -89,7 +88,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             await this.setProgress(100)
             await this.setMessage('')
             let url = URL.createObjectURL(zip)
-            this.appState.loadFile(btf)
+            this.appState.loadFile(btf, false)
             this.setDatahref(url)
             setTimeout(() => {
                 FileSaver.saveAs(zip, this.zipName)

@@ -16,13 +16,13 @@ import { Point, DummyRenderSize } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 
 const RendererModel = Plugin.props({
-    title: 'Renderer',
-    elementHeight: DummyRenderSize,
-    elementWidth: DummyRenderSize,
-    popover: '',
 })
 
 class RendererController extends shim(RendererModel, Plugin) {
+    popover = ''
+    elementHeight = DummyRenderSize
+    elementWidth = DummyRenderSize
+
     load (appState) {
         super.load(appState)
         OxrtiTextureRegistrator(appState)
@@ -81,6 +81,11 @@ class RendererController extends shim(RendererModel, Plugin) {
         })
     }
 
+    onResizeHandler (contentRect: ContentRect) {
+        if (this.elementHeight !== contentRect.bounds.height || this.elementWidth !== contentRect.bounds.width)
+            this.onResize(contentRect)
+    }
+
     @action
     onResize (contentRect: ContentRect) {
         this.elementHeight = contentRect.bounds.height
@@ -94,7 +99,7 @@ class RendererController extends shim(RendererModel, Plugin) {
             return alert('Only .btf.zip is supported. Please use the converter before.')
         let content = await readAsArrayBuffer(file) as ArrayBuffer
         let btf = await fromZip(content)
-        this.appState.loadFile(btf)
+        this.appState.loadFile(btf, true)
     }
 
     dragging = false
@@ -117,7 +122,6 @@ class RendererController extends shim(RendererModel, Plugin) {
         this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
             return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
         })
-
 
         this.lastDragScreen = nextScreen
         this.lastDragTex = nextTex
@@ -178,10 +182,11 @@ export default RendererPlugin
 export type IRendererPlugin = typeof RendererPlugin.Type
 
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
+import content from '*.css'
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
-        <Measure bounds onResize={this.onResize.bind(this)}>
+        <Measure bounds onResize={this.onResizeHandler}>
             {({ measureRef }) =>
                 <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
                     <div className={classes.stack}>

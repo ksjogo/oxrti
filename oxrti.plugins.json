@@ -8,5 +8,6 @@
     "PTMConverterPlugin",
     "PTMRendererPlugin",
     "LightControlPlugin",
+    "ImpExpPlugin",
     "BookmarksPlugin"
 ]

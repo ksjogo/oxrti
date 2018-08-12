@@ -5,7 +5,6 @@ import PTMConverterStrategy from './PTMConverterStrategy'
 // oxrti default imports ->
 
 const PTMConverterModel = Plugin.props({
-    title: 'PTM Converter',
 })
 
 class PTMonverterController extends shim(PTMConverterModel, Plugin) {

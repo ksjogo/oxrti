@@ -21,7 +21,6 @@ const BookmarkModel = types.model({
 })
 
 const BookmarksModel = Plugin.props({
-    title: 'Bookmarks',
     bookmarks: types.optional(types.array(BookmarkModel), []),
 })
 

@@ -10,7 +10,6 @@ import Slider from '@material-ui/lab/Slider'
 import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Math'
 
 const RotationModel = Plugin.props({
-    title: 'Rotation',
     rad: 0,
 })
 

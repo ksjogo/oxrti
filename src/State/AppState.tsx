@@ -14,14 +14,16 @@ const AppStateData = types.model({
   plugins: types.late(() => types.optional(types.map(Plugin), {})),
   hooks: types.optional(types.map(HookManager), {}),
   currentFile: '',
-  uptime: 0,
-  loadingTextures: 0,
 })
 
 export type PluginLoader = (name: string) => Plugin
+export type StateReloader = (state: any) => void
 let pluginLoader: PluginLoader = null
 
 class AppStateController extends shim(AppStateData) {
+  uptime = 0
+  loadingTextures = 0
+  stateReloader: StateReloader = null
 
   // volatile cache
   // as we don't want to preserve files inside the state tree
@@ -42,10 +44,12 @@ class AppStateController extends shim(AppStateData) {
   }
 
   @action
-  loadFile (file: BTFFile) {
+  loadFile (file: BTFFile, loadStateFromFile = false) {
     this.filecache[file.name] = file
     this.setCurrentFile(file.name)
-    this.hookForEach('PostLoad')
+    this.hookForEach('PostLoad', (hook: FunctionHook) => {
+      hook.func(loadStateFromFile)
+    })
   }
 
   theme () {
@@ -54,6 +58,11 @@ class AppStateController extends shim(AppStateData) {
 
   setPluginLoader (loader: PluginLoader) {
     pluginLoader = loader
+  }
+
+  @action
+  setReloader (reloader: StateReloader) {
+    this.stateReloader = reloader
   }
 
   @action
@@ -104,7 +113,6 @@ class AppStateController extends shim(AppStateData) {
   @action
   setActiveTab (index: number) {
     this.activeTab = index
-
   }
 
   @action

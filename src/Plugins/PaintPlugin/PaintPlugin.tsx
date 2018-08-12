@@ -29,7 +29,6 @@ let LayerConfig = types.model({
 })
 
 const PaintModel = Plugin.props({
-    title: 'Paint',
     color: types.optional(types.array(types.number), observable.array([1, 0, 0, 1])),
     center: types.optional(types.array(types.number), observable.array([0.5, 0.5])),
     brushRadius: 5,

@@ -62,7 +62,7 @@ function createAppState (snapshot = {}) {
         if (state) {
             if ((window as any).devToolsExtension)
                 (window as any).devToolsExtension.disconnect()
-            destroy(state)
+            // destroy(state)
         }
     } catch (e) {
         // there is some circular kill detection in mobx due to the redux devtools
@@ -77,6 +77,7 @@ function createAppState (snapshot = {}) {
         connectReduxDevtools(remotedev, state)
 
     state.setPluginLoader(pluginLoader)
+    state.setReloader(setStateFromSnapshot)
 
     return state
 }
@@ -102,10 +103,18 @@ function uptimer () {
 }
 
 /**
+ * Set state from a btf file
+ */
+function setStateFromSnapshot (snapshot) {
+    for (let key in snapshot) {
+        state[key] = snapshot[key]
+    }
+}
+
+/**
  * Let's get this started
  * @param elementId Hook into elementId or HTMLElement
  */
-
 export default function init (elementId: string | HTMLElement) {
 
     mount = typeof elementId === 'object' ? elementId : document.getElementById(elementId)

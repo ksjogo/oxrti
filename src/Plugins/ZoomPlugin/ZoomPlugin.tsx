@@ -9,7 +9,6 @@ import { Point, translate } from '../../Math'
 import { Card, CardContent, Typography, Button } from '@material-ui/core'
 
 const ZoomModel = Plugin.props({
-    title: 'Zoom',
     scale: 1,
     panX: 0,
     panY: 0,

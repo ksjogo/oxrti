@@ -11,14 +11,13 @@ import SafeGLIInspector from '../../View/SafeGLIInspector'
 const RenderMargin = 20
 
 const LightControlModel = Plugin.props({
-    title: 'LightControl',
     x: 0,
     y: 0,
-    hemisphereFrom: types.optional(types.array(types.number), [1, 0, 1]),
-    hemisphereTo: types.optional(types.array(types.number), [1, 1, 0]),
 })
 
 class LightController extends shim(LightControlModel, Plugin) {
+    hemisphereFrom = [1, 0, 1]
+    hemisphereTo = [1, 1, 0]
 
     get hooks () {
         return {

@@ -58,7 +58,7 @@ export default class BTFFile {
     layers: AnnotationLayer[] = []
     name: string = ''
 
-    constructor (manifest?: any) {
+    constructor(manifest?: any) {
         if (!manifest)
             return
 
@@ -66,6 +66,7 @@ export default class BTFFile {
         this.name = manifest.name
         this.data = manifest.data
         this.layers = manifest.layers
+        this.oxrtiState = manifest.oxrtiState
     }
 
     zipName () {
@@ -182,6 +183,14 @@ export async function fromZip (zipData) {
         manifest.layers = layersConfig
     } else {
         manifest.layers = []
+    }
+
+    let stateFile = archive.file('oxrti_state.json')
+    if (stateFile) {
+        let stateConfig = JSON.parse(await stateFile.async('text')) as object
+        manifest.oxrtiState = stateConfig
+    } else {
+        manifest.oxrtiState = {}
     }
 
     let btf = new BTFFile(manifest)

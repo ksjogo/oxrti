@@ -12,8 +12,6 @@ import { observer, inject } from 'mobx-react'
  * Plugin Model/State, is preserved in the app wide state tree
  */
 const PluginModel = types.model({
-    title: types.string,
-    loaded: false,
 })
 
 /**
@@ -34,7 +32,6 @@ class PluginController extends shim(PluginModel) {
     @action
     load (appState: IAppState) {
         this.appState = appState
-        this.loaded = true
     }
 
     get hooks (): HookConfig {
