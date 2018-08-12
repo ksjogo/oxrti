@@ -16,9 +16,8 @@ const shaders = Shaders.create({
 
 const styles = (theme: Theme) => createStyles({
     surface: {
-        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+    }
 })
 
 export default Component<{
