@@ -372,6 +372,8 @@ const PaintNode = Component(function PaintNode (props) {
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
+            width={width}
+            height={height}
             key={this.key}
             shader={{
                 frag: initShader,
@@ -382,6 +384,8 @@ const PaintNode = Component(function PaintNode (props) {
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
+            width={width}
+            height={height}
             key={this.key}
             onDraw={this.onDraw}
             shader={{
@@ -391,8 +395,6 @@ const PaintNode = Component(function PaintNode (props) {
                 children: props.children,
                 layerVisibility: this.layers.map(l => l.visible),
             }}
-            width={width}
-            height={height}
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {

@@ -21,8 +21,8 @@ const RendererModel = Plugin.props({
 
 class RendererController extends shim(RendererModel, Plugin) {
     popover = ''
-    elementHeight = DummyRenderSize
-    elementWidth = DummyRenderSize
+    elementHeight = -1
+    elementWidth = -1
     key = ''
 
     load (appState) {
@@ -204,13 +204,13 @@ const RendererView = Component(function RendererView (props, classes) {
             {({ measureRef }) =>
                 <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
                     <div className={classes.stack}>
-                        <Stack
+                        {this.elementHeight !== -1 && <Stack
                             key={this.key}
                             onMouseLeave={this.onMouseLeave}
                             onMouseMove={this.onMouseMove}
                             onMouseDown={this.onMouseDown}
                             onMouseUp={this.onMouseUp}
-                        />
+                        />}
                     </div>
                 </div>
             }
