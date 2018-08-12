@@ -150,7 +150,7 @@ export default function init (elementId: string | HTMLElement) {
                 // should regex?
                 moduleName = moduleName.split('/').reverse()[0].split('.')[0]
                 // and reload them
-                state.loadPlugin(moduleName)
+                state.loadPlugin(moduleName, true)
             })
         })
         // store inital modules to compare for changes later

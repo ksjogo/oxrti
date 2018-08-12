@@ -11,7 +11,7 @@ import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
-import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook } from '../../Hook'
+import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook, FunctionHook } from '../../Hook'
 import { Point, DummyRenderSize } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 
@@ -51,8 +51,20 @@ class RendererController extends shim(RendererModel, Plugin) {
                     component: Upload,
                     priority: 100,
                 },
+
+
             },
         }
+    }
+
+    hotUnload () {
+        console.log('Renderer Hot Unload')
+        this.appState.hookForEach('PreDownload')
+    }
+
+    hotReload () {
+        console.log('Renderer Hot Load')
+        this.appState.hookForEach('PostLoad')
     }
 
     @action
@@ -105,6 +117,7 @@ class RendererController extends shim(RendererModel, Plugin) {
         this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
             return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
         })
+
 
         this.lastDragScreen = nextScreen
         this.lastDragTex = nextTex

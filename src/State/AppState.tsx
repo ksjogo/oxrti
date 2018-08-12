@@ -4,7 +4,7 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
-import { ConfigHook, FunctionHook, HookConfig, HookName } from '../Hook'
+import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
 import { TabConfig } from '../View/Tabs'
@@ -45,9 +45,7 @@ class AppStateController extends shim(AppStateData) {
   loadFile (file: BTFFile) {
     this.filecache[file.name] = file
     this.setCurrentFile(file.name)
-    this.hookForEach('PostLoad', (hook: FunctionHook) => {
-      hook.func()
-    })
+    this.hookForEach('PostLoad')
   }
 
   theme () {
@@ -64,7 +62,7 @@ class AppStateController extends shim(AppStateData) {
   }
 
   @action
-  loadPlugin (name: string) {
+  loadPlugin (name: string, hot = false) {
     // classy-mst will add the new type to Plugin Union
     let plugin = pluginLoader(name)
     // but it will not clear up the previous specifications
@@ -88,6 +86,8 @@ class AppStateController extends shim(AppStateData) {
     let snapshot = previous ? getSnapshot(previous) : { $: name }
 
     // force recreation, non-volatile/model state will be preserved
+    if (hot)
+      previous.hotUnload()
     if (previous)
       this.plugins.delete(name)
 
@@ -97,6 +97,8 @@ class AppStateController extends shim(AppStateData) {
     let instance = this.plugins.get(name)
     instance.load(this)
     this.loadHooks(name, instance.hooks)
+    if (hot)
+      instance.hotReload()
   }
 
   @action
@@ -159,10 +161,19 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookForEach (name: HookName, iterator: HookIterator): void {
+  hookForEach (name: HookName, iterator?: HookIterator): void {
     let manager = this.hooks.get(name)
     if (!manager)
       return
+
+    if (!iterator)
+      iterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => {
+        if (hook.func)
+          hook.func()
+        else
+          throw new Error('Can only iterate over function hooks by default!')
+      }
+
     manager.forEach(iterator, name, this)
   }
 

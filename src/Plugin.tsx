@@ -52,6 +52,14 @@ class PluginController extends shim(PluginModel) {
     functionHook (name: HookName, instance: string): FunctionHook {
         return this.hook(name, instance) as FunctionHook
     }
+
+    hotUnload () {
+        //
+    }
+
+    hotReload () {
+        //
+    }
 }
 
 /**
