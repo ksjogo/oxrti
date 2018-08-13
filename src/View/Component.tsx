@@ -24,4 +24,4 @@ export default function Component<Props = {}> (inner: SFC<ComponentProps & Props
 }
 
 export type ComponentType = ReturnType<typeof Component>
-export type PluginComponentType = React.StatelessComponent<ComponentProps> & IWrappedComponent<React.StatelessComponent<ComponentProps>>
+export type PluginComponentType<P = {}> = React.StatelessComponent<ComponentProps & P> & IWrappedComponent<React.StatelessComponent<ComponentProps & P>>

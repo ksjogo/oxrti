@@ -9,5 +9,6 @@
     "PTMRendererPlugin",
     "LightControlPlugin",
     "ImpExpPlugin",
-    "BookmarksPlugin"
+    "BookmarksPlugin",
+    "QuickPanPlugin"
 ]

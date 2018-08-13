@@ -1,4 +1,4 @@
-import BaseNode from '../RendererPlugin/BaseNode'
+import BaseNode, { BaseExtraProps } from '../RendererPlugin/BaseNode'
 import React from 'react'
 import Component from '../../View/Component'
 import { Shaders, Node } from 'gl-react'
@@ -21,15 +21,15 @@ function mapper (btf: BTFFile, name: string) {
 }
 
 export default class PTMRGB extends BaseNode {
-    render = Component(props => {
+    render = Component<BaseExtraProps>(props => {
         this.appState = props.appState
         let btf = props.appState.btf()
         return <Node
             shader={shaders.ptmrgb}
-            width={btf.data.width}
-            height={btf.data.height}
+            width={props.width || btf.data.width}
+            height={props.height || btf.data.height}
             uniforms={{
-                lightPosition: this.lightPos(),
+                lightPosition: props.lightPos || this.lightPos(),
                 texR: mapper(btf, 'R'),
                 texG: mapper(btf, 'G'),
                 texB: mapper(btf, 'B'),

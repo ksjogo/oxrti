@@ -16,6 +16,10 @@ export function rotate (nums: Point, rad: number) {
     ] as Point
 }
 
+export function sub (a: Point, b: Point): Point {
+    return [a[0] - b[0], a[1] - b[1]]
+}
+
 export function toTex (nums: Point): Point {
     return nums.map(x => x / 2 + 0.5) as Point
 }

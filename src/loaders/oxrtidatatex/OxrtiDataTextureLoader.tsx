@@ -14,6 +14,8 @@ import pLimit from 'p-limit'
 let limiter = pLimit(1)
 
 let appState: IAppState = null
+type RetType = { promise: Promise<TextureAndSize>, dispose: Function }
+
 /**
  *  Allow direct texture loading from an in memory btf file
  */
@@ -28,7 +30,12 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         return input.ident
     }
 
-    loadNoCache (config: TexForRender): { promise: Promise<TextureAndSize>, dispose: Function } {
+    cache: { [key: string]: RetType } = {}
+    loadNoCache (config: TexForRender): RetType {
+        //debugger
+        if (this.cache[config.ident])
+            return this.cache[config.ident]
+
         appState.textureIsLoading()
         let gl = this.gl
         let data = config.data
@@ -74,11 +81,13 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                 appState.textureLoaded()
                 return { texture: null, width: config.width, height: config.height }
             })
-        return {
+        let ret = {
             promise, dispose: () => {
                 //
             },
         }
+        this.cache[config.ident] = ret
+        return ret
     }
 }
 

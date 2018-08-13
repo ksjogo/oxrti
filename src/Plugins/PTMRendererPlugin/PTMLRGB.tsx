@@ -1,4 +1,4 @@
-import BaseNode from '../RendererPlugin/BaseNode'
+import BaseNode, { BaseExtraProps } from '../RendererPlugin/BaseNode'
 import React from 'react'
 import Component from '../../View/Component'
 import { Shaders, Node } from 'gl-react'
@@ -13,15 +13,15 @@ const shaders = Shaders.create({
 })
 
 export default class PTMLRGB extends BaseNode {
-    render = Component(props => {
+    render = Component<BaseExtraProps>(props => {
         this.appState = props.appState
         let btf = props.appState.btf()
         return <Node
             shader={shaders.ptmlrgb}
-            width={btf.data.width}
-            height={btf.data.height}
+            width={props.width || btf.data.width}
+            height={props.width || btf.data.height}
             uniforms={{
-                lightPosition: this.lightPos(),
+                lightPosition: props.lightPos || this.lightPos(),
                 texR: btf.texForRender('R', 'a0'),
                 texG: btf.texForRender('G', 'a0'),
                 texB: btf.texForRender('B', 'a0'),

@@ -6,9 +6,19 @@ import { ILightControlPlugin } from '../LightControlPlugin/LightControlPlugin'
 import hemispherical from '../LightControlPlugin/Hemisphere'
 import { normalize } from '../../Math'
 
+export type BaseExtraProps = {
+    width?: number,
+    height?: number,
+    lightPos?: number[],
+}
+
+type BaseProps = ComponentProps & BaseExtraProps
+
+export type BaseNodeRender = React.StatelessComponent<BaseProps> & IWrappedComponent<React.StatelessComponent<BaseProps>>
+
 export default abstract class BaseNode {
     appState: IAppState
-    abstract render: React.StatelessComponent<ComponentProps> & IWrappedComponent<React.StatelessComponent<ComponentProps>>
+    abstract render: BaseNodeRender
 
     lightPos () {
         let plugin = this.appState.plugins.get('LightControlPlugin') as ILightControlPlugin

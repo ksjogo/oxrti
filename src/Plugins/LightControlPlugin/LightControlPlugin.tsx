@@ -124,7 +124,7 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const SliderComponent = Component(function RotationSlider (props) {
+const SliderComponent = Component(function LightControlComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             {/*

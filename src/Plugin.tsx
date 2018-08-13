@@ -75,9 +75,9 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // outer level constructor function
     // inner is basically (plugin, props) => ReactElement
     // we could potentially extract a better style definition though
-    type innerType = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode }, classes?: any) => ReactElement<any> | null
+    type innerType<P> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: any) => ReactElement<any> | null
     // can we type the styles somehow?
-    function SubComponent (inner: innerType, styles?: any): PluginComponentType {
+    function SubComponent<P = {}> (inner: innerType<P>, styles?: any): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         if (!styles) {
             return inject('appState')(observer(function (props) {
