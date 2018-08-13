@@ -95,6 +95,7 @@ class RotationController extends shim(RotationModel, Plugin) {
     resetRotation () {
         this.rad = 0
     }
+
 }
 
 const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')

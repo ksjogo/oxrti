@@ -7,6 +7,8 @@ import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
 import { IAppState } from './State/AppState'
 import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
+import { Point } from './Math';
+import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin';
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -56,6 +58,11 @@ class PluginController extends shim(PluginModel) {
 
     hotReload () {
         //
+    }
+
+    inversePoint (point: Point) {
+        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
+        return renderer.inversePoint(point)
     }
 }
 

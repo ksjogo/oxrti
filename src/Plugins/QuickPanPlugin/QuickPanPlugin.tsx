@@ -25,28 +25,17 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
 
     dragging = false
     @action
-    updatePosition (e: MouseEvent, multi = 9) {
+    updatePosition (e: MouseEvent) {
         let rect = (e.target as any).getBoundingClientRect()
         let x = (e.clientX - rect.left) / (rect.width)
         let y = (rect.bottom - e.clientY) / (rect.height)
         let target: Point = [x, y]
-        for (let m = 0; m < multi; m++) {
-            let currentCenter = this.inversePoint([0.5, 0.5])
-            let move = sub(target, currentCenter)
-            move = rotate(move, -this.rotater.rad)
-            this.panner.diffPanX(-move[0])
-            this.panner.diffPanY(-move[1])
-        }
+        this.panner.zoomOnPoint(target)
     }
 
     get panner () {
         let zoomer = this.appState.plugins.get('ZoomPlugin') as IZoomPlugin
         return zoomer
-    }
-
-    get rotater () {
-        let rot = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
-        return rot
     }
 
     @action
@@ -63,7 +52,7 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     @action
     onMouseDown (e: MouseEvent) {
         this.dragging = true
-        this.updatePosition(e, 9)
+        this.updatePosition(e)
     }
 
     @action
@@ -71,10 +60,7 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
         this.dragging = false
     }
 
-    inversePoint (point: Point) {
-        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
-        return renderer.inversePoint(point)
-    }
+
 }
 
 const { Plugin: QuickPanPlugin, Component } = PluginCreator(QuickPanController, QuickPanModel, 'QuickPanPlugin')

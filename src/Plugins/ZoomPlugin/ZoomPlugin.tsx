@@ -5,10 +5,11 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
-import { Point, translate, Node2PNG } from '../../Math'
+import { Point, translate, Node2PNG, rotate, sub } from '../../Math'
 import { Card, CardContent, Typography, Button } from '@material-ui/core'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin';
 import { sleep } from '../../util'
+import { IRotationPlugin } from '../RotationPlugin/RotationPlugin';
 
 const ZoomModel = Plugin.props({
     scale: 1,
@@ -72,7 +73,9 @@ class ZoomController extends shim(ZoomModel, Plugin) {
 
     @action
     onSlider (event, value) {
+        let currentCenter = this.inversePoint([0.5, 0.5])
         this.scale = value
+        this.zoomOnPoint(currentCenter)
     }
 
     @action
@@ -111,6 +114,21 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     resetPan () {
         this.panX = 0
         this.panY = 0
+    }
+
+    @action
+    zoomOnPoint (target: Point, multi = 9) {
+        for (let m = 0; m < multi; m++) {
+            let currentCenter = this.inversePoint([0.5, 0.5])
+            let move = sub(target, currentCenter)
+            move = rotate(move, -this.rotater.rad)
+            this.diffPanX(-move[0])
+            this.diffPanY(-move[1])
+        }
+    }
+    get rotater () {
+        let rot = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
+        return rot
     }
 }
 
