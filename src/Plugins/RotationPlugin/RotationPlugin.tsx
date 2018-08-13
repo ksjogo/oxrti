@@ -56,7 +56,9 @@ class RotationController extends shim(RotationModel, Plugin) {
 
     @action
     onSlider (event, value) {
+        let currentCenter = this.inversePoint([0.5, 0.5])
         this.rad = value
+        this.zoomer.zoomOnPoint(currentCenter)
     }
 
     undoCurrentRotation (point: Point): Point {
@@ -96,6 +98,9 @@ class RotationController extends shim(RotationModel, Plugin) {
         this.rad = 0
     }
 
+    get zoomer () {
+        return this.appState.plugins.get('ZoomPlugin') as IZoomPlugin
+    }
 }
 
 const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, RotationModel, 'RotationPlugin')
@@ -135,6 +140,7 @@ export const CentererComponent = Component(function RotationNode (props) {
 })
 
 import { Card, CardContent, Button } from '@material-ui/core'
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin';
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >
