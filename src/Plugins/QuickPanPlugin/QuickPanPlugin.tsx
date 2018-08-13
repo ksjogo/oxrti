@@ -25,10 +25,28 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
 
     dragging = false
     @action
-    updatePosition (e: MouseEvent) {
+    updatePosition (e: MouseEvent, multi = 9) {
         let rect = (e.target as any).getBoundingClientRect()
-        let x = (e.clientX - rect.left) / (rect.width) * 2 - 1
-        let y = (rect.bottom - e.clientY) / (rect.height) * 2 - 1
+        let x = (e.clientX - rect.left) / (rect.width)
+        let y = (rect.bottom - e.clientY) / (rect.height)
+        let target: Point = [x, y]
+        for (let m = 0; m < multi; m++) {
+            let currentCenter = this.inversePoint([0.5, 0.5])
+            let move = sub(target, currentCenter)
+            move = rotate(move, -this.rotater.rad)
+            this.panner.diffPanX(-move[0])
+            this.panner.diffPanY(-move[1])
+        }
+    }
+
+    get panner () {
+        let zoomer = this.appState.plugins.get('ZoomPlugin') as IZoomPlugin
+        return zoomer
+    }
+
+    get rotater () {
+        let rot = this.appState.plugins.get('RotationPlugin') as IRotationPlugin
+        return rot
     }
 
     @action
@@ -45,12 +63,17 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     @action
     onMouseDown (e: MouseEvent) {
         this.dragging = true
-        this.updatePosition(e)
+        this.updatePosition(e, 9)
     }
 
     @action
     onMouseUp () {
         this.dragging = false
+    }
+
+    inversePoint (point: Point) {
+        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
+        return renderer.inversePoint(point)
     }
 }
 
@@ -77,9 +100,10 @@ import noise from '../RendererPlugin/noise.glsl'
 import quickPanShader from './quickpan.glsl'
 
 import { BaseNodeConfig } from '../../Hook'
-import { CentererComponent } from '../RotationPlugin/RotationPlugin'
-import { normalize, sub, Point } from '../../Math'
+import { normalize, sub, Point, rotate } from '../../Math'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin';
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin';
+import { IRotationPlugin } from '../RotationPlugin/RotationPlugin';
 
 const SIZE = 150
 
@@ -112,11 +136,10 @@ const PreviewComponent = Component(function PreviewComponent (props, classes) {
             }} />
     }
 
-    let renderer = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
-    let A = renderer.inversePoint([0, 0])
-    let B = renderer.inversePoint([0, 1])
-    let C = renderer.inversePoint([1, 1])
-    let D = renderer.inversePoint([1, 0])
+    let A = this.inversePoint([0, 0])
+    let B = this.inversePoint([0, 1])
+    let C = this.inversePoint([1, 1])
+    let D = this.inversePoint([1, 0])
 
     return <div style={{
         marginLeft: `calc(50% - ${SIZE / 2}px)`,

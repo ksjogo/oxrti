@@ -85,6 +85,16 @@ class ZoomController extends shim(ZoomModel, Plugin) {
         this.panY = value
     }
 
+    @action
+    diffPanX (value: number) {
+        this.panX += value * this.scale
+    }
+
+    @action
+    diffPanY (value: number) {
+        this.panY += value * this.scale
+    }
+
     undoZoomAndPan (point: Point): Point {
         return [
             (point[0] - this.panX - 0.5) / this.scale + 0.5,
