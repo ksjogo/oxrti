@@ -44,7 +44,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                     // LUMINACE seems to work fine so far
                     type = gl.LUMINANCE
                     break
-                // TOFIX: allow for 16-bit
+                // TOFIX: allow for 1pr6-bit
                 case 'PNG24':
                     type = gl.RGB
                     break

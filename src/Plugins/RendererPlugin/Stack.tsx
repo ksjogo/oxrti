@@ -21,6 +21,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 export default Component<{
+    surfaceRef: (ref) => void,
     onMouseLeave: (e: MouseEvent) => void,
     onMouseMove: (e: MouseEvent) => void,
     onMouseDown: (e: MouseEvent) => void,
@@ -66,6 +67,7 @@ export default Component<{
         marginTop: !marginXP ? margin : 0,
     }}>
         <Surface
+            ref={props.surfaceRef}
             className={classes.surface}
             height={size}
             width={size}

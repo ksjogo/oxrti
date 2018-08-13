@@ -124,6 +124,7 @@ const TypedNode: React.StatelessComponent<{
     height?: number,
     clear?: boolean,
     shader: any,
+    ref?: (ref) => void,
 }> = Node
 
 /**

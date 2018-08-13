@@ -15,5 +15,5 @@ function download (appState: IAppState) {
 }
 
 export default Component(function DownloadBTF (props) {
-    return <Button onClick={download(props.appState)}>Download BTF</Button>
+    return <Button onClick={download(props.appState)}>Save BTF</Button>
 })

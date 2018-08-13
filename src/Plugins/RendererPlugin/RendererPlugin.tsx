@@ -5,7 +5,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
+import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
@@ -15,6 +15,7 @@ import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererH
 import { Point, DummyRenderSize } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 import uniqid from 'uniqid'
+import FileSaver from 'file-saver'
 
 const RendererModel = Plugin.props({
 })
@@ -53,8 +54,6 @@ class RendererController extends shim(RendererModel, Plugin) {
                     component: Upload,
                     priority: 100,
                 },
-
-
             },
         }
     }
@@ -90,8 +89,8 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     @action
     onResize (contentRect: ContentRect) {
-        this.elementHeight = contentRect.bounds.height
-        this.elementWidth = contentRect.bounds.width
+        this.elementHeight = Math.floor(contentRect.bounds.height)
+        this.elementWidth = Math.floor(contentRect.bounds.width)
     }
 
     @action
@@ -104,14 +103,15 @@ class RendererController extends shim(RendererModel, Plugin) {
         this.showPopover('Reading File')
         await sleep(0)
         let file = files[0]
-        if (!file.name.endsWith('.btf.zip'))
+        if (!file.name.endsWith('.btf.zip')) {
+            this.showPopover()
             return alert('Only .btf.zip is supported. Please use the converter before.')
+        }
         let content = await readAsArrayBuffer(file) as ArrayBuffer
         this.showPopover('Parsing Zip')
         let btf = await fromZip(content)
         this.showPopover()
         await sleep(0)
-        //this.flushBuffers()
         this.appState.loadFile(btf, true)
     }
 
@@ -188,6 +188,20 @@ class RendererController extends shim(RendererModel, Plugin) {
     get popoverText () {
         return this.popover !== '' ? this.popover : `Loading ${this.appState.loadingTextures} textures`
     }
+
+    surfaceRef: {
+        captureAsBlob: () => Promise<Blob>
+    }
+    @action
+    handleSurfaceRef (ref) {
+        this.surfaceRef = ref
+    }
+
+    async exportScreenshot () {
+        let btf = this.appState.btf()
+        let blob = await this.surfaceRef.captureAsBlob()
+        FileSaver.saveAs(blob, `${btf.name}.png`)
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -197,6 +211,7 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
 import content from '*.css'
 import { sleep } from '../../util';
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
@@ -206,6 +221,7 @@ const RendererView = Component(function RendererView (props, classes) {
                     <div className={classes.stack}>
                         {this.elementHeight !== -1 && <Stack
                             key={this.key}
+                            surfaceRef={this.handleSurfaceRef}
                             onMouseLeave={this.onMouseLeave}
                             onMouseMove={this.onMouseMove}
                             onMouseDown={this.onMouseDown}
@@ -270,6 +286,7 @@ const Upload = Component(function Upload (props, classes) {
         </CardContent>
         <CardActions>
             <DownloadBTF />
+            <Button onClick={this.exportScreenshot}>Snapshot</Button>
         </CardActions>
     </Card>
 }, UploadStyles)

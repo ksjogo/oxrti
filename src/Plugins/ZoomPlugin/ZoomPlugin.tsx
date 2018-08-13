@@ -5,8 +5,10 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
-import { Point, translate } from '../../Math'
+import { Point, translate, Node2PNG } from '../../Math'
 import { Card, CardContent, Typography, Button } from '@material-ui/core'
+import { IRendererPlugin } from '../RendererPlugin/RendererPlugin';
+import { sleep } from '../../util';
 
 const ZoomModel = Plugin.props({
     scale: 1,
@@ -107,7 +109,10 @@ export default ZoomPlugin
 export type IZoomPlugin = typeof ZoomPlugin.Type
 
 const ZoomNode = Component(function ZoomNode (props) {
+    let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
     return <ShaderNode
+        height={renderer.elementHeight}
+        width={renderer.elementWidth}
         shader={{
             frag: shader,
         }}

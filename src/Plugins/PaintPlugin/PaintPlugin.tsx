@@ -276,7 +276,7 @@ class PaintController extends shim(PaintModel, Plugin) {
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
 export default PaintPlugin
-export type IZoomPlugin = typeof PaintPlugin.Type
+export type IPaintPlugin = typeof PaintPlugin.Type
 
 const styles = (theme: Theme) => createStyles({
     root: {

@@ -1,0 +1,13 @@
+[
+    "PaintPlugin",
+    "RotationPlugin",
+    "ZoomPlugin",
+    "ConverterPlugin",
+    "RendererPlugin",
+    "SettingsPlugin",
+    "PTMConverterPlugin",
+    "PTMRendererPlugin",
+    "LightControlPlugin",
+    "ImpExpPlugin",
+    "BookmarksPlugin"
+]

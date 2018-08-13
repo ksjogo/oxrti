@@ -31,13 +31,32 @@ export function translate (point: Point, by: Point): Point {
 import ndarray from 'ndarray'
 import PNGWriter from './Plugins/ConverterPlugin/PNGWriter'
 
-export function Node2PNG (paintNode: any, width: number, height: number, canvas = document.createElement('canvas')): Blob {
-    const captured = paintNode.capture() as ndarray
-    const writer = new PNGWriter({
+export function Node2PNG (paintNode: any, width: number, height: number, flipY = false): Blob {
+    let captured = paintNode.capture() as ndarray
+    let data = captured.data as Uint8Array
+    if (flipY)
+        data = flip(data, width, height)
+    let writer = new PNGWriter({
         width: width,
         height: height,
-        data: Buffer.from(captured.data as Uint8Array),
+        data: Buffer.from(data),
         elementSize: 32,
     })
     return writer.encode()
+}
+
+function flip (data: Uint8Array, width: number, height: number): Uint8Array {
+    for (let y = 0; y < Math.floor(height / 2); ++y) {
+        for (let x = 0; x < width; ++x) {
+            let originalIndex = ((y * width) + x) * 4
+            let flippedIndex = (((height - 1 - y) * width) + x) * 4
+            for (let b = 0; b <= 3; b++) {
+                let a = data[originalIndex]
+                data[originalIndex] = data[flippedIndex]
+                data[flippedIndex] = a
+            }
+        }
+    }
+
+    return data
 }
