@@ -61,6 +61,7 @@ export default Component<{
         >{current}</Func>
     })
 
+    console.log('Stack Dim', size)
 
     return <div style={{
         marginLeft: marginXP ? margin : 0,
