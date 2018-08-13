@@ -2,7 +2,6 @@ import { IAppState } from '../State/AppState'
 import Component from './Component'
 import React from 'react'
 import FileSaver from 'file-saver'
-import { FunctionHook } from '../Hook'
 import { Button } from '@material-ui/core'
 
 function download (appState: IAppState) {
@@ -15,5 +14,5 @@ function download (appState: IAppState) {
 }
 
 export default Component(function DownloadBTF (props) {
-    return <Button onClick={download(props.appState)}>Save BTF</Button>
+    return <Button onClick={download(props.appState)}>Save</Button>
 })

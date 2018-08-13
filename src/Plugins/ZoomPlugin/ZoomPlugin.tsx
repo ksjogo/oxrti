@@ -8,7 +8,7 @@ import shader from './zoom.glsl'
 import { Point, translate, Node2PNG } from '../../Math'
 import { Card, CardContent, Typography, Button } from '@material-ui/core'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin';
-import { sleep } from '../../util';
+import { sleep } from '../../util'
 
 const ZoomModel = Plugin.props({
     scale: 1,

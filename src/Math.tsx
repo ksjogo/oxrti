@@ -51,9 +51,9 @@ function flip (data: Uint8Array, width: number, height: number): Uint8Array {
             let originalIndex = ((y * width) + x) * 4
             let flippedIndex = (((height - 1 - y) * width) + x) * 4
             for (let b = 0; b <= 3; b++) {
-                let a = data[originalIndex]
-                data[originalIndex] = data[flippedIndex]
-                data[flippedIndex] = a
+                let a = data[originalIndex + b]
+                data[originalIndex + b] = data[flippedIndex + b]
+                data[flippedIndex + b] = a
             }
         }
     }

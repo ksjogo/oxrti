@@ -66,6 +66,7 @@ export type HookConfig = {
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
     ViewerDrag?: ConfigHooks<DraggerConfig>,
+    ViewerFileAction?: ComponentHooks,
     PreDownload?: FunctionHooks,
     PostLoad?: FunctionHooks,
     Test?: FunctionHooks,

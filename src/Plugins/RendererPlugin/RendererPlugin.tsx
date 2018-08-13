@@ -55,6 +55,16 @@ class RendererController extends shim(RendererModel, Plugin) {
                     priority: 100,
                 },
             },
+            ViewerFileAction: {
+                DownloadBTF: {
+                    component: DownloadBTF,
+                    priority: 100,
+                },
+                Screenshot: {
+                    priority: 90,
+                    component: Component(() => <Button onClick={this.exportScreenshot}>Snapshot</Button>),
+                },
+            },
         }
     }
 
@@ -190,7 +200,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     surfaceRef: {
-        captureAsBlob: () => Promise<Blob>
+        captureAsBlob: () => Promise<Blob>,
     }
     @action
     handleSurfaceRef (ref) {
@@ -200,7 +210,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     async exportScreenshot () {
         let btf = this.appState.btf()
         let blob = await this.surfaceRef.captureAsBlob()
-        FileSaver.saveAs(blob, `${btf.name}.png`)
+        FileSaver.saveAs(blob, `${btf.name}_snap.png`)
     }
 }
 
@@ -210,8 +220,9 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
 import content from '*.css'
-import { sleep } from '../../util';
+import { sleep } from '../../util'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import RenderHooks from '../../View/RenderHooks'
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
@@ -285,8 +296,7 @@ const Upload = Component(function Upload (props, classes) {
             </Dropzone>
         </CardContent>
         <CardActions>
-            <DownloadBTF />
-            <Button onClick={this.exportScreenshot}>Snapshot</Button>
+            <RenderHooks name='ViewerFileAction' />
         </CardActions>
     </Card>
 }, UploadStyles)

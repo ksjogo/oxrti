@@ -21,6 +21,7 @@ import TrashIcon from '@material-ui/icons/Delete'
 import uniqid from 'uniqid'
 import { ChromePicker } from 'react-color'
 import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from '@attently/riek'
+import FileSaver from 'file-saver'
 
 let LayerConfig = types.model({
     visible: types.boolean,
@@ -84,6 +85,12 @@ class PaintController extends shim(PaintModel, Plugin) {
             PostLoad: {
                 Layers: {
                     func: this.importLayers,
+                },
+            },
+            ViewerFileAction: {
+                Fullshot: {
+                    component: Fullshot,
+                    priority: 80,
                 },
             },
         }
@@ -272,6 +279,18 @@ class PaintController extends shim(PaintModel, Plugin) {
             this.setLayerName(index, change.name)
         }
     }
+
+    mixerRef
+    @action
+    handleMixerRef (ref) {
+        this.mixerRef = ref
+    }
+
+    fullshot () {
+        let btf = this.appState.btf()
+        let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height, true)
+        FileSaver.saveAs(blob, `${btf.name}_full.png`)
+    }
 }
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
@@ -372,6 +391,7 @@ const PaintNode = Component(function PaintNode (props) {
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
+            ref={this.handleMixerRef}
             width={width}
             height={height}
             key={this.key}
@@ -384,6 +404,7 @@ const PaintNode = Component(function PaintNode (props) {
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
+            ref={this.handleMixerRef}
             width={width}
             height={height}
             key={this.key}
@@ -421,4 +442,8 @@ const PaintNode = Component(function PaintNode (props) {
                     </Bus>
                 })}
         </Node >
+})
+
+const Fullshot = Component(function Fullshot (props) {
+    return <Button onClick={this.fullshot}>Fullshot</Button>
 })
