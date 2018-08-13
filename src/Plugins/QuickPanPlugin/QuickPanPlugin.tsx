@@ -60,7 +60,6 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
         this.dragging = false
     }
 
-
 }
 
 const { Plugin: QuickPanPlugin, Component } = PluginCreator(QuickPanController, QuickPanModel, 'QuickPanPlugin')
@@ -87,9 +86,9 @@ import quickPanShader from './quickpan.glsl'
 
 import { BaseNodeConfig } from '../../Hook'
 import { normalize, sub, Point, rotate } from '../../Math'
-import { IRendererPlugin } from '../RendererPlugin/RendererPlugin';
-import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin';
-import { IRotationPlugin } from '../RotationPlugin/RotationPlugin';
+import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
 const SIZE = 150
 

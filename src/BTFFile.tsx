@@ -58,7 +58,7 @@ export default class BTFFile {
     layers: AnnotationLayer[] = []
     name: string = ''
 
-    constructor(manifest?: any) {
+    constructor (manifest?: any) {
         if (!manifest)
             return
 

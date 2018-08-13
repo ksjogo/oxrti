@@ -32,7 +32,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
 
     cache: { [key: string]: RetType } = {}
     loadNoCache (config: TexForRender): RetType {
-        //debugger
+        // debugger
         if (this.cache[config.ident])
             return this.cache[config.ident]
 

@@ -7,10 +7,13 @@ import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import SafeGLIInspector from '../../View/SafeGLIInspector'
+import { Debounce } from 'lodash-decorators'
 
 const RenderMargin = 20
 
 const LightControlModel = Plugin.props({
+    displayX: 0,
+    displayY: 0,
     x: 0,
     y: 0,
 })
@@ -87,6 +90,20 @@ class LightController extends shim(LightControlModel, Plugin) {
             point = rotate(point, rotationPlugin.rad)
         }
         let hemis = hemispherical(point[0], point[1])
+        this.displayX = hemis[0]
+        this.displayY = hemis[1]
+        this.setXYThrottled(hemis)
+    }
+
+    @Debounce(100, {
+        trailing: true,
+    })
+    setXYThrottled (hemis: number[]) {
+        this.setXY(hemis)
+    }
+
+    @action
+    setXY (hemis: number[]) {
         this.x = hemis[0]
         this.y = hemis[1]
     }
@@ -149,7 +166,7 @@ import { toTex, rotate, Point } from '../../Math'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
-    let point: Point = [this.x, this.y]
+    let point: Point = [this.displayX, this.displayY]
     let rotationPlugin = props.appState.plugins.get('RotationPlugin') as IRotationPlugin
     if (rotationPlugin) {
         point = rotate(point, -rotationPlugin.rad)
