@@ -4,7 +4,7 @@ import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Pl
 // oxrti default imports ->
 
 import { Point, Node2PNG } from '../../Math'
-import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
+import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
@@ -291,6 +291,11 @@ class PaintController extends shim(PaintModel, Plugin) {
         let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height, true)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
     }
+
+    @action
+    handleBrush (event) {
+        this.brushRadius = parseInt(event.target.value, 10)
+    }
 }
 
 const { Plugin: PaintPlugin, Component } = PluginCreator(PaintController, PaintModel, 'PaintPlugin')
@@ -349,12 +354,22 @@ const PaintUI = Component(function PaintUI (props, classes) {
             </List>
         </CardContent>
         <CardActions>
-            <Button onClick={this.addLayer}>Add Layer</Button>
+            <Button onClick={this.addLayer}>+Layer</Button>
+            <TextField
+                label=''
+                value={this.brushRadius}
+                onChange={this.handleBrush}
+                type='number'
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                margin='normal'
+            />
             <Button style={{
                 backgroundColor: this.displayColor(),
                 color: this.displayColor(true),
                 textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
-            }} onClick={this.switchColorPicker}>Pick Color</Button>
+            }} onClick={this.switchColorPicker}>Color</Button>
             <Popover
                 anchorEl={this.anchorEl}
                 open={this.showColorPicker}
@@ -387,7 +402,7 @@ const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
     let width = btf.data.width
     let height = btf.data.height
-    let brush = this.brushRadius / width
+    let brush = this.brushRadius / 100
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node

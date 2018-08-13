@@ -101,7 +101,7 @@ const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, 
 export default RotationPlugin
 export type IRotationPlugin = typeof RotationPlugin.Type
 
-const RotationComponent = Component(function RotationNode (props) {
+export const RotationComponent = Component(function RotationNode (props) {
     let maxDims = this.maxDims
     return <ShaderNode
         width={maxDims}
@@ -115,7 +115,7 @@ const RotationComponent = Component(function RotationNode (props) {
         }} />
 })
 
-const CentererComponent = Component(function RotationNode (props) {
+export const CentererComponent = Component(function RotationNode (props) {
     let [width, height] = this.centererSizes
     let maxDims = this.maxDims
     return <ShaderNode
