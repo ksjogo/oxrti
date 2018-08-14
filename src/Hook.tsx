@@ -1,13 +1,13 @@
 import { PluginComponentType } from './View/Component'
-import { TabConfig } from './View/Tabs'
 import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
 import { Dragger } from './Plugins/RendererPlugin/DragInterface'
 import { Point } from './Math'
-import { Renderer } from 'react-dom'
 import { ChannelModel } from './BTFFile'
-import BaseNode from './Plugins/RendererPlugin/BaseNode'
-
 export { ChannelModel }
+import BaseNode from './Plugins/RendererPlugin/BaseNode'
+import { TabProps } from '@material-ui/core/Tab'
+
+//generic hook definitions to allow for a typesafe hook system
 
 export type HookBase = {
     priority?: number,
@@ -31,49 +31,7 @@ export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
     inversePoint?: (point: Point) => Point,
 }
 
-export type BaseNodeConfig = {
-    channelModel: ChannelModel,
-    node: BaseNode,
-}
-
 type Hooks<P> = { [key: string]: P }
-
-export type ViewerTabFocusHook = {
-    beforeGain?: () => void,
-    beforeLose?: () => void,
-}
-export type DraggerConfig = {
-    dragger: Dragger,
-    draggerLeft?: () => void,
-}
-
-export type BookmarkSaver = {
-    key: string,
-    save: () => (string | number)[],
-    restore: (values: (string | number)[]) => void,
-}
-
-export type ScreenshotMeta = {
-    key: string,
-    fullshot?: () => (string | number)[] | string | number,
-    snapshot?: () => (string | number)[] | string | number,
-}
-
-export type HookTypes = {
-    ViewerTabFocus?: ConfigHook<ViewerTabFocusHook>,
-    ViewerRender?: RendererHook,
-    ViewerSide?: ComponentHook,
-    ViewerDrag?: ConfigHook<DraggerConfig>,
-    ViewerFileAction?: ComponentHook,
-    ScreenshotMeta?: ConfigHook<ScreenshotMeta>
-    PreDownload?: FunctionHook,
-    PostLoad?: FunctionHook,
-    Test?: FunctionHook,
-    Tabs?: ConfigHook<TabConfig>,
-    ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
-    RendererForModel?: ConfigHook<BaseNodeConfig>,
-    Bookmarks?: ConfigHook<BookmarkSaver>,
-}
 
 export type HookConfig = {
     [P in keyof HookTypes]: Hooks<HookTypes[P]>
@@ -87,3 +45,64 @@ type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof
 export type HookNameComponent = LimitedHooks<HookConfig, Hooks<ComponentHook<any>>>
 export type HookNameFunction = LimitedHooks<HookConfig, Hooks<FunctionHook<any>>>
 export type HookNameConfig = LimitedHooks<HookConfig, Hooks<ConfigHook<any>>>
+
+
+// specific hooks follow
+
+type BaseNodeConfig = {
+    channelModel: ChannelModel,
+    node: BaseNode,
+}
+
+type ViewerTabFocus = {
+    beforeGain?: () => void,
+    beforeLose?: () => void,
+}
+
+type DraggerConfig = {
+    dragger: Dragger,
+    draggerLeft?: () => void,
+}
+
+type BookmarkSaver = {
+    key: string,
+    save: () => (string | number)[],
+    restore: (values: (string | number)[]) => void,
+}
+
+type ScreenshotMeta = {
+    key: string,
+    fullshot?: () => (string | number)[] | string | number,
+    snapshot?: () => (string | number)[] | string | number,
+}
+
+type RendererNode = {
+    component: PluginComponentType,
+    inversePoint?: (point: Point) => Point,
+}
+
+type Tab = {
+    content: PluginComponentType
+    tab: TabProps,
+    padding?: number,
+    beforeFocusGain?: () => Promise<void>,
+    afterFocusGain?: () => Promise<void>,
+    beforeFocusLose?: () => Promise<void>,
+    afterFocusLose?: () => Promise<void>,
+}
+
+type HookTypes = {
+    ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
+    ViewerRender?: ConfigHook<RendererNode>,
+    ViewerSide?: ComponentHook,
+    ViewerDrag?: ConfigHook<DraggerConfig>,
+    ViewerFileAction?: ComponentHook,
+    ScreenshotMeta?: ConfigHook<ScreenshotMeta>
+    PreDownload?: FunctionHook,
+    PostLoad?: FunctionHook,
+    Test?: FunctionHook,
+    Tabs?: ConfigHook<Tab>,
+    ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
+    RendererForModel?: ConfigHook<BaseNodeConfig>,
+    Bookmarks?: ConfigHook<BookmarkSaver>,
+}

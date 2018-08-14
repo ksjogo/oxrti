@@ -11,8 +11,7 @@ import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
-import { DraggerConfig, ViewerTabFocusHook, ComponentHook, ConfigHook, RendererHook, FunctionHook } from '../../Hook'
-import { Point, DummyRenderSize } from '../../Math'
+import { Point } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
@@ -80,14 +79,14 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     @action
     async beforeFocusGain () {
-        this.appState.asyncHookForEach('ViewerTabFocus', async (config: ViewerTabFocusHook) => {
+        this.appState.asyncHookForEach('ViewerTabFocus', async (config) => {
             config.beforeGain && await config.beforeGain()
         })
     }
 
     @action
     async beforeFocusLose () {
-        this.appState.asyncHookForEach('ViewerTabFocus', async (config: ViewerTabFocusHook) => {
+        this.appState.asyncHookForEach('ViewerTabFocus', async (config) => {
             config.beforeLose && await config.beforeLose()
         })
     }
@@ -148,7 +147,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     inversePoint (point: Point) {
-        this.appState.hookForEachReverse('ViewerRender', (hook: RendererHook) => {
+        this.appState.hookForEachReverse('ViewerRender', (hook) => {
             if (hook.inversePoint)
                 point = hook.inversePoint(point)
         })

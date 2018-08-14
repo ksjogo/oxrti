@@ -1,6 +1,6 @@
 import Component from './Component'
 import React from 'react'
-import { HookNameComponent, ComponentHook } from '../Hook'
+import { HookNameComponent } from '../Hook'
 
 /**
  * Simple plugin rendering function

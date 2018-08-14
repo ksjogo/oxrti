@@ -3,14 +3,10 @@ import React from 'react'
 import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
 // oxrti default imports ->
 
-import { Switch, List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
-import Slider from '@material-ui/lab/Slider'
-import { Point, translate } from '../../Math'
+import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
 import uniqid from 'uniqid'
-import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from '@attently/riek'
+import { RIEInput } from '@attently/riek'
 import TrashIcon from '@material-ui/icons/Delete'
-import { ConfigHook, BookmarkSaver } from '../../Hook'
-import { observable, action as act, runInAction } from 'mobx'
 
 const BookmarkModel = types.model({
     values: types.optional(

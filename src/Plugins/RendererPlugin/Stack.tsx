@@ -1,10 +1,8 @@
 import React from 'react'
 import { Surface } from 'gl-react-dom'
 import Component from '../../View/Component'
-import { ComponentHook, BaseNodeConfig } from '../../Hook'
 import { IRendererPlugin } from './RendererPlugin'
 import { Shaders, Node, LinearCopy, NearestCopy } from 'gl-react'
-import { DummyRenderSize } from '../../Math'
 import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
 
 import noise from './noise.glsl'

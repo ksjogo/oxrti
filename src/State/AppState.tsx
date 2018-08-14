@@ -7,7 +7,6 @@ import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './Hook
 import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook, HookType } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
-import { TabConfig } from '../View/Tabs'
 
 const AppStateData = types.model({
   activeTab: 0,
@@ -185,7 +184,7 @@ class AppStateController extends shim(AppStateData) {
     manager.forEach(iterator, name, this)
   }
 
-  async asyncHookForEach<P extends HookName> (name: HookName, iterator: AsyncHookIterator<P>): Promise<void> {
+  async asyncHookForEach<P extends HookName> (name: P, iterator: AsyncHookIterator<P>): Promise<void> {
     let manager = this.hooks.get(name)
     if (!manager)
       return
@@ -197,7 +196,7 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookForEachReverse<P extends HookName> (name: HookName, iterator: HookIterator<P>): void {
+  hookForEachReverse<P extends HookName> (name: P, iterator: HookIterator<P>): void {
     let manager = this.hooks.get(name)
     if (!manager)
       return

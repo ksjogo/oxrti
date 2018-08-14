@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography'
 import Component from './Component'
 import { default as DefaultTheme } from './Theme'
 import { ConfigHook } from '../Hook'
-import { TabConfig } from './Tabs'
 import AppStyles from './AppStyles'
 
 export default hot(module)(Component(function App (props, classes) {
