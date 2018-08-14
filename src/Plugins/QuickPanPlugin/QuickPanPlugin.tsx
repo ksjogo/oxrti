@@ -98,7 +98,7 @@ const PreviewComponent = Component(function PreviewComponent (props, classes) {
     let height = 150 * btf.data.height / btf.data.width
     let rootnode
     if (!btf.isDefault()) {
-        props.appState.hookForEach('RendererForModel', (hook: BaseNodeConfig) => {
+        props.appState.hookForEach('RendererForModel', (hook) => {
             if (hook.channelModel === btf.data.channelModel) {
                 let Func = hook.node.render
                 rootnode = <Func

@@ -38,18 +38,10 @@ export type BaseNodeConfig = {
 
 type Hooks<P> = { [key: string]: P }
 
-export type ComponentHooks<P = PluginComponentType> = Hooks<ComponentHook<P>>
-export type FunctionHooks<P = any> = Hooks<FunctionHook<P>>
-export type ConfigHooks<P = any> = Hooks<ConfigHook<P>>
-export type RendererHooks<P = PluginComponentType> = Hooks<RendererHook<P>>
-
-export type TabsConfig = ConfigHooks<TabConfig>
 export type ViewerTabFocusHook = {
     beforeGain?: () => void,
     beforeLose?: () => void,
 }
-export type ViewerTabFocusHooks = ConfigHooks<ViewerTabFocusHook>
-
 export type DraggerConfig = {
     dragger: Dragger,
     draggerLeft?: () => void,
@@ -67,30 +59,31 @@ export type ScreenshotMeta = {
     snapshot?: () => (string | number)[] | string | number,
 }
 
-export type HookConfig = {
-    ViewerTabFocus?: ViewerTabFocusHooks,
-    ViewerRender?: RendererHooks,
-    ViewerSide?: ComponentHooks,
-    ViewerDrag?: ConfigHooks<DraggerConfig>,
-    ViewerFileAction?: ComponentHooks,
-    ScreenshotMeta?: ConfigHooks<ScreenshotMeta>
-    PreDownload?: FunctionHooks,
-    PostLoad?: FunctionHooks,
-    Test?: FunctionHooks,
-    Tabs?: TabsConfig,
-    ConverterFileFormat?: ConfigHooks<ConverterStrategyConfig>,
-    RendererForModel?: ConfigHooks<BaseNodeConfig>,
-    Bookmarks?: ConfigHooks<BookmarkSaver>,
+export type HookTypes = {
+    ViewerTabFocus?: ConfigHook<ViewerTabFocusHook>,
+    ViewerRender?: RendererHook,
+    ViewerSide?: ComponentHook,
+    ViewerDrag?: ConfigHook<DraggerConfig>,
+    ViewerFileAction?: ComponentHook,
+    ScreenshotMeta?: ConfigHook<ScreenshotMeta>
+    PreDownload?: FunctionHook,
+    PostLoad?: FunctionHook,
+    Test?: FunctionHook,
+    Tabs?: ConfigHook<TabConfig>,
+    ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
+    RendererForModel?: ConfigHook<BaseNodeConfig>,
+    Bookmarks?: ConfigHook<BookmarkSaver>,
 }
+
+export type HookConfig = {
+    [P in keyof HookTypes]: Hooks<HookTypes[P]>
+}
+export type HookName = keyof HookConfig
+
+export type HookType<P extends HookName> = HookTypes[P]
 
 type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof T]
 
-export type HookName = keyof HookConfig
-export type HookNameComponent = LimitedHooks<HookConfig, ComponentHooks<any>>
-export type HookNameFunction = LimitedHooks<HookConfig, FunctionHooks<any>>
-export type HookNameConfig = LimitedHooks<HookConfig, ConfigHooks<any>>
-
-export type HookType = keyof HookConfig
-
-
-export type HookIterator<P extends HookType> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => boolean | void
+export type HookNameComponent = LimitedHooks<HookConfig, Hooks<ComponentHook<any>>>
+export type HookNameFunction = LimitedHooks<HookConfig, Hooks<FunctionHook<any>>>
+export type HookNameConfig = LimitedHooks<HookConfig, Hooks<ConfigHook<any>>>

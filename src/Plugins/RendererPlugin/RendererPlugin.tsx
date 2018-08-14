@@ -139,7 +139,7 @@ class RendererController extends shim(RendererModel, Plugin) {
 
         nextTex = this.inversePoint(nextTex)
 
-        this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
+        this.appState.hookForEach('ViewerDrag', (hook) => {
             return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
         })
 
@@ -158,7 +158,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     @action
     onMouseLeave () {
         this.dragging = false
-        this.appState.hookForEach('ViewerDrag', (hook: ConfigHook<DraggerConfig>) => {
+        this.appState.hookForEach('ViewerDrag', (hook) => {
             return hook.draggerLeft && hook.draggerLeft()
         })
     }
@@ -276,7 +276,7 @@ const RendererView = Component(function RendererView (props, classes) {
         >
             <div className={classes.toolbar} />
             <List>
-                {props.appState.hookMap('ViewerSide', (hook: ComponentHook, fullName: string) => {
+                {props.appState.hookMap('ViewerSide', (hook, fullName) => {
                     let Func = hook.component
                     return <ListItem key={fullName} >
                         <Func />

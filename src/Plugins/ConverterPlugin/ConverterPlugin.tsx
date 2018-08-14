@@ -71,7 +71,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             let ending = path.extname(file.name)
             let name = path.basename(file.name, ending)
             let strategy: new (...args: any[]) => ConverterStrategy
-            this.appState.hookForEach('ConverterFileFormat', (hook: ConfigHook<ConverterStrategyConfig>) => {
+            this.appState.hookForEach('ConverterFileFormat', (hook) => {
                 if (hook.fileEndings.indexOf(ending) !== -1)
                     strategy = hook.strategy
             })

@@ -12,7 +12,7 @@ import { TabConfig } from './Tabs'
 import AppStyles from './AppStyles'
 
 export default hot(module)(Component(function App (props, classes) {
-    let currentTab = props.appState.hookPick<ConfigHook<TabConfig>>('Tabs', props.appState.activeTab)
+    let currentTab = props.appState.hookPick('Tabs', props.appState.activeTab)
     let CurrentRender = currentTab.content
     let padding = currentTab.padding !== undefined ? currentTab.padding : 24
     return (
@@ -21,7 +21,7 @@ export default hot(module)(Component(function App (props, classes) {
                 <Tabs
                     value={props.appState.activeTab}
                     onChange={props.appState.switchTab} >
-                    {props.appState.hookMap('Tabs', (hook: ConfigHook<TabConfig>, fullName) => {
+                    {props.appState.hookMap('Tabs', (hook, fullName) => {
                         return <Tab {...hook.tab} key={fullName} />
                     })}
                 </Tabs>

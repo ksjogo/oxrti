@@ -40,7 +40,7 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
     @action
     addBookmark (e) {
         let vals = {}
-        this.appState.hookForEach('Bookmarks', (hook: ConfigHook<BookmarkSaver>) => {
+        this.appState.hookForEach('Bookmarks', (hook) => {
             let values = hook.save()
             vals[hook.key] = values
         })
@@ -75,7 +75,7 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
 
     @action
     restore (index) {
-        this.appState.hookForEach('Bookmarks', (hook: ConfigHook<BookmarkSaver>) => {
+        this.appState.hookForEach('Bookmarks', (hook) => {
             let bookmark = this.bookmarks[index]
             let values = bookmark.values.get(hook.key)
             hook.restore(values)

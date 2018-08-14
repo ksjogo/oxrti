@@ -1,6 +1,6 @@
 import { types } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import { FunctionHook, ComponentHook, HookName, ConfigHook } from '../Hook'
+import { FunctionHook, ComponentHook, HookName, ConfigHook, HookType } from '../Hook'
 
 // circular dependency at the moment
 type IAppState = any
@@ -20,10 +20,10 @@ const HookManagerData = types.model({
     stack: types.optional(types.array(HookEntry), []),
 })
 
-export type HookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => boolean | void
-export type AsyncHookIterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => Promise<boolean | void>
-export type HookMapper<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
-export type HookFind<S> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => S
+export type HookIterator<P extends HookName> = (hook: HookType<P>, fullName?: string) => boolean | void
+export type AsyncHookIterator<P extends HookName> = (hook: HookType<P>, fullName?: string) => Promise<boolean | void>
+export type HookMapper<P extends HookName, S> = (hook: HookType<P>, fullName?: string) => S
+export type HookFind<P extends HookName, S> = (hook: HookType<P>, fullName?: string) => S
 /**
  * Manage the rendering stack for the main viewer component
  */
@@ -66,7 +66,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
-    forEach (iterator: HookIterator, name: HookName, appState: IAppState) {
+    forEach<P extends HookName> (iterator: HookIterator<P>, name: P, appState: IAppState) {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
             let instance = hook.name.split('$')
@@ -76,7 +76,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
-    async asyncForEach (iterator: AsyncHookIterator, name: HookName, appState: IAppState): Promise<void> {
+    async asyncForEach<P extends HookName> (iterator: AsyncHookIterator<P>, name: P, appState: IAppState): Promise<void> {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
             let instance = hook.name.split('$')
@@ -86,7 +86,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
-    forEachReverse (iterator: HookIterator, name: HookName, appState: IAppState) {
+    forEachReverse<P extends HookName> (iterator: HookIterator<P>, name: P, appState: IAppState) {
         for (let i = this.stack.length - 1; i >= 0; i--) {
             let hook = this.stack[i]
             let instance = hook.name.split('$')
@@ -96,7 +96,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
-    map<S> (mapper: HookMapper<S>, name: HookName, appState: IAppState): S[] {
+    map<S, P extends HookName> (mapper: HookMapper<P, S>, name: HookName, appState: IAppState): S[] {
         let result = []
         this.forEach((hook, fullName) => {
             result.push(mapper(hook, fullName))
@@ -104,7 +104,7 @@ class HookManagerCode extends shim(HookManagerData) {
         return result
     }
 
-    pick<S> (index: number, name: HookName, appState: IAppState): S {
+    pick<P extends HookName> (index: number, name: P, appState: IAppState): HookType<P> {
         let hook = this.stack[index]
         let instance = hook.name.split('$')
         let plugin = appState.plugins.get(instance[0])

@@ -36,7 +36,7 @@ export default Component<{
     let btf = props.appState.btf()
 
     if (!btf.isDefault()) {
-        props.appState.hookForEach('RendererForModel', (hook: BaseNodeConfig) => {
+        props.appState.hookForEach('RendererForModel', (hook) => {
             if (hook.channelModel === btf.data.channelModel) {
                 let Func = hook.node.render
                 current = <Func key={btf.id} />
@@ -53,15 +53,13 @@ export default Component<{
         />
     }
 
-    props.appState.hookForEach('ViewerRender', (hook: ComponentHook) => {
+    props.appState.hookForEach('ViewerRender', (hook) => {
         let Func = hook.component
         current = <Func
             // flush layer if the btf file changed
             key={btf.id}
         >{current}</Func>
     })
-
-    console.log('Stack Dim', size)
 
     return <div style={{
         marginLeft: marginXP ? margin : 0,

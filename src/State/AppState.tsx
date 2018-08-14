@@ -4,7 +4,7 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
-import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook } from '../Hook'
+import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook, HookType } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
 import { TabConfig } from '../View/Tabs'
@@ -117,8 +117,8 @@ class AppStateController extends shim(AppStateData) {
 
   @action
   async switchTab (event, index) {
-    let oldTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', this.activeTab)
-    let newTab = this.hookPick<ConfigHook<TabConfig>>('Tabs', index)
+    let oldTab = this.hookPick('Tabs', this.activeTab)
+    let newTab = this.hookPick('Tabs', index)
     oldTab.beforeFocusLose && await oldTab.beforeFocusLose()
     newTab.beforeFocusGain && await newTab.beforeFocusGain()
 
@@ -169,13 +169,13 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookForEach (name: HookName, iterator?: HookIterator): void {
+  hookForEach<P extends HookName> (name: P, iterator?: HookIterator<P>): void {
     let manager = this.hooks.get(name)
     if (!manager)
       return
 
     if (!iterator)
-      iterator = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => {
+      iterator = (hook: FunctionHook, fullName?: string) => {
         if (hook.func)
           hook.func()
         else
@@ -185,7 +185,7 @@ class AppStateController extends shim(AppStateData) {
     manager.forEach(iterator, name, this)
   }
 
-  async asyncHookForEach (name: HookName, iterator: AsyncHookIterator): Promise<void> {
+  async asyncHookForEach<P extends HookName> (name: HookName, iterator: AsyncHookIterator<P>): Promise<void> {
     let manager = this.hooks.get(name)
     if (!manager)
       return
@@ -197,7 +197,7 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookForEachReverse (name: HookName, iterator: HookIterator): void {
+  hookForEachReverse<P extends HookName> (name: HookName, iterator: HookIterator<P>): void {
     let manager = this.hooks.get(name)
     if (!manager)
       return
@@ -209,14 +209,14 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param mapper function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookMap<S> (name: HookName, mapper: HookMapper<S>): S[] {
+  hookMap<S, P extends HookName> (name: P, mapper: HookMapper<P, S>): S[] {
     let manager = this.hooks.get(name)
     if (!manager)
       return []
     return manager.map(mapper, name, this)
   }
 
-  hookPick<S> (name: HookName, index: number): S {
+  hookPick<P extends HookName> (name: P, index: number): HookType<P> {
     let manager = this.hooks.get(name)
     if (!manager)
       return null

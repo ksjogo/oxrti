@@ -115,7 +115,6 @@ export type IRotationPlugin = typeof RotationPlugin.Type
 
 export const RotationComponent = Component(function RotationNode (props) {
     let maxDims = this.maxDims
-    console.log('Rotation Dim', maxDims)
     return <ShaderNode
         width={maxDims}
         height={maxDims}
