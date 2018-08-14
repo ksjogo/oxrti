@@ -61,12 +61,19 @@ export type BookmarkSaver = {
     restore: (values: (string | number)[]) => void,
 }
 
+export type ScreenshotMeta = {
+    key: string,
+    fullshot?: () => (string | number)[] | string | number,
+    snapshot?: () => (string | number)[] | string | number,
+}
+
 export type HookConfig = {
     ViewerTabFocus?: ViewerTabFocusHooks,
     ViewerRender?: RendererHooks,
     ViewerSide?: ComponentHooks,
     ViewerDrag?: ConfigHooks<DraggerConfig>,
     ViewerFileAction?: ComponentHooks,
+    ScreenshotMeta?: ConfigHooks<ScreenshotMeta>
     PreDownload?: FunctionHooks,
     PostLoad?: FunctionHooks,
     Test?: FunctionHooks,
@@ -82,3 +89,8 @@ export type HookName = keyof HookConfig
 export type HookNameComponent = LimitedHooks<HookConfig, ComponentHooks<any>>
 export type HookNameFunction = LimitedHooks<HookConfig, FunctionHooks<any>>
 export type HookNameConfig = LimitedHooks<HookConfig, ConfigHooks<any>>
+
+export type HookType = keyof HookConfig
+
+
+export type HookIterator<P extends HookType> = (hook: ComponentHook | FunctionHook | ConfigHook, fullName?: string) => boolean | void

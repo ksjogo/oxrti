@@ -47,6 +47,16 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                     restore: this.restoreBookmark,
                 },
             },
+            ScreenshotMeta: {
+                Zoom: {
+                    key: 'zoom',
+                    snapshot: () => this.scale,
+                },
+                Pan: {
+                    key: 'pan',
+                    snapshot: () => [this.panX, this.panY]
+                },
+            },
         }
     }
 

@@ -31,11 +31,18 @@ class LightController extends shim(LightControlModel, Plugin) {
                 },
             },
             Bookmarks: {
-                Rotation: {
+                LightControl: {
                     key: 'lightcontrol',
                     save: this.saveBookmark,
                     restore: this.restoreBookmark,
                 },
+            },
+            ScreenshotMeta: {
+                LightControl: {
+                    key: 'lightposition',
+                    fullshot: this.saveBookmark,
+                    snapshot: this.saveBookmark,
+                }
             },
         }
     }

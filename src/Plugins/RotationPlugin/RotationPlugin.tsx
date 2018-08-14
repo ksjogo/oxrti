@@ -42,9 +42,15 @@ class RotationController extends shim(RotationModel, Plugin) {
                     restore: this.restoreBookmark,
                 },
             },
+            ScreenshotMeta: {
+                Rotation: {
+                    key: 'rotation',
+                    snapshot: this.saveBookmark,
+                },
+            },
         }
     }
-    @action
+
     saveBookmark () {
         return [this.rad]
     }
@@ -140,7 +146,7 @@ export const CentererComponent = Component(function RotationNode (props) {
 })
 
 import { Card, CardContent, Button } from '@material-ui/core'
-import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin';
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >

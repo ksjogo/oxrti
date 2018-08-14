@@ -67,7 +67,7 @@ class AppStateController extends shim(AppStateData) {
 
   @action
   uptimer () {
-    // this.uptime += 1
+    this.uptime += 1
   }
 
   @action

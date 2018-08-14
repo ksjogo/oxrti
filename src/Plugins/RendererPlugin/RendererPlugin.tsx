@@ -248,6 +248,9 @@ const RendererView = Component(function RendererView (props, classes) {
             }
         </Measure>
         <Popover
+            style={{
+                backgroundColor: 'black',
+            }}
             anchorEl={this.centerRef}
             open={this.popoverShown}
             anchorOrigin={{
