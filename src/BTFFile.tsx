@@ -1,5 +1,6 @@
 import JSZip from 'jszip'
 import { DummyRenderSize } from './Math'
+import { JSONY } from './util';
 export type BTFCache = { [key: string]: BTFFile }
 
 export type ChannelModel = 'RGB' | 'LRGB' | 'SPECTRAL'
@@ -38,10 +39,6 @@ export type TexForRender = {
     format: FileFormat,
 }
 
-function JSONY (thing) {
-    return JSON.stringify(thing, null, 2)
-}
-
 let IDC = 0
 
 export default class BTFFile {
@@ -58,7 +55,7 @@ export default class BTFFile {
     layers: AnnotationLayer[] = []
     name: string = ''
 
-    constructor (manifest?: any) {
+    constructor(manifest?: any) {
         if (!manifest)
             return
 

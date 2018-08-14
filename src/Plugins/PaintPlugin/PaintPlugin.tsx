@@ -290,8 +290,13 @@ class PaintController extends shim(PaintModel, Plugin) {
         let btf = this.appState.btf()
         let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height, true)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
-        let config = {}
-        this.appState.hookForEach('ScreenshotMeta')
+        let meta = {}
+        this.appState.hookForEach('ScreenshotMeta', (hook) => {
+            if (hook.fullshot)
+                meta[hook.key] = hook.fullshot()
+        })
+        blob = new Blob([JSONY(meta)], { type: 'application/json' })
+        FileSaver.saveAs(blob, `${btf.name}_full.json`)
     }
 
     @action
@@ -394,7 +399,7 @@ const PaintUI = Component(function PaintUI (props, classes) {
 }, styles)
 
 import { Shaders, Node, GLSL, Bus } from 'gl-react'
-import { sleep } from '../../util'
+import { sleep, JSONY } from '../../util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 
 /**

@@ -20,7 +20,7 @@ export type StateReloader = (state: any) => void
 let pluginLoader: PluginLoader = null
 
 class AppStateController extends shim(AppStateData) {
-  uptime = 0
+  uptime = Math.random() * 10000
   loadingTextures = 0
   stateReloader: StateReloader = null
 

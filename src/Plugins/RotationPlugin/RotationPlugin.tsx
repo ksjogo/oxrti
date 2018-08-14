@@ -45,7 +45,7 @@ class RotationController extends shim(RotationModel, Plugin) {
             ScreenshotMeta: {
                 Rotation: {
                     key: 'rotation',
-                    snapshot: this.saveBookmark,
+                    snapshot: () => this.rad,
                 },
             },
         }

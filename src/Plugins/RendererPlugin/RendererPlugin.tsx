@@ -215,6 +215,13 @@ class RendererController extends shim(RendererModel, Plugin) {
         let btf = this.appState.btf()
         let blob = await this.surfaceRef.captureAsBlob()
         FileSaver.saveAs(blob, `${btf.name}_snap.png`)
+        let meta = {}
+        this.appState.hookForEach('ScreenshotMeta', (hook) => {
+            if (hook.snapshot)
+                meta[hook.key] = hook.snapshot()
+        })
+        blob = new Blob([JSONY(meta)], { type: 'application/json' })
+        FileSaver.saveAs(blob, `${btf.name}_snap.json`)
     }
 }
 
@@ -224,8 +231,7 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
 import content from '*.css'
-import { sleep } from '../../util'
-import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import { sleep, JSONY } from '../../util'
 import RenderHooks from '../../View/RenderHooks'
 
 const RendererView = Component(function RendererView (props, classes) {
