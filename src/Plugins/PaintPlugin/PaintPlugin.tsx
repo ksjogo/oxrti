@@ -122,7 +122,7 @@ class PaintController extends shim(PaintModel, Plugin) {
      */
     @action
     dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point, dragging: boolean) {
-        if (this.activeLayer === -1)
+        if (this.activeLayer === -1 || this.activeLayer > this.layerCount)
             return false
 
         this.center[0] = nextTex[0]
