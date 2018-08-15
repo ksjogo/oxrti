@@ -138,8 +138,8 @@ class RendererController extends shim(RendererModel, Plugin) {
 
         nextTex = this.inversePoint(nextTex)
 
-        this.appState.hookForEach('ViewerDrag', (hook) => {
-            return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen)
+        this.appState.hookForEach('ViewerMouse', (hook) => {
+            return hook.listener(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen, this.dragging)
         })
 
         this.lastDragScreen = nextScreen
@@ -157,15 +157,13 @@ class RendererController extends shim(RendererModel, Plugin) {
     @action
     onMouseLeave () {
         this.dragging = false
-        this.appState.hookForEach('ViewerDrag', (hook) => {
-            return hook.draggerLeft && hook.draggerLeft()
+        this.appState.hookForEach('ViewerMouse', (hook) => {
+            return hook.mouseLeft && hook.mouseLeft()
         })
     }
 
     onMouseMove (e: MouseEvent) {
-        if (this.dragging) {
-            this.notifyDraggers(e)
-        }
+        this.notifyDraggers(e)
     }
 
     @action
@@ -178,8 +176,9 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     @action
-    onMouseUp () {
+    onMouseUp (e: MouseEvent) {
         this.dragging = false
+        this.notifyDraggers(e)
     }
 
     centerRef

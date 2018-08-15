@@ -7,6 +7,10 @@ uniform bool layerVisibility[X];
 
 uniform sampler2D layer[X];
 
+uniform vec2 center;
+uniform bool showBrush;
+uniform float brushRadius;
+
 void main()
 {  
      vec4 base = texture2D(children, uv);
@@ -18,5 +22,13 @@ void main()
             base.a = 1.0;
         }
     }
+
+    if (showBrush) {
+           vec2 d = uv - center;
+            if (length(d) < brushRadius) {
+                base = mix(base, vec4(0.5, 0.5, 0.5, 0.5), 0.5);
+            }
+    }
+
      gl_FragColor = base;
   }

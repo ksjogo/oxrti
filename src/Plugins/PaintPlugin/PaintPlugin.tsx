@@ -37,13 +37,19 @@ const PaintModel = Plugin.props({
     layers: types.optional(types.array(LayerConfig), []),
 })
 
+enum DrawingState {
+    Outside = 1,
+    Hovering,
+    Drawing,
+}
+
 /**
  * This plugin allows the overlay of multiple paint layers onto
  */
 class PaintController extends shim(PaintModel, Plugin) {
     showColorPicker = false
 
-    drawing = false
+    drawing = DrawingState.Outside
     initialized = false
 
     get layerCount () {
@@ -70,9 +76,9 @@ class PaintController extends shim(PaintModel, Plugin) {
                     priority: 24,
                 },
             },
-            ViewerDrag: {
+            ViewerMouse: {
                 Pan: {
-                    dragger: this.dragger,
+                    listener: this.dragger,
                     draggerLeft: this.draggerLeft,
                     priority: 100,
                 },
@@ -101,13 +107,13 @@ class PaintController extends shim(PaintModel, Plugin) {
      */
     @action
     async beforeFocusGain () {
-        this.drawing = false
+        this.drawing = DrawingState.Outside
         this.importLayers()
     }
 
     @action
     async beforeFocusLose () {
-        this.drawing = false
+        this.drawing = DrawingState.Outside
         await this.exportLayers()
     }
 
@@ -115,18 +121,24 @@ class PaintController extends shim(PaintModel, Plugin) {
      * The shaders do the actual drawing, so we just update their uniforms
      */
     @action
-    dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) {
-        if (this.activeLayer !== -1) {
-            this.drawing = true
-            this.center[0] = nextTex[0]
-            this.center[1] = nextTex[1]
-            return true
-        }
+    dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point, dragging: boolean) {
+        if (this.activeLayer === -1)
+            return false
+
+        this.center[0] = nextTex[0]
+        this.center[1] = nextTex[1]
+
+        if (dragging && this.activeLayer !== -1)
+            this.drawing = DrawingState.Drawing
+        else
+            this.drawing = DrawingState.Hovering
+
+        return true
     }
 
     @action
     draggerLeft () {
-        this.drawing = false
+        this.drawing = DrawingState.Outside
     }
 
     @action
@@ -141,7 +153,7 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     handleActiveLayer (index) {
         return (event) => {
-            this.setDrawing(false)
+            this.setDrawing(DrawingState.Outside)
             this.setActiveLayer(this.activeLayer === index ? -1 : index)
         }
     }
@@ -437,7 +449,11 @@ const PaintNode = Component(function PaintNode (props) {
             uniforms={{
                 children: props.children,
                 layerVisibility: this.layers.map(l => l.visible),
+                center: this.center.slice(0, 3),
+                brushRadius: brush,
+                showBrush: this.drawing === DrawingState.Hovering,
             }}
+
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {
@@ -453,7 +469,7 @@ const PaintNode = Component(function PaintNode (props) {
                             uniforms={
                                 // and then write on it
                                 this.initialized ? {
-                                    drawing: this.drawing && this.activeLayer === index,
+                                    drawing: this.drawing === DrawingState.Drawing && this.activeLayer === index,
                                     color: this.color.slice(0, 4),
                                     center: this.center.slice(0, 3),
                                     brushRadius: brush,

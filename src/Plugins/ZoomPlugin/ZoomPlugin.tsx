@@ -34,9 +34,9 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                     priority: 21,
                 },
             },
-            ViewerDrag: {
+            ViewerMouse: {
                 Pan: {
-                    dragger: this.dragger,
+                    listener: this.dragger,
                     priority: -10,
                 },
             },
@@ -73,8 +73,8 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     }
 
     @action
-    dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point) {
-        if (oldScreen) {
+    dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point, dragging: boolean) {
+        if (dragging && oldScreen) {
             this.panX += nextScreen[0] - oldScreen[0]
             this.panY += nextScreen[1] - oldScreen[1]
         }

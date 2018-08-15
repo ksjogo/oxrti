@@ -1,6 +1,6 @@
 import { PluginComponentType } from './View/Component'
 import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
-import { Dragger } from './Plugins/RendererPlugin/DragInterface'
+import { MouseListener } from './Plugins/RendererPlugin/MouseListener'
 import { Point } from './Math'
 import { ChannelModel } from './BTFFile'
 export { ChannelModel }
@@ -59,9 +59,9 @@ type ViewerTabFocus = {
     beforeLose?: () => void,
 }
 
-type DraggerConfig = {
-    dragger: Dragger,
-    draggerLeft?: () => void,
+type MouseConfig = {
+    listener: MouseListener,
+    mouseLeft?: () => void,
 }
 
 type BookmarkSaver = {
@@ -95,7 +95,7 @@ type HookTypes = {
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
     ViewerRender?: ConfigHook<RendererNode>,
     ViewerSide?: ComponentHook,
-    ViewerDrag?: ConfigHook<DraggerConfig>,
+    ViewerMouse?: ConfigHook<MouseConfig>,
     ViewerFileAction?: ComponentHook,
     ScreenshotMeta?: ConfigHook<ScreenshotMeta>
     PreDownload?: FunctionHook,
