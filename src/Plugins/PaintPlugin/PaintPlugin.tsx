@@ -458,6 +458,7 @@ const PaintNode = Component(function PaintNode (props) {
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {
+                    let drawThis = this.drawing === DrawingState.Drawing && this.activeLayer === index
                     return <Bus uniform={'layer'} key={`${layer.id}`} index={index} >
                         <Node
                             ref={this.handleRef(layer.id)}
@@ -470,10 +471,10 @@ const PaintNode = Component(function PaintNode (props) {
                             uniforms={
                                 // and then write on it
                                 this.initialized ? {
-                                    drawing: this.drawing === DrawingState.Drawing && this.activeLayer === index,
-                                    color: this.color.slice(0, 4),
-                                    center: this.center.slice(0, 3),
-                                    brushRadius: brush,
+                                    drawing: drawThis,
+                                    color: drawThis ? this.color.slice(0, 4) : [0, 0, 0, 0],
+                                    center: drawThis ? this.center.slice(0, 3) : [0, 0],
+                                    brushRadius: drawThis ? brush : 0,
                                 } : {
                                         // clear is null, so we initially grap the loaded texture
                                         children: btf.annotationTexForRender(layer.id),
