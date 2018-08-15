@@ -421,7 +421,8 @@ const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
     let width = btf.data.width
     let height = btf.data.height
-    let brush = this.brushRadius / 100
+    let mix = Math.sqrt(width * width + height * height)
+    let brush = this.brushRadius / mix / 2
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
