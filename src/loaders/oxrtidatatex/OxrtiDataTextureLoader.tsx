@@ -46,7 +46,7 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         let gl = this.gl
         let data = config.data
         // console.log(config)
-        let promise = createImageBitmap(data)
+        let promise = createImageBitmap(data, { imageOrientation: 'flipY' })
             // firefox doesn't like 9 big textures and gcs (?) some of them, so we have to limit concurrency if one fails
             // this should still allow max currency for other environments
             .catch((reason) => {
@@ -73,7 +73,6 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                         throw new Error(`Currently unsupported fileformat ${config.format}`)
                         break
                 }
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
                 gl.texImage2D(gl.TEXTURE_2D, 0, type, type, gl.UNSIGNED_BYTE, img)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)

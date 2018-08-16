@@ -35,7 +35,7 @@ export function translate (point: Point, by: Point): Point {
 import ndarray from 'ndarray'
 import PNGWriter from './Plugins/ConverterPlugin/PNGWriter'
 
-export function Node2PNG (paintNode: any, width: number, height: number, flipY = false): Blob {
+export function Node2PNG (paintNode: any, width: number, height: number, flipY = true): Blob {
     let captured = paintNode.capture() as ndarray
     let data = captured.data as Uint8Array
     if (flipY)

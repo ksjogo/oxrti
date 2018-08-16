@@ -300,7 +300,7 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     fullshot () {
         let btf = this.appState.btf()
-        let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height, true)
+        let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
         let meta = {}
         this.appState.hookForEach('ScreenshotMeta', (hook) => {

@@ -5,10 +5,9 @@ import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
 
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
-import { Point, translate, Node2PNG, rotate, sub } from '../../Math'
+import { Point, rotate, sub } from '../../Math'
 import { Card, CardContent, Typography, Button } from '@material-ui/core'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
-import { sleep } from '../../util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
 const ZoomModel = Plugin.props({

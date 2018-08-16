@@ -74,21 +74,19 @@ export default class PTMConverterStrategy extends ConverterStrategy {
          * pixels times [R, G, B]
          */
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
-        // orientated at http://www.tobias-franke.eu/projects/ptm/
-        // and https://github.com/alexbrey/ptmconvert/blob/master/hg/src/ptmconvert.cpp
         for (let y = 0; y < this.height; ++y)
             for (let x = 0; x < this.width; ++x) {
-                let p = ((y * this.width) + x)
-                let index = p // * 3
+                let originalIndex = ((y * this.width) + x)
+                let targetIndex = ((this.height - 1 - y) * this.width) + x
 
                 for (let i = 0; i <= 5; i++)
-                    this.coeffData[i][index] = this.pixelData[p * 6 + i]
+                    this.coeffData[i][targetIndex] = this.pixelData[originalIndex * 6 + i]
 
                 for (let i = 0; i <= 2; i++)
-                    this.coeffData[i + 6][index] = this.pixelData[this.pixels * 6 + p * 3 + i]
+                    this.coeffData[i + 6][targetIndex] = this.pixelData[this.pixels * 6 + originalIndex * 3 + i]
 
-                if (p % (this.pixels / 100) === 0) {
-                    await this.ui.setProgress(p / this.pixels * 100 + 1)
+                if (originalIndex % (this.pixels / 100) === 0) {
+                    await this.ui.setProgress(originalIndex / this.pixels * 100 + 1)
                 }
             }
     }
@@ -102,14 +100,12 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 for (let color = 0; color <= 2; color++) {
-                    let index = ((y * this.width) + x)
-                    let pointer = index + this.pixels * color
+                    let inputIndex = (((y * this.width) + x) + this.pixels * color) * 6
+                    let targetIndex = (((this.height - 1 - y) * this.width) + x) * 3
 
                     for (let i = 0; i <= 5; i++) {
                         let bucket = color * 2 + Math.floor(i / 3)
-                        let outputIndex = index * 3 + (i % 3)
-                        let inputIndex = pointer * 6 + i
-                        this.coeffData[bucket][outputIndex] = this.pixelData[inputIndex]
+                        this.coeffData[bucket][targetIndex + (i % 3)] = this.pixelData[inputIndex + i]
                     }
                 }
             }
