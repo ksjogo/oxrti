@@ -58,6 +58,8 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     @action
     onMouseUp () {
         this.dragging = false
+
+
     }
 
 }

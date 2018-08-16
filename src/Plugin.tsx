@@ -86,25 +86,19 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // can we type the styles somehow?
     function SubComponent<P = {}> (inner: innerType<P>, styles?: any): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
-        if (!styles) {
-            return inject('appState')(observer(function (props) {
-                let plugin = (props.appState.plugins.get(name)) as any
-                // actual rendering function
-                // allow this so all code inside a plugin can just refer to this
-                return inner.apply(plugin, [props])
-            }))
-        } else {
-            // material ui needs an extra hoc wrapper
-            // and slightly different observer ordering
-            // cache the actual inner function
-            let InnerMost = withStyles(styles)(observer((props) => {
-                return inner.apply(props.plugin, [props, props.classes])
-            }))
-            return inject('appState')(function (props) {
-                let plugin = (props.appState.plugins.get(name))
-                return <InnerMost plugin={plugin} appState={props.appState} {...props} />
-            })
-        }
+        let func = inject('appState')(observer(function (props) {
+            let plugin = (props.appState.plugins.get(name)) as typeof SubPlugin.Type
+            // actual rendering function
+            // allow this so all code inside a plugin can just refer to this
+            let innerProps = [props]
+            if (styles)
+                innerProps.push(props.classes)
+            return inner.apply(plugin, innerProps)
+        }))
+        if (styles)
+            return withStyles(styles)(func) as PluginComponentType<P>
+        else
+            return func
     }
     // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }

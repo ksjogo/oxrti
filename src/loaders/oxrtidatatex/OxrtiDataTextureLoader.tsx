@@ -11,6 +11,12 @@ import { TexForRender } from '../../BTFFile'
 import { IAppState } from '../../State/AppState'
 import pLimit from 'p-limit'
 
+function isWebGL2 (gl) {
+    if (!gl) return false
+    return (typeof (window as any).WebGL2RenderingContext) !== 'undefined'
+        && gl instanceof (window as any).WebGL2RenderingContext
+}
+
 let limiter = pLimit(1)
 
 let appState: IAppState = null
@@ -71,7 +77,13 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                 gl.texImage2D(gl.TEXTURE_2D, 0, type, type, gl.UNSIGNED_BYTE, img)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-                // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, beforeFlip)
+
+                if (isWebGL2(gl)) {
+                    gl.generateMipmap(gl.TEXTURE_2D)
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR)
+                    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST_MIPMAP_LINEAR)
+                }
+
                 appState.textureLoaded()
                 return { texture, width: img.width, height: img.height }
             }).catch((reason) => {

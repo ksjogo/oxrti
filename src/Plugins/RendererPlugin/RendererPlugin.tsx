@@ -16,6 +16,16 @@ import DownloadBTF from '../../View/DownloadBTF'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
 
+let reloading = false
+let surfaceRef: {
+    captureAsBlob: () => Promise<Blob>,
+} = null
+function handleSurfaceRef (ref) {
+    surfaceRef = ref
+}
+
+
+
 const RendererModel = Plugin.props({
 })
 
@@ -69,6 +79,7 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     hotUnload () {
         console.log('Renderer Hot Unload')
+        reloading = true
         this.appState.hookForEach('PreDownload')
     }
 
@@ -91,15 +102,15 @@ class RendererController extends shim(RendererModel, Plugin) {
         })
     }
 
-    onResizeHandler (contentRect: ContentRect) {
-        if (this.elementHeight !== contentRect.bounds.height || this.elementWidth !== contentRect.bounds.width)
-            this.onResize(contentRect)
-    }
-
     @action
     onResize (contentRect: ContentRect) {
         this.elementHeight = Math.floor(contentRect.bounds.height)
         this.elementWidth = Math.floor(contentRect.bounds.width)
+    }
+
+    onResizeHandler (contentRect: ContentRect) {
+        if (this.elementHeight !== contentRect.bounds.height || this.elementWidth !== contentRect.bounds.width)
+            this.onResize(contentRect)
     }
 
     @action
@@ -164,6 +175,7 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     onMouseMove (e: MouseEvent) {
         this.notifyDraggers(e)
+
     }
 
     @action
@@ -202,17 +214,10 @@ class RendererController extends shim(RendererModel, Plugin) {
         return this.popover !== '' ? this.popover : `Loading ${this.appState.loadingTextures} textures`
     }
 
-    surfaceRef: {
-        captureAsBlob: () => Promise<Blob>,
-    }
-    @action
-    handleSurfaceRef (ref) {
-        this.surfaceRef = ref
-    }
 
     async exportScreenshot () {
         let btf = this.appState.btf()
-        let blob = await this.surfaceRef.captureAsBlob()
+        let blob = await surfaceRef.captureAsBlob()
         FileSaver.saveAs(blob, `${btf.name}_snap.png`)
         let meta = {}
         this.appState.hookForEach('ScreenshotMeta', (hook) => {
@@ -241,7 +246,7 @@ const RendererView = Component(function RendererView (props, classes) {
                     <div className={classes.stack}>
                         {this.elementHeight !== -1 && <Stack
                             key={this.key}
-                            surfaceRef={this.handleSurfaceRef}
+                            surfaceRef={handleSurfaceRef}
                             onMouseLeave={this.onMouseLeave}
                             onMouseMove={this.onMouseMove}
                             onMouseDown={this.onMouseDown}
