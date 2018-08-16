@@ -143,29 +143,29 @@ class PaintController extends shim(PaintModel, Plugin) {
     }
 
     @action
-    setActiveLayer (value) {
+    setActiveLayer (value: number) {
         this.activeLayer = value
     }
 
     @action
-    setDrawing (value) {
+    setDrawing (value: DrawingState) {
         this.drawing = value
     }
 
-    handleActiveLayer (index) {
-        return (event) => {
+    handleActiveLayer (index: number) {
+        return (event: React.MouseEvent<HTMLElement>) => {
             this.setDrawing(DrawingState.Outside)
             this.setActiveLayer(this.activeLayer === index ? -1 : index)
         }
     }
 
     @action
-    setVisibility (index, value) {
+    setVisibility (index: number, value: boolean) {
         this.layers[index].visible = value
     }
 
-    handleVisibility (index) {
-        return (event, value) => {
+    handleVisibility (index: number) {
+        return (event: React.ChangeEvent<HTMLInputElement>, value: boolean) => {
             this.setVisibility(index, value)
         }
     }
@@ -185,19 +185,19 @@ class PaintController extends shim(PaintModel, Plugin) {
         renderer.showPopover()
     }
 
-    handleDelete (index) {
-        return (event) => {
+    handleDelete (index: number) {
+        return (event: React.MouseEvent<HTMLElement>) => {
             this.deleteLayer(index)
         }
     }
 
     @action
-    setInitialized (value) {
+    setInitialized (value: boolean) {
         this.initialized = value
     }
 
     @action
-    addLayer (e) {
+    addLayer (event: React.MouseEvent<HTMLElement>) {
         if (this.layers.length >= 15)
             return alert('Max 15 layers supported due to WebGL implementation limits.')
 
@@ -231,7 +231,7 @@ class PaintController extends shim(PaintModel, Plugin) {
             this.setInitialized(true)
     }
 
-    key = null
+    key = uniqid()
     @action
     importLayers () {
         let btf = this.appState.btf()
@@ -254,10 +254,10 @@ class PaintController extends shim(PaintModel, Plugin) {
         return mixerShader.replace(/\[X\]/gi, `[${this.layerCount}]`).replace('< layerCount', ` < ${this.layerCount}`)
     }
 
-    anchorEl
+    anchorEl: HTMLElement
     @action
-    switchColorPicker (e) {
-        this.anchorEl = e.target
+    switchColorPicker (e: React.MouseEvent<HTMLElement>) {
+        this.anchorEl = e.target as HTMLElement
         this.showColorPicker = !this.showColorPicker
     }
 
@@ -271,17 +271,17 @@ class PaintController extends shim(PaintModel, Plugin) {
     }
 
     @action
-    handleColorChange (color) {
+    handleColorChange (color: any) {
         this.color = observable.array([color.rgb.r / 255, color.rgb.g / 255, color.rgb.b / 255, color.rgb.a])
     }
 
     @action
-    setLayerName (index, name) {
+    setLayerName (index: number, name: string) {
         this.layers[index].name = name
     }
 
-    handleLayerName (index) {
-        return (change) => {
+    handleLayerName (index: number) {
+        return (change: any) => {
             this.setLayerName(index, change.name)
         }
     }
@@ -290,7 +290,7 @@ class PaintController extends shim(PaintModel, Plugin) {
         let btf = this.appState.btf()
         let blob = Node2PNG(this.ref('mixer'), btf.data.width, btf.data.height)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
-        let meta = {}
+        let meta: { [key: string]: any } = {}
 
         this.appState.hookForEach('ScreenshotMeta', (hook) => {
             if (hook.fullshot)
@@ -301,7 +301,7 @@ class PaintController extends shim(PaintModel, Plugin) {
     }
 
     @action
-    handleBrush (event) {
+    handleBrush (event: any) {
         this.brushRadius = parseInt(event.target.value, 10)
     }
 }

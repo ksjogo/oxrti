@@ -13,8 +13,8 @@ import { BTFCache } from './BTFFile'
 let mount: HTMLElement
 
 // webpack bundles the modules into one context
-let pluginContext
-let pluginModules = {}
+let pluginContext: any
+let pluginModules: { [key: string]: any } = {}
 function reloadPluginContext (inital = false) {
     pluginContext = require.context('./Plugins', true, /^\.\//)
     return pluginContext
@@ -86,7 +86,7 @@ function createAppState (snapshot = {}) {
  * @param App app (view) code
  * @param state state tree
  */
-function renderApp (App, state) {
+function renderApp (App: React.StatelessComponent, state: IAppState) {
     ReactDOM.render(<Provider appState={state} >
         <App />
     </Provider>, mount)
@@ -104,9 +104,9 @@ function uptimer () {
 /**
  * Set state from a btf file
  */
-function setStateFromSnapshot (snapshot) {
+function setStateFromSnapshot (snapshot: any) {
     for (let key in snapshot) {
-        state[key] = snapshot[key]
+        (state as any)[key] = snapshot[key]
     }
 }
 
@@ -143,14 +143,14 @@ export default function init (elementId: string | HTMLElement) {
             // we need to find the changed modules
             // code akin to https://github.com/webpack/docs/wiki/hot-module-replacement
             let changedModules = reloadedContext.keys()
-                .map(function (key) {
+                .map(function (key: string) {
                     return [key, reloadedContext(key)]
                 })
-                .filter(function (reloadedModule) {
+                .filter(function (reloadedModule: any) {
                     return pluginModules[reloadedModule[0]] !== reloadedModule[1]
                 })
-            changedModules.forEach(function (module) {
-                pluginModules[module[0]] = module[1]
+            changedModules.forEach(function (module: any) {
+                (pluginModules as any)[module[0]] = module[1]
                 // filter for real plugin roots
                 let moduleName: string = module[0]
                 if (!moduleName.endsWith('Plugin.tsx'))
@@ -162,7 +162,7 @@ export default function init (elementId: string | HTMLElement) {
             })
         })
         // store inital modules to compare for changes later
-        pluginContext.keys().forEach(function (key) {
+        pluginContext.keys().forEach(function (key: string) {
             let module = pluginContext(key)
             pluginModules[key] = module
         })

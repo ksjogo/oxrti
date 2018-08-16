@@ -5,7 +5,7 @@ import FileSaver from 'file-saver'
 import { Button } from '@material-ui/core'
 
 function download (appState: IAppState) {
-    return async (e) => {
+    return async (e: any) => {
         appState.hookForEach('PreDownload')
         let btf = appState.btf()
         let zip = await btf.generateZip()

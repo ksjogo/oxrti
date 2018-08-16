@@ -17,7 +17,7 @@ export default abstract class ConverterStrategy {
         return this.width * this.height
     }
 
-    constructor (content: ArrayBuffer, ui: IConverterUI) {
+    constructor(content: ArrayBuffer, ui: IConverterUI) {
         this.ui = ui
         this.fileBuffer = content
         this.inputBuffer = Buffer.from(content)
@@ -72,9 +72,9 @@ export default abstract class ConverterStrategy {
         return Promise.resolve(this.output)
     }
 
-    abstract async parseMetadata ()
-    abstract async readPixels ()
-    abstract async readSuffix ()
+    abstract async parseMetadata (): Promise<void>
+    abstract async readPixels (): Promise<void>
+    abstract async readSuffix (): Promise<void>
 
     abstract async bundleChannels (): Promise<Channels>
 

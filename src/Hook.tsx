@@ -7,7 +7,7 @@ export { ChannelModel }
 import BaseNode from './Plugins/RendererPlugin/BaseNode'
 import { TabProps } from '@material-ui/core/Tab'
 
-//generic hook definitions to allow for a typesafe hook system
+// generic hook definitions to allow for a typesafe hook system
 
 export type HookBase = {
     priority?: number,
@@ -31,7 +31,11 @@ export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
     inversePoint?: (point: Point) => Point,
 }
 
+export type UnknownHook = ComponentHook & FunctionHook & ConfigHook
+
 type Hooks<P> = { [key: string]: P }
+
+export type UnknownHooks = Hooks<UnknownHook>
 
 export type HookConfig = {
     [P in keyof HookTypes]: Hooks<HookTypes[P]>

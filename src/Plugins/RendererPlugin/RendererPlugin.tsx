@@ -26,7 +26,7 @@ class RendererController extends shim(RendererModel, Plugin) {
     elementWidth = -1
     key = ''
 
-    load (appState) {
+    load (appState: any) {
         super.load(appState)
         OxrtiTextureRegistrator(appState)
     }
@@ -126,7 +126,6 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     dragging = false
-    lastDragTime = null
     lastDragTex: Point = null
     lastDragScreen: Point = null
     @action
@@ -171,7 +170,6 @@ class RendererController extends shim(RendererModel, Plugin) {
     @action
     onMouseDown (e: MouseEvent) {
         this.dragging = true
-        this.lastDragTime = new Date()
         this.lastDragScreen = null
         this.lastDragTex = null
         this.notifyDraggers(e)
@@ -183,9 +181,9 @@ class RendererController extends shim(RendererModel, Plugin) {
         this.notifyDraggers(e)
     }
 
-    centerRef
-    handleCenterRef (measureRef) {
-        return (ref) => {
+    centerRef: any
+    handleCenterRef (measureRef: any) {
+        return (ref: any) => {
             this.centerRef = ref
             measureRef(ref)
         }
@@ -209,7 +207,7 @@ class RendererController extends shim(RendererModel, Plugin) {
         let btf = this.appState.btf()
         let blob = await (this.ref('surface').captureAsBlob() as Promise<Blob>)
         FileSaver.saveAs(blob, `${btf.name}_snap.png`)
-        let meta = {}
+        let meta: { [key: string]: any } = {}
         this.appState.hookForEach('ScreenshotMeta', (hook) => {
             if (hook.snapshot)
                 meta[hook.key] = hook.snapshot()

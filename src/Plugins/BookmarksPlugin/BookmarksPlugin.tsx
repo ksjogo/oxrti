@@ -34,8 +34,8 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
     }
 
     @action
-    addBookmark (e) {
-        let vals = {}
+    addBookmark (e: any) {
+        let vals: {[key: string]: any} = {}
         this.appState.hookForEach('Bookmarks', (hook) => {
             let values = hook.save()
             vals[hook.key] = values
@@ -48,12 +48,12 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
     }
 
     @action
-    setBookmarkName (index, name) {
+    setBookmarkName (index: number, name: string) {
         this.bookmarks[index].name = name
     }
 
-    handleBookmarkName (index) {
-        return (change) => {
+    handleBookmarkName (index: number) {
+        return (change: {name: string}) => {
             this.setBookmarkName(index, change.name)
         }
     }
@@ -63,14 +63,14 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
         this.bookmarks.splice(index, 1)
     }
 
-    handleDelete (index) {
-        return (event) => {
+    handleDelete (index: number) {
+        return (event: any) => {
             this.deleteBookmark(index)
         }
     }
 
     @action
-    restore (index) {
+    restore (index: number) {
         this.appState.hookForEach('Bookmarks', (hook) => {
             let bookmark = this.bookmarks[index]
             let values = bookmark.values.get(hook.key)
@@ -78,8 +78,8 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
         })
     }
 
-    handleRestore (index) {
-        return (event) => {
+    handleRestore (index: number) {
+        return (event: any) => {
             this.restore(index)
         }
     }

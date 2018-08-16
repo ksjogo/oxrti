@@ -11,7 +11,7 @@ import { TexForRender } from '../../BTFFile'
 import { IAppState } from '../../State/AppState'
 import pLimit from 'p-limit'
 
-function isWebGL2 (gl) {
+function isWebGL2 (gl: any) {
     if (!gl) return false
     return (typeof (window as any).WebGL2RenderingContext) !== 'undefined'
         && gl instanceof (window as any).WebGL2RenderingContext

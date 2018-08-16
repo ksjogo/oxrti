@@ -54,20 +54,20 @@ class LightController extends shim(LightControlModel, Plugin) {
     }
 
     @action
-    restoreBookmark (values) {
+    restoreBookmark (values: number[]) {
         this.x = values[0]
         this.y = values[1]
         this.fixHemis()
     }
 
     @action
-    onSliderX (event, value) {
+    onSliderX (event: any, value: number) {
         this.x = value
         this.fixHemis()
     }
 
     @action
-    onSliderY (event, value) {
+    onSliderY (event: any, value: number) {
         this.y = value
         this.fixHemis()
     }

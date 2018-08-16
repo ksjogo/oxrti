@@ -19,7 +19,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 export default Component<{
-    surfaceRef: (ref) => void,
+    surfaceRef: (ref: typeof Surface) => void,
     onMouseLeave: (e: MouseEvent) => void,
     onMouseMove: (e: MouseEvent) => void,
     onMouseDown: (e: MouseEvent) => void,

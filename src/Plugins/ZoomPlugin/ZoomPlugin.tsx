@@ -65,7 +65,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     }
 
     @action
-    restoreBookmark (values) {
+    restoreBookmark (values: number[]) {
         this.onSlider(null, values[0])
         this.onSliderX(null, values[1])
         this.onSliderY(null, values[2])
@@ -81,19 +81,19 @@ class ZoomController extends shim(ZoomModel, Plugin) {
     }
 
     @action
-    onSlider (event, value) {
+    onSlider (event: any, value: number) {
         let currentCenter = this.inversePoint([0.5, 0.5])
         this.scale = value
         this.zoomOnPoint(currentCenter)
     }
 
     @action
-    onSliderX (event, value) {
+    onSliderX (event: any, value: number) {
         this.panX = value
     }
 
     @action
-    onSliderY (event, value) {
+    onSliderY (event: any, value: number) {
         this.panY = value
     }
 

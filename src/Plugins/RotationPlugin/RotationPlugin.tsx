@@ -57,12 +57,12 @@ class RotationController extends shim(RotationModel, Plugin) {
     }
 
     @action
-    restoreBookmark (values) {
+    restoreBookmark (values: number[]) {
         this.rad = values[0]
     }
 
     @action
-    onSlider (event, value) {
+    onSlider (event: any, value: number) {
         let currentCenter = this.inversePoint([0.5, 0.5])
         this.rad = value
         this.zoomer.zoomOnPoint(currentCenter)

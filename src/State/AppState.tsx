@@ -4,7 +4,7 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
-import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook, HookType } from '../Hook'
+import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook, HookType, UnknownHook, UnknownHooks } from '../Hook'
 import Theme from '../View/Theme'
 import BTFFile, { BTFCache } from '../BTFFile'
 
@@ -17,12 +17,12 @@ const AppStateData = types.model({
 
 export type PluginLoader = (name: string) => Plugin
 export type StateReloader = (state: any) => void
-let pluginLoader: PluginLoader = null
+let pluginLoader: PluginLoader
 
 class AppStateController extends shim(AppStateData) {
   uptime = Math.random() * 10000
   loadingTextures = 0
-  stateReloader: StateReloader = null
+  stateReloader: StateReloader
 
   // volatile cache
   // as we don't want to preserve files inside the state tree
@@ -46,7 +46,7 @@ class AppStateController extends shim(AppStateData) {
   loadFile (file: BTFFile, loadStateFromFile = false) {
     this.filecache[file.name] = file
     this.setCurrentFile(file.name)
-    this.hookForEach('PostLoad', (hook: FunctionHook) => {
+    this.hookForEach('PostLoad', (hook) => {
       hook.func(loadStateFromFile)
     })
   }
@@ -115,7 +115,7 @@ class AppStateController extends shim(AppStateData) {
   }
 
   @action
-  async switchTab (event, index) {
+  async switchTab (event: any, index: number) {
     let oldTab = this.hookPick('Tabs', this.activeTab)
     let newTab = this.hookPick('Tabs', index)
     oldTab.beforeFocusLose && await oldTab.beforeFocusLose()
@@ -137,16 +137,17 @@ class AppStateController extends shim(AppStateData) {
   @action
   loadHooks (pluginName: string, hooks: HookConfig) {
     for (let hookName in hooks) {
+      let innerHooks = (hooks as { [key: string]: UnknownHook })[hookName]
       // ensure we got an appropiate hook manager
       let manager = this.hooks.get(hookName)
       if (!manager) {
         this.hooks.set(hookName, HookManager.create({}))
         manager = this.hooks.get(hookName)
       }
-      for (let functionName in hooks[hookName]) {
+      for (let functionName in innerHooks) {
         // create a unique reference
         let hookReference = `${pluginName}$${hookName}$${functionName}`
-        let priority = hooks[hookName][functionName].priority
+        let priority = innerHooks[functionName].priority
         // and actually insert it
         manager.insert(hookReference, priority)
       }
@@ -168,18 +169,15 @@ class AppStateController extends shim(AppStateData) {
    * @param name of the hook
    * @param iterator function, will be called with each concrete hook instance, could be multiple from one plugin
    */
-  hookForEach<P extends HookName> (name: P, iterator?: HookIterator<P>): void {
+  hookForEach<P extends HookName> (name: P, iterator: HookIterator<P> = (hook: UnknownHook, fullName: string) => {
+    if (hook.func)
+      hook.func()
+    else
+      throw new Error('Can only iterate over function hooks by default!')
+  }): void {
     let manager = this.hooks.get(name)
     if (!manager)
       return
-
-    if (!iterator)
-      iterator = (hook: FunctionHook, fullName?: string) => {
-        if (hook.func)
-          hook.func()
-        else
-          throw new Error('Can only iterate over function hooks by default!')
-      }
 
     manager.forEach(iterator, name, this)
   }

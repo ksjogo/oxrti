@@ -51,6 +51,8 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             scales: scales.map(val => parseFloat(val)),
             biases: biases.map(val => parseFloat(val)),
         }
+
+        return Promise.resolve()
     }
 
     coeffData: Buffer[]

@@ -1,4 +1,4 @@
-import Writer from './Writer'
+import Writer, { WriterConfig } from './Writer'
 
 /**
  * adapted from https://github.com/shaozilee/bmp-js
@@ -23,7 +23,7 @@ export default class BmpEncoder extends Writer {
     bitPP = 0
 
     COMPONENTS = 1
-    constructor (config) {
+    constructor (config: WriterConfig) {
         super(config)
 
         this.bitPP = this.COMPONENTS * 8

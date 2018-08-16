@@ -94,6 +94,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             this.setProgress(0)
             await this.setMessage(e.message)
         }
+        return Promise.resolve()
     }
 }
 

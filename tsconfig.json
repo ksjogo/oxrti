@@ -15,7 +15,10 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "outDir": "dist",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
   },
   "exclude": [
     "node_modules",

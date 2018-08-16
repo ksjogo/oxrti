@@ -1,6 +1,7 @@
 import { types } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import { FunctionHook, ComponentHook, HookName, ConfigHook, HookType } from '../Hook'
+import { HookName, HookType } from '../Hook'
+import { IPlugin } from '../Plugin'
 
 // circular dependency at the moment
 type IAppState = any
@@ -20,10 +21,10 @@ const HookManagerData = types.model({
     stack: types.optional(types.array(HookEntry), []),
 })
 
-export type HookIterator<P extends HookName> = (hook: HookType<P>, fullName?: string) => boolean | void
-export type AsyncHookIterator<P extends HookName> = (hook: HookType<P>, fullName?: string) => Promise<boolean | void>
-export type HookMapper<P extends HookName, S> = (hook: HookType<P>, fullName?: string) => S
-export type HookFind<P extends HookName, S> = (hook: HookType<P>, fullName?: string) => S
+export type HookIterator<P extends HookName> = (hook: HookType<P>, fullName: string) => boolean | void
+export type AsyncHookIterator<P extends HookName> = (hook: HookType<P>, fullName: string) => Promise<boolean | void>
+export type HookMapper<P extends HookName, S> = (hook: HookType<P>, fullName: string) => S
+export type HookFind<P extends HookName, S> = (hook: HookType<P>, fullName: string) => S
 /**
  * Manage the rendering stack for the main viewer component
  */
@@ -70,7 +71,7 @@ class HookManagerCode extends shim(HookManagerData) {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
             let instance = hook.name.split('$')
-            let plugin = appState.plugins.get(instance[0])
+            let plugin: IPlugin = appState.plugins.get(instance[0])
             if (iterator(plugin.hook(name, instance[2]), hook.name))
                 break
         }
@@ -80,7 +81,7 @@ class HookManagerCode extends shim(HookManagerData) {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
             let instance = hook.name.split('$')
-            let plugin = appState.plugins.get(instance[0])
+            let plugin: IPlugin = appState.plugins.get(instance[0])
             if (await iterator(plugin.hook(name, instance[2]), hook.name))
                 break
         }
@@ -97,7 +98,7 @@ class HookManagerCode extends shim(HookManagerData) {
     }
 
     map<S, P extends HookName> (mapper: HookMapper<P, S>, name: HookName, appState: IAppState): S[] {
-        let result = []
+        let result: S[] = []
         this.forEach((hook, fullName) => {
             result.push(mapper(hook, fullName))
         }, name, appState)

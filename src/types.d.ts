@@ -33,7 +33,7 @@ declare module 'gl-react' {
     height?: number,
     clear?: boolean,
     shader: any,
-    ref?: (ref) => void,
+    ref?: (ref: Node) => void,
     onDraw?: () => void
   }>
 
@@ -47,6 +47,23 @@ declare module 'gl-react' {
   export { Shaders, Node, LinearCopy, NearestCopy, Bus }
 }
 
+declare module 'gl-react-dom' {
+  let Surface: React.StatelessComponent<{
+    ref?: (ref: any) => void,
+    className?: string,
+    height: number,
+    width: number,
+    onMouseLeave?: (e: MouseEvent) => void,
+    onMouseMove?: (e: MouseEvent) => void,
+    onMouseDown?: (e: MouseEvent) => void,
+    onMouseUp?: (e: MouseEvent) => void,
+    webglContextAttributes?: {
+      preserveDrawingBuffer: boolean
+    }
+  }>
+  export { Surface }
+}
+
 declare module 'file-saver' {
   let saver: {
     saveAs: (blob: Blob, name: string) => void
@@ -57,7 +74,7 @@ declare module 'file-saver' {
 declare module '@attently/riek' {
   let RIEInput: React.StatelessComponent<{
     value: string,
-    change: (value: string) => void,
+    change: (vals: { [key: string]: any }) => void,
     propName: string
   }>
   export { RIEInput }
@@ -74,4 +91,25 @@ declare module 'react-dropzone' {
 declare module 'promise-file-reader' {
   let readAsArrayBuffer: (file: File) => Promise<ArrayBuffer>
   export { readAsArrayBuffer }
+}
+
+declare module '@material-ui/lab/Slider' {
+  let slider: React.StatelessComponent<{
+    value: number,
+    min: number,
+    max: number,
+    onChange: (event: any, value: number) => void
+  }>
+  export = slider
+}
+
+declare module 'remotedev' {
+  let remotedev: any
+  export = remotedev
+}
+
+declare module 'webgltexture-loader' {
+  let globalRegistry: any
+  let WebGLTextureLoaderAsyncHashCache: any
+  export { globalRegistry, WebGLTextureLoaderAsyncHashCache }
 }

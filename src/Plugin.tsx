@@ -3,7 +3,7 @@ import { shim, action, mst } from 'classy-mst'
 import { ComponentProps, PluginComponentType } from './View/Component'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
-import { HookConfig, HookName, ComponentHook, FunctionHook } from './Hook'
+import { HookConfig, HookName, ComponentHook, FunctionHook, HookType } from './Hook'
 import { IAppState } from './State/AppState'
 import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
 import { observer, inject } from 'mobx-react'
@@ -47,6 +47,13 @@ class PluginController extends shim(PluginModel) {
     }
 
     /**
+     * get single hook config
+     */
+    hook<P extends HookName> (name: P, instance: string): HookType<P> {
+        return this.hooks[name][instance]
+    }
+
+    /**
      * called before the plugin will be deleted from the state tree
      */
     hotUnload () {
@@ -64,7 +71,7 @@ class PluginController extends shim(PluginModel) {
      * inverse a rendering point
      * move point from surface coordinates into texture coordinates
      */
-    inversePoint (point: Point) {
+    inversePoint (point: Point): Point {
         let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
         if (!renderer)
             throw new Error('Need RendererPlugin to inversePoint')
@@ -78,14 +85,14 @@ class PluginController extends shim(PluginModel) {
      */
     handleRef (id: string) {
         let key = (this as any).$
-        return (ref) => {
+        return (ref: any) => {
             if (!refCache[key])
                 refCache[key] = {}
             refCache[key][id] = ref
         }
     }
 
-    /** 
+    /**
      * return a stored ref
      * @param id namespaced into the plugin
      */
@@ -101,7 +108,8 @@ class PluginController extends shim(PluginModel) {
  * Actual Plugin `class` which will be used as superclass
  */
 const Plugin = mst(PluginController, PluginModel, 'Plugin')
-
+type IPlugin = typeof Plugin.Type
+export { IPlugin }
 /**
  * Create Subplugins
  * @param Code is the controller, extending this Plugin
@@ -113,7 +121,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // outer level constructor function
     // inner is basically (plugin, props) => ReactElement
     // we could potentially extract a better style definition though
-    type innerType<P> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: any) => ReactElement<any> | null
+    type innerType<P> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: any) => ReactElement<any>
     // can we type the styles somehow?
     function SubComponent<P = {}> (inner: innerType<P>, styles?: any): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
@@ -137,5 +145,5 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
 
 export default Plugin
 export {
-    PluginCreator
+    PluginCreator,
 }
