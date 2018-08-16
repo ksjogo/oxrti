@@ -1,7 +1,7 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
-// oxrti default imports ->
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
@@ -58,10 +58,7 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     @action
     onMouseUp () {
         this.dragging = false
-
-
     }
-
 }
 
 const { Plugin: QuickPanPlugin, Component } = PluginCreator(QuickPanController, QuickPanModel, 'QuickPanPlugin')
@@ -108,7 +105,7 @@ const PreviewComponent = Component(function PreviewComponent (props, classes) {
             }
         })
     } else {
-        rootnode = <ShaderNode
+        rootnode = <Node
             height={height}
             width={width}
             shader={{

@@ -1,10 +1,9 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-// oxrti default imports ->
+import Plugin, { PluginCreator } from '../../Plugin'
 import PTMLRGB from './PTMLRGB'
 import PTMRGB from './PTMRGB'
 import { ChannelModel } from '../../BTFFile'
+import { shim } from 'classy-mst';
 
 const PTMRendererModel = Plugin.props({
 })

@@ -1,9 +1,8 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
 import { Card, CardContent, List, ListItem, Theme, createStyles, Typography } from '@material-ui/core'
 import JSONDisplay from '../../View/JSONDisplay'
-// oxrti default imports ->
 
 const SettingsModel = Plugin.props({
 })

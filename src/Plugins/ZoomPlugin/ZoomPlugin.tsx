@@ -1,8 +1,8 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-// oxrti default imports ->
-
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { Node, Shaders } from 'gl-react'
+import { types } from 'mobx-state-tree'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import { Point, rotate, sub } from '../../Math'
@@ -147,7 +147,7 @@ export type IZoomPlugin = typeof ZoomPlugin.Type
 
 const ZoomNode = Component(function ZoomNode (props) {
     let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
-    return <ShaderNode
+    return <Node
         height={renderer.elementHeight}
         width={renderer.elementWidth}
         shader={{

@@ -1,8 +1,7 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim } from 'classy-mst';
 import PTMConverterStrategy from './PTMConverterStrategy'
-// oxrti default imports ->
 
 const PTMConverterModel = Plugin.props({
 })

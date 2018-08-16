@@ -16,6 +16,8 @@ import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin'
 const PluginModel = types.model({
 })
 
+const refCache: { [key: string]: { [key: string]: any } } = {}
+
 /**
  * Plugin Code
  * functions without @action are `views` and cannot change the model
@@ -30,44 +32,73 @@ class PluginController extends shim(PluginModel) {
 
     /**
      * A plugin shall be loaded, otherwise it might lay dormant and not do much
+     * will inject the appState reference into the plugin as mobx's inject can't be used
      */
     @action
     load (appState: IAppState) {
         this.appState = appState
     }
 
+    /**
+     * all hooks the plugin is using
+     */
     get hooks (): HookConfig {
         return {}
     }
 
-    hook (name: HookName, instance: string) {
-        return this.hooks[name][instance]
-    }
-
-    componentHook (name: HookName, instance: string): ComponentHook {
-        return this.hook(name, instance) as ComponentHook
-    }
-
-    functionHook (name: HookName, instance: string): FunctionHook {
-        return this.hook(name, instance) as FunctionHook
-    }
-
+    /**
+     * called before the plugin will be deleted from the state tree
+     */
     hotUnload () {
         //
     }
 
+    /**
+     * called after the plugin was restored in the state tree
+     */
     hotReload () {
         //
     }
 
+    /**
+     * inverse a rendering point
+     * move point from surface coordinates into texture coordinates
+     */
     inversePoint (point: Point) {
         let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
+        if (!renderer)
+            throw new Error('Need RendererPlugin to inversePoint')
         return renderer.inversePoint(point)
+    }
+
+    /**
+     * non-action based ref handler to allow deletion of refs from unmounted plugins/components
+     * otherwise a plugin will be deleted, the ref trigger, and then an action on the old non living plugin be called
+     * @param id namespaced into the plugin
+     */
+    handleRef (id: string) {
+        let key = (this as any).$
+        return (ref) => {
+            if (!refCache[key])
+                refCache[key] = {}
+            refCache[key][id] = ref
+        }
+    }
+
+    /** 
+     * return a stored ref
+     * @param id namespaced into the plugin
+     */
+    ref (id: string) {
+        let key = (this as any).$
+        if (!refCache[key])
+            return null
+        return refCache[key][id]
     }
 }
 
 /**
- * Actual Plugin `class`
+ * Actual Plugin `class` which will be used as superclass
  */
 const Plugin = mst(PluginController, PluginModel, 'Plugin')
 
@@ -104,40 +135,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     return { Plugin: SubPlugin, Component: SubComponent }
 }
 
-type ActualShader = string
-type ShaderConfig = {
-    frag: string,
-    vert?: string,
-}
-
-type TypedCreate = (config: { [key: string]: ShaderConfig }) => {
-    [key: string]: ActualShader,
-}
-
-const TypedShaders: {
-    create: TypedCreate,
-} = Shaders
-
-const TypedNode: React.StatelessComponent<{
-    uniforms?: any,
-    uniformOptions?: any,
-    width?: number,
-    height?: number,
-    clear?: boolean,
-    shader: any,
-    ref?: (ref) => void,
-}> = Node
-
-/**
- * Facading the classy-mst and mobx-state-tree exports to simplfy importing and allow proxy changes without changing plugin code
- */
 export default Plugin
 export {
-    types as types,
-    shim as shim,
-    action as action,
-    PluginCreator as PluginCreator,
-    TypedShaders as Shaders,
-    TypedNode as ShaderNode,
-    TypedNode,
+    PluginCreator
 }

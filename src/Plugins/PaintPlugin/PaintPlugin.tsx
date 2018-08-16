@@ -1,15 +1,9 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
-// oxrti default imports ->
-
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { types } from 'mobx-state-tree'
 import { Point, Node2PNG } from '../../Math'
 import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
-
-import paintShader from './paint.glsl'
-import mixerShader from './mixer.glsl'
-import initShader from './init.glsl'
-
 import { observable } from 'mobx'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -20,8 +14,15 @@ import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
 import uniqid from 'uniqid'
 import { ChromePicker } from 'react-color'
-import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from '@attently/riek'
+import { RIEInput } from '@attently/riek'
 import FileSaver from 'file-saver'
+import { Node, Bus } from 'gl-react'
+import { sleep, JSONY } from '../../util'
+import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
+
+import paintShader from './paint.glsl'
+import mixerShader from './mixer.glsl'
+import initShader from './init.glsl'
 
 let LayerConfig = types.model({
     visible: types.boolean,
@@ -208,18 +209,11 @@ class PaintController extends shim(PaintModel, Plugin) {
         }))
     }
 
-    refs: { [key: string]: Node } = {}
-    handleRef (id: string) {
-        return (node: Node) => {
-            this.refs[id] = node
-        }
-    }
-
     @action
     exportLayers (skipIndex = -1) {
         let btf = this.appState.btf()
         let layers = this.layers.map(layer => {
-            let data = Node2PNG(this.refs[layer.id], btf.data.width, btf.data.height)
+            let data = Node2PNG(this.ref(layer.id), btf.data.width, btf.data.height)
             return {
                 name: layer.name,
                 texture: data,
@@ -292,17 +286,12 @@ class PaintController extends shim(PaintModel, Plugin) {
         }
     }
 
-    mixerRef
-    @action
-    handleMixerRef (ref) {
-        this.mixerRef = ref
-    }
-
     fullshot () {
         let btf = this.appState.btf()
-        let blob = Node2PNG(this.mixerRef, btf.data.width, btf.data.height)
+        let blob = Node2PNG(this.ref('mixer'), btf.data.width, btf.data.height)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
         let meta = {}
+
         this.appState.hookForEach('ScreenshotMeta', (hook) => {
             if (hook.fullshot)
                 meta[hook.key] = hook.fullshot()
@@ -410,10 +399,6 @@ const PaintUI = Component(function PaintUI (props, classes) {
     </Card>
 }, styles)
 
-import { Shaders, Node, GLSL, Bus } from 'gl-react'
-import { sleep, JSONY } from '../../util'
-import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
-
 /**
  * Actual painting node inside the render stack
  */
@@ -426,7 +411,7 @@ const PaintNode = Component(function PaintNode (props) {
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
         return <Node
-            ref={this.handleMixerRef}
+            ref={this.handleRef('mixer')}
             width={width}
             height={height}
             key={this.key}
@@ -439,7 +424,7 @@ const PaintNode = Component(function PaintNode (props) {
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
-            ref={this.handleMixerRef}
+            ref={this.handleRef('mixer')}
             width={width}
             height={height}
             key={this.key}
@@ -454,7 +439,6 @@ const PaintNode = Component(function PaintNode (props) {
                 brushRadius: brush,
                 showBrush: this.drawing === DrawingState.Hovering,
             }}
-
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {

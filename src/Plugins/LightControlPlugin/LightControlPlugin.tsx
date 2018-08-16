@@ -1,7 +1,8 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
-// oxrti default imports ->
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { Node, Shaders } from 'gl-react'
+import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
@@ -189,7 +190,7 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
             onMouseMove={this.onMouseMove}
             onMouseDown={this.onMouseDown}
             onMouseUp={this.onMouseUp}>
-            <ShaderNode shader={{
+            <Node shader={{
                 frag: shader,
             }}
                 uniforms={{

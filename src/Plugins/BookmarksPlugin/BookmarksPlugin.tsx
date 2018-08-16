@@ -1,8 +1,8 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
-// oxrti default imports ->
-
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { Node, Shaders } from 'gl-react'
+import { types } from 'mobx-state-tree'
 import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
 import uniqid from 'uniqid'
 import { RIEInput } from '@attently/riek'

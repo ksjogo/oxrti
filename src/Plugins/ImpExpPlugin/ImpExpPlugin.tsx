@@ -1,8 +1,6 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-import { IAppState } from '../../State/AppState'
-// oxrti default imports ->
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
 
 const ImpExpModel = Plugin.props({
 })

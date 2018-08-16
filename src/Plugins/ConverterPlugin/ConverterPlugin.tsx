@@ -1,15 +1,11 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, types } from '../../Plugin'
-// oxrti default imports ->
-
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
 import Dropzone from 'react-dropzone'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { Typography, Grid, Theme, Card, Button, createStyles, CardContent, List, ListItem } from '@material-ui/core'
 import path from 'path'
 import ConverterStrategy from './ConverterStrategy'
-import { ConfigHook } from '../../Hook'
-import ConverterStrategyConfig from './ConverterStrategyConfig'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
@@ -78,7 +74,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             if (!strategy) {
                 return this.statusMessage = `File format ${ending} is not supported at the moment`
             }
-            let content = await readAsArrayBuffer(file) as ArrayBuffer
+            let content = await readAsArrayBuffer(file)
             let btf = await (new strategy(content, this)).process()
             btf.name = name
             this.setZipname(btf.zipName())

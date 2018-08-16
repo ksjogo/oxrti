@@ -1,8 +1,9 @@
-// <- oxrti default imports
+// <-  imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode, Shaders } from '../../Plugin'
-// oxrti default imports ->
-
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { Node, Shaders } from 'gl-react'
+import { types } from 'mobx-state-tree'
 import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
@@ -115,7 +116,7 @@ export type IRotationPlugin = typeof RotationPlugin.Type
 
 export const RotationComponent = Component(function RotationNode (props) {
     let maxDims = this.maxDims
-    return <ShaderNode
+    return <Node
         width={maxDims}
         height={maxDims}
         shader={{
@@ -130,7 +131,7 @@ export const RotationComponent = Component(function RotationNode (props) {
 export const CentererComponent = Component(function RotationNode (props) {
     let [width, height] = this.centererSizes
     let maxDims = this.maxDims
-    return <ShaderNode
+    return <Node
         width={maxDims}
         height={maxDims}
         shader={{

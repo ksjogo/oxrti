@@ -1,7 +1,8 @@
-// <- oxrti default imports
 import React from 'react'
-import Plugin, { PluginCreator, shim, action, ShaderNode } from '../../Plugin'
-// oxrti default imports ->
+import Plugin, { PluginCreator } from '../../Plugin'
+import { shim, action } from 'classy-mst'
+import { Node, Shaders } from 'gl-react'
+import { types } from 'mobx-state-tree'
 import Grid from '@material-ui/core/Grid'
 import Stack from './Stack'
 import Measure, { ContentRect } from 'react-measure'
@@ -15,16 +16,6 @@ import { Point } from '../../Math'
 import DownloadBTF from '../../View/DownloadBTF'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
-
-let reloading = false
-let surfaceRef: {
-    captureAsBlob: () => Promise<Blob>,
-} = null
-function handleSurfaceRef (ref) {
-    surfaceRef = ref
-}
-
-
 
 const RendererModel = Plugin.props({
 })
@@ -79,7 +70,6 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     hotUnload () {
         console.log('Renderer Hot Unload')
-        reloading = true
         this.appState.hookForEach('PreDownload')
     }
 
@@ -217,7 +207,7 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     async exportScreenshot () {
         let btf = this.appState.btf()
-        let blob = await surfaceRef.captureAsBlob()
+        let blob = await (this.ref('surface').captureAsBlob() as Promise<Blob>)
         FileSaver.saveAs(blob, `${btf.name}_snap.png`)
         let meta = {}
         this.appState.hookForEach('ScreenshotMeta', (hook) => {
@@ -246,7 +236,7 @@ const RendererView = Component(function RendererView (props, classes) {
                     <div className={classes.stack}>
                         {this.elementHeight !== -1 && <Stack
                             key={this.key}
-                            surfaceRef={handleSurfaceRef}
+                            surfaceRef={this.handleRef('surface')}
                             onMouseLeave={this.onMouseLeave}
                             onMouseMove={this.onMouseMove}
                             onMouseDown={this.onMouseDown}
