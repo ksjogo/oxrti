@@ -84,6 +84,12 @@ type RendererNode = {
     inversePoint?: (point: Point) => Point,
 }
 
+type ViewerFileAction = {
+    tooltip: string,
+    text: string,
+    action: () => Promise<void>,
+}
+
 type Tab = {
     content: PluginComponentType
     tab: TabProps,
@@ -99,7 +105,7 @@ type HookTypes = {
     ViewerRender?: ConfigHook<RendererNode>,
     ViewerSide?: ComponentHook,
     ViewerMouse?: ConfigHook<MouseConfig>,
-    ViewerFileAction?: ComponentHook,
+    ViewerFileAction?: ConfigHook<ViewerFileAction>,
     ScreenshotMeta?: ConfigHook<ScreenshotMeta>
     PreDownload?: FunctionHook,
     PostLoad?: FunctionHook,

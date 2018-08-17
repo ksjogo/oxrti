@@ -1,6 +1,8 @@
 import { createMuiTheme } from '@material-ui/core/styles'
 import red from '@material-ui/core/colors/red'
 import './style.css'
+import { TooltipClassKey } from '@material-ui/core/Tooltip'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 // TOFIX: not working standalone currently
 // import 'typeface-roboto'
@@ -10,5 +12,18 @@ import './style.css'
 export default createMuiTheme({
     palette: {
         primary: red,
+    },
+    overrides: {
+        MuiTooltip: {
+            tooltip: {
+                fontSize: 16,
+            },
+            tooltipPlacementBottom: {
+                marginTop: 5,
+            },
+            tooltipPlacementTop: {
+                marginBottom: 5,
+            },
+        },
     },
 })

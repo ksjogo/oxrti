@@ -4,8 +4,7 @@ export type __IModelType = IModelType<any, any>
 import Plugin from '../Plugin'
 import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
-import { ConfigHook, FunctionHook, HookConfig, HookName, ComponentHook, HookType, UnknownHook, UnknownHooks } from '../Hook'
-import Theme from '../View/Theme'
+import { HookConfig, HookName, HookType, UnknownHook } from '../Hook'
 import BTFFile, { BTFCache } from '../BTFFile'
 
 const AppStateData = types.model({
@@ -49,10 +48,6 @@ class AppStateController extends shim(AppStateData) {
     this.hookForEach('PostLoad', (hook) => {
       hook.func(loadStateFromFile)
     })
-  }
-
-  theme () {
-    return Theme
   }
 
   setPluginLoader (loader: PluginLoader) {

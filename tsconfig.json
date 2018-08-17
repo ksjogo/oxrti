@@ -22,7 +22,8 @@
   },
   "exclude": [
     "node_modules",
-    "static"
+    "static",
+    "dist"
   ],
   "awesomeTypescriptLoaderOptions": {
     "silent": true

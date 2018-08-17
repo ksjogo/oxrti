@@ -140,13 +140,15 @@ export default function init (elementId: string | HTMLElement) {
     if (module.hot) {
         module.hot.accept(['./State/AppState'], () => {
             // Store definition changed, recreate a new one from old state
-            renderApp(require('./View/App').default, createAppState(getSnapshot(state)))
-            loadPlugins()
+            // renderApp(require('./View/App').default, createAppState(getSnapshot(state)))
+            // loadPlugins()
+            console.error('cannot hot-reload appstate, please do a full reload')
         })
 
         module.hot.accept(['./View/App'], () => {
             // Componenent definition changed, re-render app
             renderApp(require('./View/App').default, state)
+            console.log('updated main view')
         })
 
         module.hot.accept(pluginContext.id, () => {

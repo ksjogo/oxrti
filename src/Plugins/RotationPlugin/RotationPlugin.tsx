@@ -145,14 +145,18 @@ export const CentererComponent = Component(function CentererNode (props) {
         }} />
 })
 
-import { Card, CardContent, Button } from '@material-ui/core'
+import { Card, CardContent, Button, Tooltip } from '@material-ui/core'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Button onClick={this.resetRotation} style={{ marginLeft: '-8px' }}>Rotation</Button>
-            <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
+            <Tooltip title='Reset'>
+                <Button onClick={this.resetRotation} style={{ marginLeft: '-8px' }}>Rotation</Button>
+            </Tooltip>
+            <Tooltip title={this.rad}>
+                <Slider value={this.rad} onChange={this.onSlider} min={-Math.PI} max={Math.PI} />
+            </Tooltip>
         </CardContent>
     </Card>
 })

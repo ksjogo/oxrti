@@ -4,7 +4,7 @@ import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
 import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent, Tooltip } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
@@ -178,7 +178,7 @@ const SliderComponent = Component(function LightControlComponent (props) {
 import shader from './hemisphere.glsl'
 import { toTex, rotate, Point, normalize } from '../../Math'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
-import { BaseNodeProps } from '../RendererPlugin/BaseNode';
+import { BaseNodeProps } from '../RendererPlugin/BaseNode'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
     let point: Point = [this.displayX, this.displayY]
@@ -186,25 +186,29 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
     if (rotationPlugin) {
         point = rotate(point, -rotationPlugin.rad)
     }
-    return <div style={{
-        marginLeft: 'calc(50% - 75px)',
-    }}>
-        <Surface
-            className={classes.dragger}
-            width={150}
-            height={150}
-            onMouseLeave={this.onMouseLeave}
-            onMouseMove={this.onMouseMove}
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}>
-            <Node shader={{
-                frag: shader,
-            }}
-                uniforms={{
-                    point: toTex(point),
-                    fromColor: this.hemisphereFrom.slice(0),
-                    toColor: this.hemisphereTo.slice(0),
-                }} />
-        </Surface>
-    </div>
+    return <Tooltip
+        title={<>x: {this.x}<br />y: {this.y}</>}
+    >
+        <div style={{
+            marginLeft: 'calc(50% - 75px)',
+        }}>
+            <Surface
+                className={classes.dragger}
+                width={150}
+                height={150}
+                onMouseLeave={this.onMouseLeave}
+                onMouseMove={this.onMouseMove}
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}>
+                <Node shader={{
+                    frag: shader,
+                }}
+                    uniforms={{
+                        point: toTex(point),
+                        fromColor: this.hemisphereFrom.slice(0),
+                        toColor: this.hemisphereTo.slice(0),
+                    }} />
+            </Surface>
+        </div>
+    </Tooltip>
 }, styles)

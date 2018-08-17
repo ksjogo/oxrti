@@ -6,7 +6,7 @@ import { types } from 'mobx-state-tree'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import { Point, rotate, sub } from '../../Math'
-import { Card, CardContent, Typography, Button } from '@material-ui/core'
+import { Card, CardContent, Typography, Button, Tooltip } from '@material-ui/core'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
@@ -53,7 +53,7 @@ class ZoomController extends shim(ZoomModel, Plugin) {
                 },
                 Pan: {
                     key: 'pan',
-                    snapshot: () => [this.panX, this.panY]
+                    snapshot: () => [this.panX, this.panY],
                 },
             },
         }
@@ -164,11 +164,21 @@ const ZoomNode = Component(function ZoomNode (props) {
 const Zoom = Component(function ZoomSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Button onClick={this.resetZoom} style={{ marginLeft: '-8px' }}>Zoom</Button>
-            <Slider value={this.scale} onChange={this.onSlider} min={0.01} max={30} />
-            <Button onClick={this.resetPan} style={{ marginLeft: '-11px' }}>Pan</Button>
-            <Slider value={this.panX} onChange={this.onSliderX} min={-1 * this.scale} max={1 * this.scale} />
-            <Slider value={this.panY} onChange={this.onSliderY} min={-1 * this.scale} max={1 * this.scale} />
+            <Tooltip title='Reset'>
+                <Button onClick={this.resetZoom} style={{ marginLeft: '-8px' }}>Zoom</Button>
+            </Tooltip>
+            <Tooltip title={this.scale}>
+                <Slider value={this.scale} onChange={this.onSlider} min={0.01} max={30} />
+            </Tooltip>
+            <Tooltip title='Reset'>
+                <Button onClick={this.resetPan} style={{ marginLeft: '-11px' }}>Pan</Button>
+            </Tooltip>
+            <Tooltip title={this.panX}>
+                <Slider value={this.panX} onChange={this.onSliderX} min={-1 * this.scale} max={1 * this.scale} />
+            </Tooltip>
+            <Tooltip title={this.panY}>
+                <Slider value={this.panY} onChange={this.onSliderY} min={-1 * this.scale} max={1 * this.scale} />
+            </Tooltip>
         </CardContent>
     </Card>
 })

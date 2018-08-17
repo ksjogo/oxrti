@@ -3,7 +3,7 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent, Tooltip } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
 import { LinearCopy, Node } from 'gl-react'
@@ -121,35 +121,37 @@ const QuickPan = Component(function QuickPan (props, classes) {
     let C = this.inversePoint([1, 1])
     let D = this.inversePoint([1, 0])
 
-    return <div style={{
-        marginLeft: `calc(50% - ${SIZE / 2}px)`,
-    }}>
-        <Surface
-            className={classes.dragger}
-            width={width}
-            height={height}
-            onMouseLeave={this.onMouseLeave}
-            onMouseMove={this.onMouseMove}
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}>
-            <RectRenderNode
-                A={A}
-                B={B}
-                C={C}
-                D={D}
-            >
-                {rootnode}
-            </RectRenderNode>
-        </Surface>
-    </div>
+    return <Tooltip title='Drag around'>
+        <div style={{
+            marginLeft: `calc(50% - ${SIZE / 2}px)`,
+        }}>
+            <Surface
+                className={classes.dragger}
+                width={width}
+                height={height}
+                onMouseLeave={this.onMouseLeave}
+                onMouseMove={this.onMouseMove}
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}>
+                <RectRender
+                    A={A}
+                    B={B}
+                    C={C}
+                    D={D}
+                >
+                    {rootnode}
+                </RectRender>
+            </Surface>
+        </div>
+    </Tooltip>
 }, styles)
 
-export const RectRenderNode = Component<{
+export const RectRender = Component<{
     A: Point,
     B: Point,
     C: Point,
     D: Point,
-}>(function RectRenderNode (props) {
+}>(function RectRender (props) {
     return <Node
         shader={{
             frag: quickPanShader,

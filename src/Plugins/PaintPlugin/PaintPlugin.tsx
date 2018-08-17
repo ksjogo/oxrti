@@ -3,7 +3,7 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
 import { Point, Node2PNG } from '../../Math'
-import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
+import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField, Tooltip } from '@material-ui/core'
 import { observable } from 'mobx'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -96,8 +96,10 @@ class PaintController extends shim(PaintModel, Plugin) {
             },
             ViewerFileAction: {
                 Fullshot: {
-                    component: Fullshot,
                     priority: 80,
+                    tooltip: 'Export full resolution rendered + active layers.',
+                    text: 'Fullshot',
+                    action: this.fullshot,
                 },
             },
         }
@@ -286,7 +288,7 @@ class PaintController extends shim(PaintModel, Plugin) {
         }
     }
 
-    fullshot () {
+    async fullshot () {
         let btf = this.appState.btf()
         let blob = Node2PNG(this.ref('mixer'), btf.data.width, btf.data.height)
         FileSaver.saveAs(blob, `${btf.name}_full.png`)
@@ -335,49 +337,69 @@ const PaintUI = Component(function PaintUI (props, classes) {
                         dense
                         button
                     >
-                        <Checkbox
-                            onClick={this.handleActiveLayer(index)}
-                            checked={this.activeLayer === index}
-                            tabIndex={-1}
-                            disableRipple
-                        />
-                        <ListItemText>
-                            <RIEInput
-                                value={layer.name}
-                                change={this.handleLayerName(index)}
-                                propName='name' />
-                        </ListItemText>
+                        <Tooltip title='Paint this layer'>
+                            <Checkbox
+                                onClick={this.handleActiveLayer(index)}
+                                checked={this.activeLayer === index}
+                                tabIndex={-1}
+                                disableRipple
+                            />
+                        </Tooltip>
+                        <Tooltip title='Change name'>
+                            <ListItemText>
+                                <RIEInput
+                                    value={layer.name}
+                                    change={this.handleLayerName(index)}
+                                    propName='name' />
+                            </ListItemText>
+                        </Tooltip>
+
                         {/* <ListItemText primary={`${layer.id}`} /> */}
                         <ListItemSecondaryAction>
-                            <Switch
-                                onChange={this.handleVisibility(index)}
-                                checked={layer.visible}
-                            />
-                            <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
-                                <TrashIcon />
-                            </IconButton>
+                            <Tooltip title='Toggle visibility'>
+
+                                <Switch
+                                    onChange={this.handleVisibility(index)}
+                                    checked={layer.visible}
+                                />
+                            </Tooltip>
+                            <Tooltip title='Delete'>
+
+                                <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                    <TrashIcon />
+                                </IconButton>
+                            </Tooltip>
+
                         </ListItemSecondaryAction>
                     </ListItem>
                 ))}
             </List>
         </CardContent>
         <CardActions>
-            <Button onClick={this.addLayer}>+Layer</Button>
-            <TextField
-                label=''
-                value={this.brushRadius}
-                onChange={this.handleBrush}
-                type='number'
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                margin='normal'
-            />
-            <Button style={{
-                backgroundColor: this.displayColor(),
-                color: this.displayColor(true),
-                textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
-            }} onClick={this.switchColorPicker}>Color</Button>
+            <Tooltip title='Create new layer on top'>
+                <Button onClick={this.addLayer}>+Layer</Button>
+            </Tooltip>
+            <Tooltip title='Brush size'>
+                <TextField
+                    label=''
+                    value={this.brushRadius}
+                    onChange={this.handleBrush}
+                    type='number'
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    margin='normal'
+                />
+            </Tooltip>
+            <Tooltip title='Change colour'>
+
+                <Button style={{
+                    backgroundColor: this.displayColor(),
+                    color: this.displayColor(true),
+                    textShadow: this.color[3] < 0.3 ? '1px 1px 1px black' : '',
+                }} onClick={this.switchColorPicker}>Color</Button>
+            </Tooltip>
+
             <Popover
                 anchorEl={this.anchorEl}
                 open={this.showColorPicker}
@@ -466,8 +488,4 @@ const PaintNode = Component(function PaintNode (props) {
                     </Bus>
                 })}
         </Node >
-})
-
-const Fullshot = Component(function Fullshot (props) {
-    return <Button onClick={this.fullshot}>Fullshot</Button>
 })

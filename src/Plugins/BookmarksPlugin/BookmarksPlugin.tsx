@@ -3,7 +3,7 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
 import { types } from 'mobx-state-tree'
-import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography } from '@material-ui/core'
+import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, Tooltip } from '@material-ui/core'
 import uniqid from 'uniqid'
 import { RIEInput } from '@attently/riek'
 import TrashIcon from '@material-ui/icons/Delete'
@@ -35,7 +35,7 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
 
     @action
     addBookmark (e: any) {
-        let vals: {[key: string]: any} = {}
+        let vals: { [key: string]: any } = {}
         this.appState.hookForEach('Bookmarks', (hook) => {
             let values = hook.save()
             vals[hook.key] = values
@@ -53,7 +53,7 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
     }
 
     handleBookmarkName (index: number) {
-        return (change: {name: string}) => {
+        return (change: { name: string }) => {
             this.setBookmarkName(index, change.name)
         }
     }
@@ -97,30 +97,43 @@ const BookmarkUI = Component(function BookmarkUI (props, classes) {
         <CardContent>
             <List>
                 {this.bookmarks.map((bookmark, index) => (
-                    <ListItem
-                        onClick={this.handleRestore(index)}
-                        key={bookmark.id}
-                        role={undefined}
-                        dense
-                        button
-                    >
-                        <ListItemText>
-                            <RIEInput
-                                value={bookmark.name}
-                                change={this.handleBookmarkName(index)}
-                                propName='name' />
-                        </ListItemText>
-                        <ListItemSecondaryAction>
-                            <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
-                                <TrashIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
+                    <Tooltip title='Restore' key={bookmark.id}>
+
+                        <ListItem
+                            onClick={this.handleRestore(index)}
+                            key={bookmark.id}
+                            role={undefined}
+                            dense
+                            button
+                        >
+
+                            <Tooltip title='Change name'>
+                                <Typography>
+                                    <RIEInput
+                                        value={bookmark.name}
+                                        change={this.handleBookmarkName(index)}
+                                        propName='name' />
+                                </Typography>
+                            </Tooltip>
+
+                            <ListItemSecondaryAction>
+                                <Tooltip title='Delete'>
+                                    <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                        <TrashIcon />
+                                    </IconButton>
+                                </Tooltip>
+
+                            </ListItemSecondaryAction>
+
+                        </ListItem>
+                    </Tooltip>
                 ))}
             </List>
         </CardContent>
         <CardActions>
-            <Button onClick={this.addBookmark}>Add Bookmark</Button>
+            <Tooltip title='Store the current configuration inside a new bookmark'>
+                <Button onClick={this.addBookmark}>Add Bookmark</Button>
+            </Tooltip>
         </CardActions>
     </Card>
 }, styles)

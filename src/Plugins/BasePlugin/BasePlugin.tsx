@@ -77,7 +77,6 @@ const RenderHooks = Component<{ name: HookNameComponent }>(function RenderHooks 
     return <>{rendered}</>
 })
 
-
 const SafeGLIInspector = Component(function SafeGLIInspector (props) {
     let found = false
     let elems = document.getElementsByTagName('script')

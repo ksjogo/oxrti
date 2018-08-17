@@ -4,7 +4,7 @@ import { shim, action } from 'classy-mst'
 import { Node, Shaders, LinearCopy } from 'gl-react'
 import { types } from 'mobx-state-tree'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
+import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography, Tooltip } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay, RenderHooks } from '../BasePlugin/BasePlugin'
@@ -55,12 +55,16 @@ class RendererController extends shim(RendererModel, Plugin) {
             },
             ViewerFileAction: {
                 DownloadBTF: {
-                    component: DownloadBTF,
+                    tooltip: 'Download BTF',
+                    text: 'BTF',
+                    action: this.download,
                     priority: 100,
                 },
                 Screenshot: {
                     priority: 90,
-                    component: Component(() => <Button onClick={this.exportScreenshot}>Snapshot</Button>),
+                    tooltip: 'Export Screenshot of current view window',
+                    text: 'Snapshot',
+                    action: this.exportScreenshot,
                 },
             },
         }
@@ -222,6 +226,21 @@ class RendererController extends shim(RendererModel, Plugin) {
         let zip = await btf.generateZip()
         FileSaver.saveAs(zip, btf.zipName())
     }
+
+    inhibitTooltips: boolean = null
+    actionWrapper (action: () => Promise<void>) {
+        return async () => {
+            await action()
+            this.setInhibitTooltips(true)
+            await sleep(0)
+            this.setInhibitTooltips(null)
+        }
+    }
+
+    @action
+    setInhibitTooltips (value: boolean) {
+        this.inhibitTooltips = value
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -301,15 +320,20 @@ const Upload = Component(function Upload (props, classes) {
                 <div>Try dropping some files here, or click to select files to upload.</div>
             </Dropzone>
         </CardContent>
-        <CardActions>
-            <RenderHooks name='ViewerFileAction' />
+        <CardActions>{
+            this.appState.hookMap('ViewerFileAction', (hook, fullName) => {
+                let button = <Button key={fullName} onClick={this.actionWrapper(hook.action)}>{hook.text}</Button>
+                return this.inhibitTooltips ? button :
+                    <Tooltip key={fullName} title={hook.tooltip}>
+                        {button}
+                    </Tooltip>
+            })
+        }
         </CardActions>
     </Card>
 }, UploadStyles)
 
 import noise from './noise.glsl'
-import { normalize } from '../../../dist/src/Math'
-import hemispherical from '../LightControlPlugin/Hemisphere'
 import { ILightControlPlugin } from '../LightControlPlugin/LightControlPlugin'
 const shaders = Shaders.create({
     noise: {
@@ -382,7 +406,3 @@ const Stack = Component(function Stack (props, classes) {
         </Surface>
     </div>
 }, styles)
-
-const DownloadBTF = Component(function DownloadBTF (props) {
-    return <Button onClick={this.download} > Save</ Button>
-})
