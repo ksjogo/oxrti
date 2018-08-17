@@ -114,7 +114,7 @@ declare module 'webgltexture-loader' {
   export { globalRegistry, WebGLTextureLoaderAsyncHashCache }
 }
 
-declare module  'mobx-devtools-mst' {
-  let makeInspectable: (...args:any[]) => any
+declare module 'mobx-devtools-mst' {
+  let makeInspectable: (...args: any[]) => any
   export = makeInspectable
 }

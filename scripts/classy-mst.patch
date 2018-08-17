@@ -1,8 +1,8 @@
---- original.js	2018-08-17 04:35:24.000000000 +0100
-+++ classy-mst.js	2018-08-17 04:35:34.000000000 +0100
-@@ -83,9 +83,11 @@
-             }
-         };
+--- original.js	2018-08-17 20:04:22.000000000 +0100
++++ classy-mst.js	2018-08-17 20:06:06.000000000 +0100
+@@ -81,9 +81,11 @@
+     }).actions(function (self) {
+         var result = {};
          var _loop_1 = function (name_3, value) {
 -            result[name_3] = function () {
 +             var func = function () {

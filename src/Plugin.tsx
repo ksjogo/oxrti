@@ -1,4 +1,4 @@
-import { types, IModelType } from 'mobx-state-tree'
+import { types, IModelType, ModelProperties } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
@@ -124,7 +124,7 @@ export { IPlugin }
  * @param Data is the model, extendings this Plugins model
  * @param name must be the same as the folder and filename
  */
-function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name: string) {
+function PluginCreator<S extends ModelProperties, T, U> (Code: new () => U, Data: IModelType<S, T>, name: string) {
     let SubPlugin = mst(Code, Data, name)
     // outer level constructor function
     // inner is basically (plugin, props) => ReactElement
