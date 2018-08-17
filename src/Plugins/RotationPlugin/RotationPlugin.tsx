@@ -128,7 +128,7 @@ export const RotationComponent = Component(function RotationNode (props) {
         }} />
 })
 
-export const CentererComponent = Component(function RotationNode (props) {
+export const CentererComponent = Component(function CentererNode (props) {
     let [width, height] = this.centererSizes
     let maxDims = this.maxDims
     return <Node

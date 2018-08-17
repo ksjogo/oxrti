@@ -332,11 +332,6 @@ const Stack = Component(function Stack (props, classes) {
     let btf = props.appState.btf()
 
     let lightControl = this.appState.plugins.get('LightControlPlugin') as ILightControlPlugin
-    let lightPos: number[]
-    if (!lightControl || (lightControl.x === 0 && lightControl.y === 0))
-        lightPos = normalize([0.00001, -0.00001, 1])
-    else
-        lightPos = hemispherical(lightControl.x, lightControl.y)
 
     if (!btf.isDefault()) {
         props.appState.hookForEach('RendererForModel', (hook) => {
@@ -344,7 +339,7 @@ const Stack = Component(function Stack (props, classes) {
                 let Func = hook.node
                 current = <Func
                     key={btf.id}
-                    lightPos={lightPos}
+                    lightPos={lightControl.lightPos}
                 />
             }
         })

@@ -38,6 +38,14 @@ const { Plugin: TestPlugin, Component } = PluginCreator(TestController, TestMode
 export default TestPlugin
 export type ITestPlugin = typeof TestPlugin.Type
 
+import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
+
+const styles = (theme: Theme) => createStyles({
+    dragger: {
+        // margin: `${RenderMargin}px`,
+    },
+})
+
 const TestView = Component(function TestComponent (props) {
     return <>
         <p>{props.children}</p>
@@ -45,4 +53,4 @@ const TestView = Component(function TestComponent (props) {
         <button onClick={this.setExtra} > Tap me2!</button>
         <button onClick={this.setExtra2} > Tap me!</button>
     </>
-})
+}, styles)

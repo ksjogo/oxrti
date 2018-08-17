@@ -11,5 +11,6 @@
     "LightControlPlugin",
     "ImpExpPlugin",
     "BookmarksPlugin",
+    "TestPlugin",
     "QuickPanPlugin"
 ]

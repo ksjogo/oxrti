@@ -149,6 +149,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
         (func as PluginComponentType<P>).displayName = `PluginComponent(${inner.name})`
         return func
     }
+
     // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }
 }

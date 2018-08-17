@@ -58,7 +58,7 @@ const PTMRGB = Component<BaseNodeProps>(function PTMRGB (props) {
         width={props.width || btf.data.width}
         height={props.height || btf.data.height}
         uniforms={{
-            lightPosition: props.lightPos || props.lightPos,
+            lightPosition: props.lightPos,
             texR: mapper(btf, 'R'),
             texG: mapper(btf, 'G'),
             texB: mapper(btf, 'B'),
@@ -74,7 +74,7 @@ const PTMLRGB = Component<BaseNodeProps>(function PTMLRGB (props) {
         width={props.width || btf.data.width}
         height={props.width || btf.data.height}
         uniforms={{
-            lightPosition: props.lightPos || props.lightPos,
+            lightPosition: props.lightPos,
             texR: btf.texForRender('R', 'a0'),
             texG: btf.texForRender('G', 'a0'),
             texB: btf.texForRender('B', 'a0'),

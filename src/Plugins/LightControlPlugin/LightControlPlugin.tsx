@@ -1,5 +1,5 @@
 import React from 'react'
-import Plugin, { PluginCreator } from '../../Plugin'
+import Plugin, { PluginCreator, PluginComponentType } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
 import { types } from 'mobx-state-tree'
@@ -137,6 +137,12 @@ class LightController extends shim(LightControlModel, Plugin) {
     onMouseUp () {
         this.dragging = false
     }
+
+    get lightPos (): number[] {
+        if (this.x === 0 && this.y === 0)
+            return normalize([0.00001, -0.00001, 1])
+        return hemispherical(this.x, this.y)
+    }
 }
 
 const { Plugin: LightControlPlugin, Component } = PluginCreator(LightController, LightControlModel, 'LightControlPlugin')
@@ -170,8 +176,9 @@ const SliderComponent = Component(function LightControlComponent (props) {
 })
 
 import shader from './hemisphere.glsl'
-import { toTex, rotate, Point } from '../../Math'
+import { toTex, rotate, Point, normalize } from '../../Math'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
+import { BaseNodeProps } from '../RendererPlugin/BaseNode';
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
     let point: Point = [this.displayX, this.displayY]

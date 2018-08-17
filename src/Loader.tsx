@@ -93,6 +93,9 @@ function createAppState (snapshot = {}) {
 function renderApp (App: React.StatelessComponent, state: IAppState) {
     let Async = (React as any).unstable_AsyncMode
     ReactDOM.render(<Provider appState={state} >
+        {/* <Async>
+            <App />
+        </Async> */}
         <App />
     </Provider>, mount)
 }
