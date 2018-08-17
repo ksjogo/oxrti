@@ -7,12 +7,13 @@ The inital parts will be the main body of a master thesis by Johannes "ksjogo" G
 
 # Running It
 
-## Local static copy
-To access the precompiled local copy, just
-```
-open index.html
-```
-inside some web browser.
+## Online Copy
+
+The easiest way to access to software is by visiting [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
+
+## Download
+
+[Zip](https://github.com/ksjogo/oxrti/raw/master/dist/oxrti.zip) including the bundled HTML and JavaScript.
 
 ## Dev Setup
 
@@ -54,9 +55,6 @@ to download them.
 * GNU/Linux and OSX status: [![unix status](https://travis-ci.org/ksjogo/oxrti.svg?branch=master)](https://travis-ci.org/ksjogo/oxrti)
 * Windows: [![windows status](https://ci.appveyor.com/api/projects/status/41pgk56jugmeie7w?svg=true)](https://ci.appveyor.com/project/ksjogo/oxrti)
 
-## Online Copy
-
-The easiest way to access to software is by visiting [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
 
 # Development
 Please enable the build pre-commit hook
