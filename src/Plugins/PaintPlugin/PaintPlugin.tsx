@@ -428,7 +428,7 @@ const PaintNode = Component(function PaintNode (props) {
             width={width}
             height={height}
             key={this.key}
-            onDraw={this.onDraw}
+            onDraw={this.initialized ? null : this.onDraw}
             shader={{
                 frag: this.mixerShader(),
             }}

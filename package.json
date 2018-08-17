@@ -12,6 +12,7 @@
     "@material-ui/icons": "^2.0.2",
     "@material-ui/lab": "^1.0.0-alpha.10",
     "@types/async": "^2.0.49",
+    "@types/diff": "^3.5.1",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/jszip": "^3.1.4",
     "@types/lodash": "^4.14.116",
@@ -36,6 +37,7 @@
     "core-worker": "^0.3.5",
     "crypto-hash": "^0.1.0",
     "css-loader": "^1.0.0",
+    "diff": "^3.5.0",
     "electron": "^3.0.0-beta.5",
     "electron-builder": "^20.28.1",
     "electron-devtools-installer": "^2.2.4",
@@ -108,6 +110,5 @@
     "main": {
       "sourceDirectory": "src/electron"
     }
-  },
-  "dependencies": {}
+  }
 }
