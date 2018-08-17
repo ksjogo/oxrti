@@ -5,7 +5,7 @@ export default abstract class Writer {
     height = 0
     inputBuffer: Buffer
     inputElementSize: number
-    constructor(config: WriterConfig) {
+    constructor (config: WriterConfig) {
         this.inputBuffer = config.data
         this.width = config.width
         this.height = config.height
