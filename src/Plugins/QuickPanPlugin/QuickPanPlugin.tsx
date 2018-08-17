@@ -74,7 +74,7 @@ const QuickPanComponent = Component(function QuickPanComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <SafeGLIInspector>
-                <PreviewComponent />
+                <QuickPan />
             </SafeGLIInspector>
         </CardContent>
     </Card>
@@ -87,7 +87,7 @@ import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SIZE = 150
 
-const PreviewComponent = Component(function PreviewComponent (props, classes) {
+const QuickPan = Component(function QuickPan (props, classes) {
     let btf = props.appState.btf()
     let width = SIZE
     let height = 150 * btf.data.height / btf.data.width

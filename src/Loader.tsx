@@ -9,6 +9,7 @@ import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
+import makeInspectable from 'mobx-devtools-mst'
 
 if (plugins.indexOf('BasePlugin') === -1) {
     alert('BasePlugin needs to be loaded always!')
@@ -75,6 +76,8 @@ function createAppState (snapshot = {}) {
     // create new one
     state = (require('./State/AppState').default).create(snapshot)
     state.filecache = filecache
+
+    makeInspectable(state)
 
     if ((window as any).devToolsExtension)
         connectReduxDevtools(remotedev, state)

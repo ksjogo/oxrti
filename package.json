@@ -55,6 +55,7 @@
     "lodash-decorators": "^6.0.0",
     "material-ui-render-props-styles": "^4.0.2",
     "mobx": "^4.3.1",
+    "mobx-devtools-mst": "^0.9.18",
     "mobx-react": "^5.2.5",
     "mobx-react-devtools": "^5.0.1",
     "mobx-state-tree": "^2.2.0",
