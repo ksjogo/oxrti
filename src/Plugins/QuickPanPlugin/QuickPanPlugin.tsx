@@ -5,7 +5,7 @@ import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
-import SafeGLIInspector from '../../View/SafeGLIInspector'
+import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
 import { LinearCopy, Node } from 'gl-react'
 
 const QuickPanModel = Plugin.props({
@@ -95,7 +95,7 @@ const PreviewComponent = Component(function PreviewComponent (props, classes) {
     if (!btf.isDefault()) {
         props.appState.hookForEach('RendererForModel', (hook) => {
             if (hook.channelModel === btf.data.channelModel) {
-                let Func = hook.node.render
+                let Func = hook.node
                 rootnode = <Func
                     key={btf.id}
                     height={height}

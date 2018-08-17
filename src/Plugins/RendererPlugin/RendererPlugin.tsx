@@ -1,21 +1,19 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import { Node, Shaders } from 'gl-react'
+import { Node, Shaders, LinearCopy } from 'gl-react'
 import { types } from 'mobx-state-tree'
-import Grid from '@material-ui/core/Grid'
-import Stack from './Stack'
 import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
-import { BTFMetadataConciseDisplay } from '../../View/JSONDisplay'
+import { BTFMetadataConciseDisplay, RenderHooks } from '../BasePlugin/BasePlugin'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { Point } from '../../Math'
-import DownloadBTF from '../../View/DownloadBTF'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
+import { Surface } from 'gl-react-dom'
 
 const RendererModel = Plugin.props({
 })
@@ -96,10 +94,11 @@ class RendererController extends shim(RendererModel, Plugin) {
     onResize (contentRect: ContentRect) {
         this.elementHeight = Math.floor(contentRect.bounds.height)
         this.elementWidth = Math.floor(contentRect.bounds.width)
+        console.log('on resize')
     }
 
     onResizeHandler (contentRect: ContentRect) {
-        if (this.elementHeight !== contentRect.bounds.height || this.elementWidth !== contentRect.bounds.width)
+        if (Math.abs(this.elementHeight - Math.floor(contentRect.bounds.height)) + Math.floor(Math.abs(this.elementWidth - contentRect.bounds.width)) > 3)
             this.onResize(contentRect)
     }
 
@@ -184,8 +183,10 @@ class RendererController extends shim(RendererModel, Plugin) {
     centerRef: any
     handleCenterRef (measureRef: any) {
         return (ref: any) => {
-            this.centerRef = ref
-            measureRef(ref)
+            if (this.centerRef !== ref) {
+                this.centerRef = ref
+                measureRef(ref)
+            }
         }
     }
 
@@ -202,7 +203,6 @@ class RendererController extends shim(RendererModel, Plugin) {
         return this.popover !== '' ? this.popover : `Loading ${this.appState.loadingTextures} textures`
     }
 
-
     async exportScreenshot () {
         let btf = this.appState.btf()
         let blob = await (this.ref('surface').captureAsBlob() as Promise<Blob>)
@@ -215,6 +215,13 @@ class RendererController extends shim(RendererModel, Plugin) {
         blob = new Blob([JSONY(meta)], { type: 'application/json' })
         FileSaver.saveAs(blob, `${btf.name}_snap.json`)
     }
+
+    async download () {
+        this.appState.hookForEach('PreDownload')
+        let btf = this.appState.btf()
+        let zip = await btf.generateZip()
+        FileSaver.saveAs(zip, btf.zipName())
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -224,7 +231,6 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 import AppStyles, { DrawerWidth } from '../../View/AppStyles'
 import content from '*.css'
 import { sleep, JSONY } from '../../util'
-import RenderHooks from '../../View/RenderHooks'
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
@@ -234,11 +240,6 @@ const RendererView = Component(function RendererView (props, classes) {
                     <div className={classes.stack}>
                         {this.elementHeight !== -1 && <Stack
                             key={this.key}
-                            surfaceRef={this.handleRef('surface')}
-                            onMouseLeave={this.onMouseLeave}
-                            onMouseMove={this.onMouseMove}
-                            onMouseDown={this.onMouseDown}
-                            onMouseUp={this.onMouseUp}
                         />}
                     </div>
                 </div>
@@ -305,3 +306,88 @@ const Upload = Component(function Upload (props, classes) {
         </CardActions>
     </Card>
 }, UploadStyles)
+
+import noise from './noise.glsl'
+import { normalize } from '../../../dist/src/Math'
+import hemispherical from '../LightControlPlugin/Hemisphere'
+import { ILightControlPlugin } from '../LightControlPlugin/LightControlPlugin'
+const shaders = Shaders.create({
+    noise: {
+        frag: noise,
+    },
+})
+
+const styles = (theme: Theme) => createStyles({
+    surface: {
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+    },
+})
+
+const Stack = Component(function Stack (props, classes) {
+    let size = Math.min(this.elementHeight, this.elementWidth)
+    let marginXP = this.elementWidth > this.elementHeight
+    let margin = Math.abs((this.elementHeight - this.elementWidth) / 2)
+
+    let current: JSX.Element
+    let btf = props.appState.btf()
+
+    let lightControl = this.appState.plugins.get('LightControlPlugin') as ILightControlPlugin
+    let lightPos: number[]
+    if (!lightControl || (lightControl.x === 0 && lightControl.y === 0))
+        lightPos = normalize([0.00001, -0.00001, 1])
+    else
+        lightPos = hemispherical(lightControl.x, lightControl.y)
+
+    if (!btf.isDefault()) {
+        props.appState.hookForEach('RendererForModel', (hook) => {
+            if (hook.channelModel === btf.data.channelModel) {
+                let Func = hook.node
+                current = <Func
+                    key={btf.id}
+                    lightPos={lightPos}
+                />
+            }
+        })
+    }
+    if (!current) {
+        current = <Node
+            key={btf.id}
+            height={size}
+            width={size}
+            shader={shaders.noise}
+            uniforms={{ iGlobalTime: props.appState.uptime }}
+        />
+    }
+
+    props.appState.hookForEach('ViewerRender', (hook) => {
+        let Func = hook.component
+        current = <Func
+            // flush layer if the btf file changed
+            key={btf.id}
+        >{current}</Func>
+    })
+
+    return <div style={{
+        marginLeft: marginXP ? margin : 0,
+        marginTop: !marginXP ? margin : 0,
+    }}>
+        <Surface
+            ref={this.handleRef('surface')}
+            className={classes.surface}
+            height={size}
+            width={size}
+            onMouseLeave={this.onMouseLeave}
+            onMouseMove={this.onMouseMove}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}
+            webglContextAttributes={{ preserveDrawingBuffer: true }}
+        ><LinearCopy>
+                {current}
+            </LinearCopy>
+        </Surface>
+    </div>
+}, styles)
+
+const DownloadBTF = Component(function DownloadBTF (props) {
+    return <Button onClick={this.download} > Save</ Button>
+})

@@ -1,11 +1,11 @@
-import { PluginComponentType } from './View/Component'
 import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
 import { MouseListener } from './Plugins/RendererPlugin/MouseListener'
 import { Point } from './Math'
 import { ChannelModel } from './BTFFile'
 export { ChannelModel }
-import BaseNode from './Plugins/RendererPlugin/BaseNode'
+import { BaseNodeProps } from './Plugins/RendererPlugin/BaseNode'
 import { TabProps } from '@material-ui/core/Tab'
+import { PluginComponentType } from './Plugin'
 
 // generic hook definitions to allow for a typesafe hook system
 
@@ -50,12 +50,11 @@ export type HookNameComponent = LimitedHooks<HookConfig, Hooks<ComponentHook<any
 export type HookNameFunction = LimitedHooks<HookConfig, Hooks<FunctionHook<any>>>
 export type HookNameConfig = LimitedHooks<HookConfig, Hooks<ConfigHook<any>>>
 
-
 // specific hooks follow
 
 type BaseNodeConfig = {
     channelModel: ChannelModel,
-    node: BaseNode,
+    node: PluginComponentType<BaseNodeProps>,
 }
 
 type ViewerTabFocus = {

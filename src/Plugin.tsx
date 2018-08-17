@@ -1,12 +1,11 @@
 import { types, IModelType } from 'mobx-state-tree'
 import { shim, action, mst } from 'classy-mst'
-import { ComponentProps, PluginComponentType } from './View/Component'
 import React, { ReactNode, ReactElement } from 'react'
 import { Shaders, Node } from 'gl-react'
 import { HookConfig, HookName, ComponentHook, FunctionHook, HookType } from './Hook'
 import { IAppState } from './State/AppState'
 import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
-import { observer, inject } from 'mobx-react'
+import { observer, inject, IWrappedComponent } from 'mobx-react'
 import { Point } from './Math'
 import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin'
 
@@ -17,6 +16,14 @@ const PluginModel = types.model({
 })
 
 const refCache: { [key: string]: { [key: string]: any } } = {}
+
+interface ComponentProps {
+    appState?: IAppState,
+}
+
+export { ComponentProps }
+export type ComponentType = ((props: any) => JSX.Element) & IWrappedComponent<(props: any) => JSX.Element>
+export type PluginComponentType<P = {}> = React.StatelessComponent<ComponentProps & P> & IWrappedComponent<React.StatelessComponent<ComponentProps & P>>
 
 /**
  * Plugin Code
@@ -88,7 +95,8 @@ class PluginController extends shim(PluginModel) {
         return (ref: any) => {
             if (!refCache[key])
                 refCache[key] = {}
-            refCache[key][id] = ref
+            if (refCache[key][id] !== ref)
+                refCache[key][id] = ref
         }
     }
 
@@ -125,7 +133,7 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
     // can we type the styles somehow?
     function SubComponent<P = {}> (inner: innerType<P>, styles?: any): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
-        let func = inject('appState')(observer(function (props) {
+        let innerMost = function (props: any) {
             let plugin = (props.appState.plugins.get(name)) as typeof SubPlugin.Type
             // actual rendering function
             // allow this so all code inside a plugin can just refer to this
@@ -133,11 +141,13 @@ function PluginCreator<S, T, U> (Code: new () => U, Data: IModelType<S, T>, name
             if (styles)
                 innerProps.push(props.classes)
             return inner.apply(plugin, innerProps)
-        }))
+        };
+        (innerMost as any).displayName = inner.name
+        let func: any = inject('appState')(observer(innerMost))
         if (styles)
-            return withStyles(styles)(func) as PluginComponentType<P>
-        else
-            return func
+            func = withStyles(styles)(func);
+        (func as PluginComponentType<P>).displayName = `PluginComponent(${inner.name})`
+        return func
     }
     // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }

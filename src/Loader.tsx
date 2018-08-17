@@ -10,6 +10,10 @@ import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
 
+if (plugins.indexOf('BasePlugin') === -1) {
+    alert('BasePlugin needs to be loaded always!')
+}
+
 let mount: HTMLElement
 
 // webpack bundles the modules into one context
@@ -87,13 +91,14 @@ function createAppState (snapshot = {}) {
  * @param state state tree
  */
 function renderApp (App: React.StatelessComponent, state: IAppState) {
+    let Async = (React as any).unstable_AsyncMode
     ReactDOM.render(<Provider appState={state} >
         <App />
     </Provider>, mount)
 }
 
 /**
- * Standard function to have some global timer
+ * Standard function to have some global timerac
  * Currently spamming the redux dev tools though
  */
 function uptimer () {
@@ -169,5 +174,5 @@ export default function init (elementId: string | HTMLElement) {
 
     }
 
-    //uptimer()
+    // uptimer()
 }

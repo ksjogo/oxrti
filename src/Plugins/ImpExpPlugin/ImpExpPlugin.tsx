@@ -39,4 +39,4 @@ class ImpExpController extends shim(ImpExpModel, Plugin) {
 
 const { Plugin: ImpExpPlugin, Component } = PluginCreator(ImpExpController, ImpExpModel, 'ImpExpPlugin')
 export default ImpExpPlugin
-export type ITestPlugin = typeof ImpExpPlugin.Type
+export type IImpExpPlugin = typeof ImpExpPlugin.Type

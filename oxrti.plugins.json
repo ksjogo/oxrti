@@ -1,4 +1,5 @@
 [
+    "BasePlugin",
     "PaintPlugin",
     "RotationPlugin",
     "ZoomPlugin",

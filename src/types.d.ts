@@ -113,3 +113,4 @@ declare module 'webgltexture-loader' {
   let WebGLTextureLoaderAsyncHashCache: any
   export { globalRegistry, WebGLTextureLoaderAsyncHashCache }
 }
+

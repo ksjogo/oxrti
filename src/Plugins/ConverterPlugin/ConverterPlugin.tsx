@@ -10,7 +10,7 @@ import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
 import { sleep } from '../../util'
-import { BTFMetadataDisplay } from '../../View/JSONDisplay'
+import { BTFMetadataDisplay } from '../BasePlugin/BasePlugin'
 
 const ConverterModel = Plugin.props({
 })

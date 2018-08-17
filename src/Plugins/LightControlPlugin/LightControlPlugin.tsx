@@ -7,7 +7,7 @@ import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
-import SafeGLIInspector from '../../View/SafeGLIInspector'
+import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
 
 const RenderMargin = 20
@@ -43,7 +43,7 @@ class LightController extends shim(LightControlModel, Plugin) {
                     key: 'lightposition',
                     fullshot: this.saveBookmark,
                     snapshot: this.saveBookmark,
-                }
+                },
             },
         }
     }

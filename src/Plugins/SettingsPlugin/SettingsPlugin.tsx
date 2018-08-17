@@ -2,7 +2,7 @@ import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Card, CardContent, List, ListItem, Theme, createStyles, Typography } from '@material-ui/core'
-import JSONDisplay from '../../View/JSONDisplay'
+import { JSONDisplay } from '../BasePlugin/BasePlugin'
 
 const SettingsModel = Plugin.props({
 })
