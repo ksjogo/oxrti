@@ -22,6 +22,16 @@ replace({
 console.log("Fixing MaterialUI Slider");
 rimrif.sync("node_modules/@material-ui/lab/Slider/*.d.ts");
 
+
+console.log("Fixing MaterialUI Tooltips")
+replace({
+    regex: /enterDelay: 0,/,
+    replacement: "enterDelay: 200,",
+    paths: ['./node_modules/@material-ui/core/Tooltip/Tooltip.js'],
+    silent: false,
+});
+
+
 console.log("Fixing webpack cli");
 //electron webpack needs thats
 fs.copyFileSync("./node_modules/webpack-cli/bin/cli.js", "./node_modules/webpack-cli/bin/webpack.js");

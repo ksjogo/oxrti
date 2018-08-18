@@ -1,11 +1,9 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import { Node, Shaders } from 'gl-react'
 import { types } from 'mobx-state-tree'
-import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, Tooltip } from '@material-ui/core'
+import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, Tooltip, TextField } from '@material-ui/core'
 import uniqid from 'uniqid'
-import { RIEInput } from '@attently/riek'
 import TrashIcon from '@material-ui/icons/Delete'
 
 const BookmarkModel = types.model({
@@ -53,8 +51,8 @@ class BookmarksController extends shim(BookmarksModel, Plugin) {
     }
 
     handleBookmarkName (index: number) {
-        return (change: { name: string }) => {
-            this.setBookmarkName(index, change.name)
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            this.setBookmarkName(index, event.target.value)
         }
     }
 
@@ -97,8 +95,7 @@ const BookmarkUI = Component(function BookmarkUI (props, classes) {
         <CardContent>
             <List>
                 {this.bookmarks.map((bookmark, index) => (
-                    <Tooltip title='Restore' key={bookmark.id}>
-
+                    <Tooltip title='Restore this bookmark' key={bookmark.id}>
                         <ListItem
                             onClick={this.handleRestore(index)}
                             key={bookmark.id}
@@ -106,23 +103,27 @@ const BookmarkUI = Component(function BookmarkUI (props, classes) {
                             dense
                             button
                         >
-
-                            <Tooltip title='Change name'>
-                                <Typography>
-                                    <RIEInput
-                                        value={bookmark.name}
-                                        change={this.handleBookmarkName(index)}
-                                        propName='name' />
-                                </Typography>
-                            </Tooltip>
-
+                            <Typography style={{
+                                marginTop: 10,
+                            }}>RES</Typography>
                             <ListItemSecondaryAction>
+                                <Tooltip title='Change name'>
+                                    <TextField
+                                        style={{
+                                            maxWidth: 120,
+                                        }}
+                                        id='name'
+                                        label=''
+                                        value={bookmark.name}
+                                        onChange={this.handleBookmarkName(index)}
+                                        margin='normal'
+                                    />
+                                </Tooltip>
                                 <Tooltip title='Delete'>
                                     <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
                                         <TrashIcon />
                                     </IconButton>
                                 </Tooltip>
-
                             </ListItemSecondaryAction>
 
                         </ListItem>

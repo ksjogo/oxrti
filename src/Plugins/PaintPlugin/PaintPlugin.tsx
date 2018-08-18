@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
@@ -8,13 +8,11 @@ import { observable } from 'mobx'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import TrashIcon from '@material-ui/icons/Delete'
 import uniqid from 'uniqid'
 import { ChromePicker } from 'react-color'
-import { RIEInput } from '@attently/riek'
 import FileSaver from 'file-saver'
 import { Node, Bus } from 'gl-react'
 import { sleep, JSONY } from '../../util'
@@ -283,8 +281,8 @@ class PaintController extends shim(PaintModel, Plugin) {
     }
 
     handleLayerName (index: number) {
-        return (change: any) => {
-            this.setLayerName(index, change.name)
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            this.setLayerName(index, event.target.value)
         }
     }
 
@@ -331,47 +329,49 @@ const PaintUI = Component(function PaintUI (props, classes) {
         <CardContent>
             <List>
                 {this.layers.map((layer, index) => (
-                    <ListItem
-                        key={index}
-                        role={undefined}
-                        dense
-                        button
-                    >
-                        <Tooltip title='Paint this layer'>
+                    <Tooltip title='Paint this layer'>
+                        <ListItem
+                            key={index}
+                            role={undefined}
+                            button
+                            dense
+                            onClick={(e: React.MouseEvent<HTMLElement>) => this.handleActiveLayer(index)(null)}
+                        >
                             <Checkbox
-                                onClick={this.handleActiveLayer(index)}
+                                style={{
+                                    marginTop: 10,
+                                }}
                                 checked={this.activeLayer === index}
-                                tabIndex={-1}
-                                disableRipple
                             />
-                        </Tooltip>
-                        <Tooltip title='Change name'>
-                            <ListItemText>
-                                <RIEInput
-                                    value={layer.name}
-                                    change={this.handleLayerName(index)}
-                                    propName='name' />
-                            </ListItemText>
-                        </Tooltip>
+                            <ListItemSecondaryAction>
+                                <Tooltip title='Change name'>
+                                    <TextField
+                                        style={{
+                                            maxWidth: 75,
+                                        }}
+                                        id='name'
+                                        label=''
+                                        value={layer.name}
+                                        onChange={this.handleLayerName(index)}
+                                        margin='normal'
+                                    />
+                                </Tooltip>
 
-                        {/* <ListItemText primary={`${layer.id}`} /> */}
-                        <ListItemSecondaryAction>
-                            <Tooltip title='Toggle visibility'>
+                                <Tooltip title='Toggle visibility'>
+                                    <Switch
+                                        onChange={this.handleVisibility(index)}
+                                        checked={layer.visible}
+                                    />
+                                </Tooltip>
+                                <Tooltip title='Delete'>
+                                    <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                        <TrashIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </Tooltip>
 
-                                <Switch
-                                    onChange={this.handleVisibility(index)}
-                                    checked={layer.visible}
-                                />
-                            </Tooltip>
-                            <Tooltip title='Delete'>
-
-                                <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
-                                    <TrashIcon />
-                                </IconButton>
-                            </Tooltip>
-
-                        </ListItemSecondaryAction>
-                    </ListItem>
                 ))}
             </List>
         </CardContent>
