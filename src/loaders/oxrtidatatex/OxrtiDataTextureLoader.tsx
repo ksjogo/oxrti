@@ -8,7 +8,7 @@ type TextureAndSize = {
     height: number,
 }
 import { TexForRender } from '../../BTFFile'
-import { IAppState } from '../../State/AppState'
+import { IAppState } from '../../AppState'
 import pLimit from 'p-limit'
 
 function isWebGL2 (gl: any) {

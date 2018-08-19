@@ -248,7 +248,7 @@ const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, 
 export default RendererPlugin
 export type IRendererPlugin = typeof RendererPlugin.Type
 
-import AppStyles, { DrawerWidth } from '../../View/AppStyles'
+import AppStyles, { DrawerWidth } from '../../AppStyles'
 import content from '*.css'
 import { sleep, JSONY } from '../../util'
 

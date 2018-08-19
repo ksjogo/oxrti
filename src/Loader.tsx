@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { IAppState } from './State/AppState'
-import App from './View/App'
+import { IAppState } from './AppState'
+import App from './App'
 import plugins from '../oxrti.plugins.json'
 import * as path from 'path'
 import { connectReduxDevtools } from 'mst-middlewares'
@@ -10,7 +10,7 @@ import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
 import makeInspectable from 'mobx-devtools-mst'
 import { MuiThemeProvider } from '@material-ui/core/styles'
-import { Theme as DefaultTheme } from './View/AppStyles'
+import { Theme as DefaultTheme } from './AppStyles'
 
 if (plugins.indexOf('BasePlugin') === -1) {
     alert('BasePlugin needs to be loaded always!')
@@ -75,7 +75,7 @@ function createAppState (snapshot = {}) {
     }
 
     // create new one
-    state = (require('./State/AppState').default).create(snapshot)
+    state = (require('./AppState').default).create(snapshot)
     state.filecache = filecache
 
     makeInspectable(state)
@@ -140,16 +140,16 @@ export default function init (elementId: string | HTMLElement) {
 
     // Connect HMR
     if (module.hot) {
-        module.hot.accept(['./State/AppState'], () => {
+        module.hot.accept(['./AppState'], () => {
             // Store definition changed, recreate a new one from old state
-            // renderApp(require('./View/App').default, createAppState(getSnapshot(state)))
+            // renderApp(require('./App').default, createAppState(getSnapshot(state)))
             // loadPlugins()
             console.error('cannot hot-reload appstate, please do a full reload')
         })
 
-        module.hot.accept(['./View/App'], () => {
+        module.hot.accept(['./App'], () => {
             // Componenent definition changed, re-render app
-            renderApp(require('./View/App').default, state)
+            renderApp(require('./App').default, state)
             console.log('updated main view')
         })
 
