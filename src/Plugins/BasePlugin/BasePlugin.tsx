@@ -93,10 +93,11 @@ const SafeGLIInspector = Component(function SafeGLIInspector (props) {
 const Tooltip: React.SFC<{
     title: string | number | ReactText | JSX.Element,
     key?: string | number,
+    className?: string,
 }> = (props) => {
-    return <div key={props.key}><MTooltip title={props.title}>
+    return <MTooltip title={props.title}>
         {props.children as any}
-    </MTooltip></div>
+    </MTooltip>
 }
 
 export { Tooltip, JSONDisplay, BTFMetadataDisplay, BTFMetadataConciseDisplay, RenderHooks, SafeGLIInspector }

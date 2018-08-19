@@ -43,6 +43,7 @@ const AppStyles = (theme: Theme) => createStyles({
         position: 'absolute',
         right: 0,
         backgroundColor: theme.palette.primary.main,
+        borderLeft: '2px solid rgba(255, 255, 255, 0.12)',
     },
     toolbar: theme.mixins.toolbar,
     stack: {

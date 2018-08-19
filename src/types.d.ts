@@ -71,19 +71,11 @@ declare module 'file-saver' {
   export = saver
 }
 
-declare module '@attently/riek' {
-  let RIEInput: React.StatelessComponent<{
-    value: string,
-    change: (vals: { [key: string]: any }) => void,
-    propName: string
-  }>
-  export { RIEInput }
-}
-
 declare module 'react-dropzone' {
   let dropzone: React.StatelessComponent<{
     onDrop: (files: File[]) => void,
-    className?: string
+    className?: string,
+    ref: (dropzone: any) => void
   }>
   export = dropzone
 }

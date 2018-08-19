@@ -19,7 +19,6 @@ import { sleep, JSONY } from '../../util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 
-
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
 import initShader from './init.glsl'
@@ -331,7 +330,7 @@ const PaintUI = Component(function PaintUI (props, classes) {
         <CardContent>
             <List>
                 {this.layers.map((layer, index) => (
-                    <Tooltip title='Paint this layer'>
+                    <Tooltip key={layer.id} title='Paint this layer'>
                         <ListItem
                             key={index}
                             role={undefined}

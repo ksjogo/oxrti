@@ -8,6 +8,8 @@ import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
 import { observer, inject, IWrappedComponent } from 'mobx-react'
 import { Point } from './Math'
 import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin'
+import { StyleRules } from '@material-ui/core/styles'
+import { ClassNameMap } from '@material-ui/core/styles/withStyles'
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -127,11 +129,11 @@ export { IPlugin }
 function PluginCreator<S extends ModelProperties, T, U> (Code: new () => U, Data: IModelType<S, T>, name: string) {
     let SubPlugin = mst(Code, Data, name)
     // outer level constructor function
-    // inner is basically (plugin, props) => ReactElement
+    // inner is basically (props, classes?) => ReactElement
     // we could potentially extract a better style definition though
-    type innerType<P> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: any) => ReactElement<any>
+    type innerType<P, C extends string> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: ClassNameMap<C>) => ReactElement<any>
     // can we type the styles somehow?
-    function SubComponent<P = {}> (inner: innerType<P>, styles?: any): PluginComponentType<P> {
+    function SubComponent<P = {}, C extends string = ''> (inner: innerType<P, C>, styles?: StyleRulesCallback<C>): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         let innerMost = function (props: any) {
             let plugin = (props.appState.plugins.get(name)) as typeof SubPlugin.Type

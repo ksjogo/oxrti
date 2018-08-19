@@ -6,12 +6,13 @@ export { ChannelModel }
 import { BaseNodeProps } from './Plugins/RendererPlugin/BaseNode'
 import { TabProps } from '@material-ui/core/Tab'
 import { PluginComponentType } from './Plugin'
+import { Component } from 'react'
 
 // generic hook definitions to allow for a typesafe hook system
 
 export type HookBase = {
     priority?: number,
-    name?: string,
+    // name?: string,
 }
 
 export type ComponentHook<P = PluginComponentType> = HookBase & {
@@ -100,6 +101,13 @@ type Tab = {
     afterFocusLose?: () => Promise<void>,
 }
 
+type ActionBar = {
+    onClick: () => void,
+    title: string,
+    enabled: () => boolean,
+    tooltip: string,
+}
+
 type HookTypes = {
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
     ViewerRender?: ConfigHook<RendererNode>,
@@ -114,4 +122,7 @@ type HookTypes = {
     ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
     RendererForModel?: ConfigHook<BaseNodeConfig>,
     Bookmarks?: ConfigHook<BookmarkSaver>,
+    AppView?: ComponentHook,
+    ActionBar?: ConfigHook<ActionBar>,
+    AfterPluginLoads?: FunctionHook,
 }

@@ -1,16 +1,22 @@
-[
-    "BasePlugin",
-    "PaintPlugin",
-    "RotationPlugin",
-    "ZoomPlugin",
-    "ConverterPlugin",
-    "RendererPlugin",
-    "SettingsPlugin",
-    "PTMConverterPlugin",
-    "PTMRendererPlugin",
-    "LightControlPlugin",
-    "ImpExpPlugin",
-    "BookmarksPlugin",
-    "TestPlugin",
-    "QuickPanPlugin"
-]
+{
+    "enabled": [
+        "BasePlugin",
+        "TabViewPlugin",
+        "PaintPlugin",
+        "RotationPlugin",
+        "ZoomPlugin",
+        "ConverterPlugin",
+        "RendererPlugin",
+        "SettingsPlugin",
+        "PTMConverterPlugin",
+        "PTMRendererPlugin",
+        "LightControlPlugin",
+        "ImpExpPlugin",
+        "BookmarksPlugin",
+        "QuickPanPlugin"
+    ],
+    "disabled": [
+        "UndoPlugin",
+        "TestPlugin"
+    ]
+}

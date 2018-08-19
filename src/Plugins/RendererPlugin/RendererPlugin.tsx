@@ -68,6 +68,15 @@ class RendererController extends shim(RendererModel, Plugin) {
                     action: this.exportScreenshot,
                 },
             },
+            ActionBar: {
+                Open: {
+                    priority: 10,
+                    onClick: () => this.ref('dropzone').open(),
+                    title: 'Open',
+                    enabled: () => true,
+                    tooltip: 'Load a .btf.zip file',
+                },
+            },
         }
     }
 
@@ -317,9 +326,11 @@ const UploadStyles = (theme: Theme) => createStyles({
 const Upload = Component(function Upload (props, classes) {
     return <Card>
         <CardContent>
-            <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
-                <div>Try dropping some files here, or click to select files to upload.</div>
-            </Dropzone>
+            <Tooltip title='Load a .btf.zip file'>
+                <Dropzone ref={this.handleRef('dropzone')} onDrop={this.onDrop} className={classes.dropzone}>
+                    <div>Try dropping some files here, or click to select files to upload.</div>
+                </Dropzone>
+            </Tooltip>
         </CardContent>
         <CardActions>{
             this.appState.hookMap('ViewerFileAction', (hook, fullName) => {

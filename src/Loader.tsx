@@ -1,7 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { IAppState } from './AppState'
-import App from './App'
 import plugins from '../oxrti.plugins.json'
 import * as path from 'path'
 import { connectReduxDevtools } from 'mst-middlewares'
@@ -12,7 +11,7 @@ import makeInspectable from 'mobx-devtools-mst'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import { Theme as DefaultTheme } from './AppStyles'
 
-if (plugins.indexOf('BasePlugin') === -1) {
+if (plugins.enabled.indexOf('BasePlugin') === -1) {
     alert('BasePlugin needs to be loaded always!')
 }
 
@@ -42,7 +41,7 @@ function pluginLoader (name: string, preload = false): Plugin {
  * @param preload as above
  */
 function loadPlugins (preload = false) {
-    plugins.forEach(name => {
+    plugins.enabled.forEach(name => {
         if (name !== path.basename(name)) {
             console.error('file-system paths currently not allowed for plugins')
         } else {
@@ -53,6 +52,8 @@ function loadPlugins (preload = false) {
                 state.loadPlugin(name)
         }
     })
+    if (!preload)
+        state.hookForEach('AfterPluginLoads')
 }
 
 let state: IAppState = null
@@ -85,7 +86,6 @@ function createAppState (snapshot = {}) {
 
     state.setPluginLoader(pluginLoader)
     state.setReloader(setStateFromSnapshot)
-    state.setUndoManager()
     return state
 }
 
@@ -94,12 +94,13 @@ function createAppState (snapshot = {}) {
  * @param App app (view) code
  * @param state state tree
  */
-function renderApp (App: React.StatelessComponent, state: IAppState) {
+function renderApp (state: IAppState) {
+    let App = state.hookPick('AppView', 0)
     let Async = (React as any).unstable_AsyncMode
     ReactDOM.render(<Provider appState={state} >
         <MuiThemeProvider theme={DefaultTheme}>
             {/* <Async>*/}
-            <App />
+            <App.component />
             {/*</Async> */}
         </MuiThemeProvider >
     </Provider>, mount)
@@ -136,7 +137,7 @@ export default function init (elementId: string | HTMLElement) {
     loadPlugins(true)
     createAppState()
     loadPlugins()
-    renderApp(App, state)
+    renderApp(state)
 
     // Connect HMR
     if (module.hot) {
@@ -145,12 +146,6 @@ export default function init (elementId: string | HTMLElement) {
             // renderApp(require('./App').default, createAppState(getSnapshot(state)))
             // loadPlugins()
             console.error('cannot hot-reload appstate, please do a full reload')
-        })
-
-        module.hot.accept(['./App'], () => {
-            // Componenent definition changed, re-render app
-            renderApp(require('./App').default, state)
-            console.log('updated main view')
         })
 
         module.hot.accept(pluginContext.id, () => {
