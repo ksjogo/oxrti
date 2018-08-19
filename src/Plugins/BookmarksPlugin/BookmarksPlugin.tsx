@@ -2,9 +2,11 @@ import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
-import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, Tooltip, TextField } from '@material-ui/core'
+import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
 import uniqid from 'uniqid'
 import TrashIcon from '@material-ui/icons/Delete'
+import { Tooltip } from '../BasePlugin/BasePlugin'
+
 
 const BookmarkModel = types.model({
     values: types.optional(

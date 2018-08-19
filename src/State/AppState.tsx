@@ -6,6 +6,8 @@ import { reduceRight } from 'lodash'
 import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './HookManager'
 import { HookConfig, HookName, HookType, UnknownHook } from '../Hook'
 import BTFFile, { BTFCache } from '../BTFFile'
+import { UndoManager } from 'mst-middlewares'
+type um = ReturnType<typeof UndoManager.create>
 
 const AppStateData = types.model({
   activeTab: 0,
@@ -27,6 +29,14 @@ class AppStateController extends shim(AppStateData) {
   // as we don't want to preserve files inside the state tree
   filecache: BTFCache
   defaultBtf = new BTFFile()
+
+  undoManager: um
+
+  setUndoManager () {
+    debugger
+    let undoManager = UndoManager.create({}, { targetStore: this })
+    this.undoManager = undoManager
+  }
 
   btf () {
 

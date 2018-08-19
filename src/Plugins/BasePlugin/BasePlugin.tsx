@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { ReactText } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
+import Rjv from 'react-json-view'
+import { Tooltip as MTooltip, Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
+import { HookNameComponent } from '../../Hook'
 
 const BasePluginModel = Plugin.props({
 })
@@ -11,10 +14,6 @@ class BasePluginController extends shim(BasePluginModel, Plugin) {
 const { Plugin: BasePlugin, Component } = PluginCreator(BasePluginController, BasePluginModel, 'BasePlugin')
 export default BasePlugin
 export type IBasePlugin = typeof BasePlugin.Type
-
-import Rjv from 'react-json-view'
-import { Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
-import { HookNameComponent } from '../../Hook';
 
 const JSONDisplay = Component<{ json: object | string, style?: any }>(function JSONDisplay (props) {
     let json = (typeof props.json === 'string') ? JSON.parse(props.json) : props.json
@@ -91,5 +90,13 @@ const SafeGLIInspector = Component(function SafeGLIInspector (props) {
 
 })
 
+const Tooltip: React.SFC<{
+    title: string | number | ReactText | JSX.Element,
+    key?: string | number,
+}> = (props) => {
+    return <div key={props.key}><MTooltip title={props.title}>
+        {props.children as any}
+    </MTooltip></div>
+}
 
-export { JSONDisplay, BTFMetadataDisplay, BTFMetadataConciseDisplay, RenderHooks, SafeGLIInspector }
+export { Tooltip, JSONDisplay, BTFMetadataDisplay, BTFMetadataConciseDisplay, RenderHooks, SafeGLIInspector }

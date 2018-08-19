@@ -4,12 +4,13 @@ import { IAppState } from './State/AppState'
 import App from './View/App'
 import plugins from '../oxrti.plugins.json'
 import * as path from 'path'
-import { destroy, getSnapshot } from 'mobx-state-tree'
 import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
 import makeInspectable from 'mobx-devtools-mst'
+import { MuiThemeProvider } from '@material-ui/core/styles'
+import { Theme as DefaultTheme } from './View/AppStyles'
 
 if (plugins.indexOf('BasePlugin') === -1) {
     alert('BasePlugin needs to be loaded always!')
@@ -84,7 +85,7 @@ function createAppState (snapshot = {}) {
 
     state.setPluginLoader(pluginLoader)
     state.setReloader(setStateFromSnapshot)
-
+    state.setUndoManager()
     return state
 }
 
@@ -96,10 +97,11 @@ function createAppState (snapshot = {}) {
 function renderApp (App: React.StatelessComponent, state: IAppState) {
     let Async = (React as any).unstable_AsyncMode
     ReactDOM.render(<Provider appState={state} >
-        {/* <Async>
+        <MuiThemeProvider theme={DefaultTheme}>
+            {/* <Async>*/}
             <App />
-        </Async> */}
-        <App />
+            {/*</Async> */}
+        </MuiThemeProvider >
     </Provider>, mount)
 }
 

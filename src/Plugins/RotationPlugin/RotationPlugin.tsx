@@ -7,7 +7,9 @@ import { types } from 'mobx-state-tree'
 import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
-
+import { Card, CardContent, Button } from '@material-ui/core'
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import { Tooltip } from '../BasePlugin/BasePlugin'
 import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Math'
 
 const RotationModel = Plugin.props({
@@ -144,9 +146,6 @@ export const CentererComponent = Component(function CentererNode (props) {
             maxDim: maxDims,
         }} />
 })
-
-import { Card, CardContent, Button, Tooltip } from '@material-ui/core'
-import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SliderComponent = Component(function RotationSlider (props) {
     return <Card style={{ width: '100%' }} >

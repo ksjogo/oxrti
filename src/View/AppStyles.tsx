@@ -1,6 +1,33 @@
 import { createStyles, Theme } from '@material-ui/core'
+import { createMuiTheme } from '@material-ui/core/styles'
+import red from '@material-ui/core/colors/red'
+import './style.css'
 
 const DrawerWidth = 350
+
+// TOFIX: not working standalone currently
+// import 'typeface-roboto'
+
+// let's be a bit special and use our own theme
+
+let Theme = createMuiTheme({
+    palette: {
+        primary: red,
+    },
+    overrides: {
+        MuiTooltip: {
+            tooltip: {
+                fontSize: 16,
+            },
+            tooltipPlacementBottom: {
+                marginTop: 5,
+            },
+            tooltipPlacementTop: {
+                marginBottom: 5,
+            },
+        },
+    },
+})
 
 const AppStyles = (theme: Theme) => createStyles({
     container: {
@@ -11,6 +38,11 @@ const AppStyles = (theme: Theme) => createStyles({
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
+    },
+    appBarActions: {
+        position: 'absolute',
+        right: 0,
+        backgroundColor: theme.palette.primary.main,
     },
     toolbar: theme.mixins.toolbar,
     stack: {
@@ -37,4 +69,4 @@ const AppStyles = (theme: Theme) => createStyles({
 })
 
 export default AppStyles
-export { DrawerWidth }
+export { DrawerWidth, Theme }

@@ -6,9 +6,10 @@ import { types } from 'mobx-state-tree'
 import Slider from '@material-ui/lab/Slider'
 import shader from './zoom.glsl'
 import { Point, rotate, sub } from '../../Math'
-import { Card, CardContent, Typography, Button, Tooltip } from '@material-ui/core'
+import { Card, CardContent, Typography, Button } from '@material-ui/core'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
+import { Tooltip } from '../BasePlugin/BasePlugin'
 
 const ZoomModel = Plugin.props({
     scale: 1,

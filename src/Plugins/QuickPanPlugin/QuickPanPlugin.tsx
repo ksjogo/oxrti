@@ -3,10 +3,11 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent, Tooltip } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
 import { LinearCopy, Node } from 'gl-react'
+import { Tooltip } from '../BasePlugin/BasePlugin'
 
 const QuickPanModel = Plugin.props({
 })

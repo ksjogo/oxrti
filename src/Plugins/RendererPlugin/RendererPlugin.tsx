@@ -4,7 +4,7 @@ import { shim, action } from 'classy-mst'
 import { Node, Shaders, LinearCopy } from 'gl-react'
 import { types } from 'mobx-state-tree'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography, Tooltip } from '@material-ui/core'
+import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay, RenderHooks } from '../BasePlugin/BasePlugin'
@@ -14,6 +14,7 @@ import { Point } from '../../Math'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
 import { Surface } from 'gl-react-dom'
+import { Tooltip } from '../BasePlugin/BasePlugin'
 
 const RendererModel = Plugin.props({
 })

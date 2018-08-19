@@ -4,11 +4,12 @@ import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
 import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent, Tooltip } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
+import { Tooltip } from '../BasePlugin/BasePlugin'
 
 const RenderMargin = 20
 
