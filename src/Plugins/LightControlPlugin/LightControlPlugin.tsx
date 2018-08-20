@@ -2,10 +2,8 @@ import React from 'react'
 import Plugin, { PluginCreator, PluginComponentType } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
-import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
-import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
 import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
@@ -187,7 +185,7 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
         point = rotate(point, -rotationPlugin.rad)
     }
     return <Tooltip
-        title={`x: ${this.x}<br />y: ${this.y}</>`}
+        title={<p>x: {this.x}<br />y: {this.y}</p>}
     >
         <div style={{
             marginLeft: 'calc(50% - 75px)',
