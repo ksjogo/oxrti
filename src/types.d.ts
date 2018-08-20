@@ -75,7 +75,7 @@ declare module 'react-dropzone' {
   let dropzone: React.StatelessComponent<{
     onDrop: (files: File[]) => void,
     className?: string,
-    ref: (dropzone: any) => void
+    ref?: (dropzone: any) => void
   }>
   export = dropzone
 }

@@ -39,6 +39,7 @@ export default TestPlugin
 export type ITestPlugin = typeof TestPlugin.Type
 
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
+import _ from 'lodash'
 
 const styles = (theme: Theme) => createStyles({
     dragger: {
@@ -54,3 +55,8 @@ const TestView = Component(function TestComponent (props) {
         <button onClick={this.setExtra2} > Tap me!</button>
     </>
 }, styles)
+
+
+const thing = function (times: number, other: (index: number) => boolean) {
+    _.times(times, other)
+}
