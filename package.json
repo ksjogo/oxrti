@@ -35,6 +35,7 @@
     "classy-mst": "^3.0.0",
     "core-worker": "^0.3.5",
     "crypto-hash": "^0.1.0",
+    "css-color-converter": "^1.1.0",
     "css-loader": "^1.0.0",
     "diff": "^3.5.0",
     "electron": "^3.0.0-beta.5",

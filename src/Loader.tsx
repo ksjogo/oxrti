@@ -9,7 +9,6 @@ import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
 import makeInspectable from 'mobx-devtools-mst'
 import { MuiThemeProvider } from '@material-ui/core/styles'
-import { Theme as DefaultTheme } from './AppStyles'
 
 if (plugins.enabled.indexOf('BasePlugin') === -1) {
     alert('BasePlugin needs to be loaded always!')
@@ -98,7 +97,7 @@ function renderApp (state: IAppState) {
     let App = state.hookPick('AppView', 0)
     let Async = (React as any).unstable_AsyncMode
     ReactDOM.render(<Provider appState={state} >
-        <MuiThemeProvider theme={DefaultTheme}>
+        <MuiThemeProvider theme={state.appTheme}>
             {/* <Async>*/}
             <App.component />
             {/*</Async> */}

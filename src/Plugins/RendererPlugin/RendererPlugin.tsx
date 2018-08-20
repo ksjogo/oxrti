@@ -1,4 +1,5 @@
 import React from 'react'
+import { AppStyles, DrawerWidth } from '../BaseThemePlugin/BaseThemePlugin'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders, LinearCopy } from 'gl-react'
@@ -7,14 +8,14 @@ import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
-import { BTFMetadataConciseDisplay, RenderHooks } from '../BasePlugin/BasePlugin'
+import { BTFMetadataConciseDisplay, Tooltip } from '../BasePlugin/BasePlugin'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { Point } from '../../Math'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
 import { Surface } from 'gl-react-dom'
-import { Tooltip } from '../BasePlugin/BasePlugin'
+import { sleep, JSONY } from '../../util'
 
 const RendererModel = Plugin.props({
 })
@@ -256,10 +257,6 @@ class RendererController extends shim(RendererModel, Plugin) {
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
 export default RendererPlugin
 export type IRendererPlugin = typeof RendererPlugin.Type
-
-import AppStyles, { DrawerWidth } from '../../AppStyles'
-import content from '*.css'
-import { sleep, JSONY } from '../../util'
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>

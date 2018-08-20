@@ -1,16 +1,13 @@
 import React, { ReactText } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import AppStyles from '../../AppStyles'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
-import { observer, inject } from 'mobx-react'
-import { withStyles, Button, Toolbar } from '@material-ui/core'
 import { hot } from 'react-hot-loader'
-import TouchRipple, { TouchRippleProps } from '@material-ui/core/ButtonBase/TouchRipple'
 import { Tooltip } from '../BasePlugin/BasePlugin'
+import { AppStyles } from '../BaseThemePlugin/BaseThemePlugin'
 
 const TabViewModel = Plugin.props({
 })

@@ -161,6 +161,11 @@ class AppStateController extends shim(AppStateData) {
     this.loadingTextures--
   }
 
+  get appTheme () {
+    let controller = this.hookPick('Theme', 0).controller
+    return controller.theme
+  }
+
   /**
    * Iterate over a given hookname
    * @param name of the hook

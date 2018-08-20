@@ -18,10 +18,12 @@ import { Node, Bus } from 'gl-react'
 import { sleep, JSONY } from '../../util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
+import cssColorConverter from 'css-color-converter'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
 import initShader from './init.glsl'
+import { IAppState } from '../../AppState'
 
 let LayerConfig = types.model({
     visible: types.boolean,
@@ -52,12 +54,30 @@ class PaintController extends shim(PaintModel, Plugin) {
     drawing = DrawingState.Outside
     initialized = false
 
+    @action
+    loadColorFromTheme () {
+        debugger
+        let theme = this.appState.appTheme.palette.primary.main
+        let rgba = cssColorConverter(theme).toRgbaArray()
+        this.color = observable.array(rgba.map((value, index) => {
+            if (index < 3)
+                return value / 255
+            else
+                return value
+        }))
+    }
+
     get layerCount () {
         return this.layers.length
     }
 
     get hooks () {
         return {
+            AfterPluginLoads: {
+                Paint: {
+                    func: this.loadColorFromTheme,
+                },
+            },
             ViewerTabFocus: {
                 Paint: {
                     beforeGain: this.beforeFocusGain,

@@ -1,7 +1,7 @@
 {
     "enabled": [
         "BasePlugin",
-        "TabViewPlugin",
+        "BaseThemePlugin",
         "PaintPlugin",
         "RotationPlugin",
         "ZoomPlugin",
@@ -13,9 +13,13 @@
         "LightControlPlugin",
         "ImpExpPlugin",
         "BookmarksPlugin",
+        "RedThemePlugin",
+        "TabViewPlugin",
         "QuickPanPlugin"
     ],
     "disabled": [
+        "BlueThemePlugin",
+        "SingleViewPlugin",
         "UndoPlugin",
         "TestPlugin"
     ]

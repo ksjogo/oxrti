@@ -6,6 +6,7 @@ export { ChannelModel }
 import { BaseNodeProps } from './Plugins/RendererPlugin/BaseNode'
 import { TabProps } from '@material-ui/core/Tab'
 import { PluginComponentType } from './Plugin'
+import { Theme } from '@material-ui/core'
 
 // generic hook definitions to allow for a typesafe hook system
 
@@ -118,6 +119,14 @@ type BookmarkSaver = {
 
 // %BookmarkHooksEnd
 
+// %ThemeHooksBegin
+
+type ThemeConfig = {
+    controller: { theme: Theme },
+}
+
+// %ThemeHooksEnd
+
 type HookTypes = {
     ActionBar?: ConfigHook<ActionBar>,
     AfterPluginLoads?: FunctionHook,
@@ -135,4 +144,5 @@ type HookTypes = {
     ViewerRender?: ConfigHook<RendererNode>,
     ViewerSide?: ComponentHook,
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
+    Theme?: ConfigHook<ThemeConfig>,
 }
