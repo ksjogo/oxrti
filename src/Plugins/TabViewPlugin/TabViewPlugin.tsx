@@ -60,7 +60,7 @@ const TabActions = Component(function TabActions (props, classes) {
         {this.appState.hookMap('ActionBar', (hook) => {
             let Comp = Component(function TabAction (props) {
                 // TODO: Why is tooltip not shown?
-                return <Tab disabled={!hook.enabled()} onClick={hook.onClick} label={<Tooltip title={hook.tooltip}>hook.title</Tooltip>} />
+                return <Tab disabled={!hook.enabled()} onClick={hook.onClick} label={<Tooltip title={hook.tooltip}><p>{hook.title}</p></Tooltip>} />
             })
             // TODO: Fix touch ripple
             // return <><TouchRipple {...TouchRippleProps} /><Comp key={hook.title} /></>

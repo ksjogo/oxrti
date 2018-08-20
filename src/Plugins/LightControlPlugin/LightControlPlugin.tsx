@@ -7,9 +7,8 @@ import { Surface } from 'gl-react-dom'
 import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import Slider from '@material-ui/lab/Slider'
 import hemispherical from './Hemisphere'
-import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
+import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
-import { Tooltip } from '../BasePlugin/BasePlugin'
 
 const RenderMargin = 20
 
@@ -188,7 +187,7 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
         point = rotate(point, -rotationPlugin.rad)
     }
     return <Tooltip
-        title={<>x: {this.x}<br />y: {this.y}</>}
+        title={`x: ${this.x}<br />y: ${this.y}</>`}
     >
         <div style={{
             marginLeft: 'calc(50% - 75px)',
