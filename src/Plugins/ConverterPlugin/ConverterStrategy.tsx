@@ -17,7 +17,7 @@ export default abstract class ConverterStrategy {
         return this.width * this.height
     }
 
-    constructor(content: ArrayBuffer, ui: IConverterUI) {
+    constructor (content: ArrayBuffer, ui: IConverterUI) {
         this.ui = ui
         this.fileBuffer = content
         this.inputBuffer = Buffer.from(content)

@@ -1,6 +1,6 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
-import { shim } from 'classy-mst';
+import { shim } from 'classy-mst'
 import PTMConverterStrategy from './PTMConverterStrategy'
 
 const PTMConverterModel = Plugin.props({

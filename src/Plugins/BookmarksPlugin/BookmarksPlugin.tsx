@@ -7,7 +7,6 @@ import uniqid from 'uniqid'
 import TrashIcon from '@material-ui/icons/Delete'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 
-
 const BookmarkModel = types.model({
     values: types.optional(
         types.map(types.array(types.union(types.string, types.number))), {},

@@ -3,7 +3,7 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import Rjv from 'react-json-view'
 import { Tooltip as MTooltip, Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
-import { HookNameComponent } from '../../Hook'
+import { ComponentHook, LimitedHook } from '../../Hook'
 
 const BasePluginModel = Plugin.props({
 })
@@ -68,7 +68,7 @@ const BTFMetadataConciseDisplay = Component(function BTFMetadataConciseDisplay (
  * Simple plugin rendering function
  * Will split on ':' and then look up the respective component from within the plugin tree
  */
-const RenderHooks = Component<{ name: HookNameComponent }>(function RenderHooks (props) {
+const RenderHooks = Component<{ name: LimitedHook<ComponentHook> }>(function RenderHooks (props) {
     let rendered = this.appState.hookMap(props.name, (hook, fullName) => {
         let Func = hook.component
         return <Func key={fullName} />

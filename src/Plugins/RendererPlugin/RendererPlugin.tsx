@@ -130,7 +130,7 @@ class RendererController extends shim(RendererModel, Plugin) {
             this.showPopover()
             return alert('Only .btf.zip is supported. Please use the converter before.')
         }
-        let content = await readAsArrayBuffer(file) as ArrayBuffer
+        let content = await readAsArrayBuffer(file)
         this.showPopover('Parsing Zip')
         let btf = await fromZip(content)
         this.showPopover()

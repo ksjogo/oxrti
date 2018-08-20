@@ -6,90 +6,52 @@ export { ChannelModel }
 import { BaseNodeProps } from './Plugins/RendererPlugin/BaseNode'
 import { TabProps } from '@material-ui/core/Tab'
 import { PluginComponentType } from './Plugin'
-import { Component } from 'react'
 
 // generic hook definitions to allow for a typesafe hook system
 
-export type HookBase = {
-    priority?: number,
-    // name?: string,
-}
+// %begin
 
-export type ComponentHook<P = PluginComponentType> = HookBase & {
-    component: P,
-}
+// Hooks are sorted in descending priority order in their respective `HookManager`
+export type HookBase = { priority?: number }
 
-export type FunctionHook<P = any> = HookBase & {
-    func: P,
-}
+// Generic single component hook, usually used for rendering a dynamic list of components
+export type ComponentHook<P = PluginComponentType> = HookBase & { component: P }
 
-export type AsyncFunctionHook<P = void> = FunctionHook<() => Promise<P>>
+// Generic single component hook, usually used for notifications
+export type FunctionHook<P = (...args: any[]) => any> = HookBase & { func: P }
 
-export type ConfigHook<P = any> = HookBase & {
-} & P
+// Generic hook config, requiring more work at the consumer side
+export type ConfigHook<P = any> = HookBase & P
 
-export type RendererHook<P = PluginComponentType> = ComponentHook<P> & {
-    inversePoint?: (point: Point) => Point,
-}
-
+// union of all hooks to allow for manual hook distinction
 export type UnknownHook = ComponentHook & FunctionHook & ConfigHook
 
+// object of named hooks
 type Hooks<P> = { [key: string]: P }
 
+// collection of unknown hooks
 export type UnknownHooks = Hooks<UnknownHook>
 
-export type HookConfig = {
-    [P in keyof HookTypes]: Hooks<HookTypes[P]>
-}
+// hook configuration inside plugins: 1-Hookname->*-LocalName->1-HookConfig
+export type HookConfig = { [P in keyof HookTypes]: Hooks<HookTypes[P]> }
+
+// all hooknames
 export type HookName = keyof HookConfig
 
+// map one hookname to its type
 export type HookType<P extends HookName> = HookTypes[P]
 
+// list of hooknames inside hook collection T, having hooktype U
 type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof T]
 
-export type HookNameComponent = LimitedHooks<HookConfig, Hooks<ComponentHook<any>>>
-export type HookNameFunction = LimitedHooks<HookConfig, Hooks<FunctionHook<any>>>
-export type HookNameConfig = LimitedHooks<HookConfig, Hooks<ConfigHook<any>>>
+// limit hookname parameters to a type conforming subset, e.g. LimitedHook<ComponentHook>
+export type LimitedHook<P> = LimitedHooks<HookConfig, Hooks<P>>
 
-// specific hooks follow
+// %end
 
-type BaseNodeConfig = {
-    channelModel: ChannelModel,
-    node: PluginComponentType<BaseNodeProps>,
-}
+// specific hooks for the plugins to use
 
-type ViewerTabFocus = {
-    beforeGain?: () => void,
-    beforeLose?: () => void,
-}
-
-type MouseConfig = {
-    listener: MouseListener,
-    mouseLeft?: () => void,
-}
-
-type BookmarkSaver = {
-    key: string,
-    save: () => (string | number)[],
-    restore: (values: (string | number)[]) => void,
-}
-
-type ScreenshotMeta = {
-    key: string,
-    fullshot?: () => (string | number)[] | string | number,
-    snapshot?: () => (string | number)[] | string | number,
-}
-
-type RendererNode = {
-    component: PluginComponentType,
-    inversePoint?: (point: Point) => Point,
-}
-
-type ViewerFileAction = {
-    tooltip: string,
-    text: string,
-    action: () => Promise<void>,
-}
+// %AppHooksBegin
 
 type Tab = {
     content: PluginComponentType
@@ -105,24 +67,72 @@ type ActionBar = {
     onClick: () => void,
     title: string,
     enabled: () => boolean,
-    tooltip: string,
+    tooltip?: string,
 }
 
+type ViewerTabFocus = {
+    beforeGain?: () => void,
+    beforeLose?: () => void,
+}
+
+type ScreenshotMeta = {
+    key: string,
+    fullshot?: () => (string | number)[] | string | number,
+    snapshot?: () => (string | number)[] | string | number,
+}
+
+type ViewerFileAction = {
+    tooltip: string,
+    text: string,
+    action: () => Promise<void>,
+}
+
+// %AppHooksEnd
+
+// %RendererHooksBegin
+
+type BaseNodeConfig = {
+    channelModel: ChannelModel,
+    node: PluginComponentType<BaseNodeProps>,
+}
+
+type RendererNode = {
+    component: PluginComponentType,
+    inversePoint?: (point: Point) => Point,
+}
+
+type MouseConfig = {
+    listener: MouseListener,
+    mouseLeft?: () => void,
+}
+
+// %RendererHooksEnd
+
+// %BookmarkHooksBegin
+
+type BookmarkSaver = {
+    key: string,
+    save: () => (string | number)[],
+    restore: (values: (string | number)[]) => void,
+}
+
+// %BookmarkHooksEnd
+
 type HookTypes = {
-    ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
-    ViewerRender?: ConfigHook<RendererNode>,
-    ViewerSide?: ComponentHook,
-    ViewerMouse?: ConfigHook<MouseConfig>,
-    ViewerFileAction?: ConfigHook<ViewerFileAction>,
-    ScreenshotMeta?: ConfigHook<ScreenshotMeta>
-    PreDownload?: FunctionHook,
-    PostLoad?: FunctionHook,
-    Test?: FunctionHook,
-    Tabs?: ConfigHook<Tab>,
-    ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
-    RendererForModel?: ConfigHook<BaseNodeConfig>,
-    Bookmarks?: ConfigHook<BookmarkSaver>,
-    AppView?: ComponentHook,
     ActionBar?: ConfigHook<ActionBar>,
     AfterPluginLoads?: FunctionHook,
+    AppView?: ComponentHook,
+    Bookmarks?: ConfigHook<BookmarkSaver>,
+    ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
+    PostLoad?: FunctionHook,
+    PreDownload?: FunctionHook,
+    RendererForModel?: ConfigHook<BaseNodeConfig>,
+    ScreenshotMeta?: ConfigHook<ScreenshotMeta>
+    Tabs?: ConfigHook<Tab>,
+    Test?: FunctionHook,
+    ViewerFileAction?: ConfigHook<ViewerFileAction>,
+    ViewerMouse?: ConfigHook<MouseConfig>,
+    ViewerRender?: ConfigHook<RendererNode>,
+    ViewerSide?: ComponentHook,
+    ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
 }
