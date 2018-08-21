@@ -76,6 +76,11 @@ const RenderHooks = Component<{ name: LimitedHook<ComponentHook> }>(function Ren
     return <>{rendered}</>
 })
 
+/**
+ * Wrap a gl-react surface so it will be disabled if the GLInspector chrome extension is present
+ * The GLInspector can only handle one surface
+ * It is most likely that the user wants to debug the main rendering surface, so all other surfaces should be wrapped.
+ */
 const SafeGLIInspector = Component(function SafeGLIInspector (props) {
     let found = false
     let elems = document.getElementsByTagName('script')

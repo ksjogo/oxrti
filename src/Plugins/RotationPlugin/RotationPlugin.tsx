@@ -2,8 +2,7 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import { Node, Shaders } from 'gl-react'
-import { types } from 'mobx-state-tree'
+import { Node } from 'gl-react'
 import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
@@ -64,7 +63,7 @@ class RotationController extends shim(RotationModel, Plugin) {
     }
 
     @action
-    onSlider (event: any, value: number) {
+    onSlider (value: number) {
         let currentCenter = this.inversePoint([0.5, 0.5])
         this.rad = value
         this.zoomer.zoomOnPoint(currentCenter)
@@ -147,7 +146,7 @@ export const CentererComponent = Component(function CentererNode (props) {
         }} />
 })
 
-const SliderComponent = Component(function RotationSlider (props) {
+const SliderComponent = Component(function RotationSlider () {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <Tooltip title='Reset'>

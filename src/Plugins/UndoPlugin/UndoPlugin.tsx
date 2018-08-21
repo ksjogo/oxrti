@@ -1,9 +1,6 @@
-import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import { IAppState } from '../../AppState'
 import { UndoManager } from 'mst-middlewares'
-import { observable } from 'mobx'
 type um = ReturnType<typeof UndoManager.create>
 
 const UndoModel = Plugin.props({
@@ -61,6 +58,6 @@ class UndoController extends shim(UndoModel, Plugin) {
     }
 }
 
-const { Plugin: UndoPlugin, Component } = PluginCreator(UndoController, UndoModel, 'UndoPlugin')
+const { Plugin: UndoPlugin } = PluginCreator(UndoController, UndoModel, 'UndoPlugin')
 export default UndoPlugin
 export type IUndoPlugin = typeof UndoPlugin.Type

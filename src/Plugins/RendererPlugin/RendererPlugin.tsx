@@ -3,9 +3,8 @@ import { AppStyles, DrawerWidth } from '../BaseThemePlugin/BaseThemePlugin'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders, LinearCopy } from 'gl-react'
-import { types } from 'mobx-state-tree'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Button, Divider, Paper, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
+import { Theme, createStyles, Button, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay, Tooltip } from '../BasePlugin/BasePlugin'
@@ -350,7 +349,7 @@ const shaders = Shaders.create({
     },
 })
 
-const styles = (theme: Theme) => createStyles({
+const styles = () => createStyles({
     surface: {
         border: '1px solid rgba(0, 0, 0, 0.12)',
     },

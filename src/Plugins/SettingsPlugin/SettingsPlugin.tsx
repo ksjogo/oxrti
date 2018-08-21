@@ -1,6 +1,6 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
-import { shim, action } from 'classy-mst'
+import { shim } from 'classy-mst'
 import { Card, CardContent, List, ListItem, Theme, createStyles, Typography } from '@material-ui/core'
 import { JSONDisplay } from '../BasePlugin/BasePlugin'
 
@@ -27,7 +27,7 @@ const { Plugin: SettingsPlugin, Component } = PluginCreator(SettingsController, 
 export default SettingsPlugin
 export type ISettingsPlugin = typeof SettingsPlugin.Type
 
-const styles = (theme: Theme) => createStyles({
+const styles = () => createStyles({
     pluginCard: {
         width: '100%',
     },

@@ -1,6 +1,6 @@
-import React, { ReactText } from 'react'
+import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
-import { shim, action } from 'classy-mst'
+import { shim } from 'classy-mst'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
@@ -50,12 +50,11 @@ const TabView = Component(function App (props, classes) {
     </div>
 }, AppStyles)
 
-const HotTabView = hot(module)(TabView)
 
 const TabActions = Component(function TabActions (props, classes) {
     return <div className={classes.appBarActions}>
         {this.appState.hookMap('ActionBar', (hook) => {
-            let Comp = Component(function TabAction (props) {
+            let Comp = Component(function TabAction () {
                 // TODO: Why is tooltip not shown?
                 return <Tab disabled={!hook.enabled()} onClick={hook.onClick} label={<Tooltip title={hook.tooltip}><p>{hook.title}</p></Tooltip>} />
             })

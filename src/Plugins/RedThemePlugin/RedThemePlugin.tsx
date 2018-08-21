@@ -1,10 +1,9 @@
-import React from 'react'
-import Plugin, { PluginCreator } from '../../Plugin'
-import BaseTheme, { IBaseThemePlugin } from '../BaseThemePlugin/BaseThemePlugin'
-import { shim, action } from 'classy-mst'
+import { PluginCreator } from '../../Plugin'
+import BaseTheme from '../BaseThemePlugin/BaseThemePlugin'
+import { shim } from 'classy-mst'
 import red from '@material-ui/core/colors/red'
 import { HookConfig } from '../../Hook'
-import { StyleRules, Theme } from '@material-ui/core/styles'
+import { StyleRules } from '@material-ui/core/styles'
 
 const RedThemeModel = BaseTheme.props({
 })
@@ -28,12 +27,12 @@ class RedThemeController extends shim(RedThemeModel, BaseTheme) {
         },
     }
 
-    classesExtension (theme: Theme): StyleRules {
+    classesExtension (): StyleRules {
         return {
         }
     }
 }
 
-const { Plugin: RedThemePlugin, Component } = PluginCreator(RedThemeController, RedThemeModel, 'RedThemePlugin')
+const { Plugin: RedThemePlugin } = PluginCreator(RedThemeController, RedThemeModel, 'RedThemePlugin')
 export default RedThemePlugin
 export type IRedThemePlugin = typeof RedThemePlugin.Type

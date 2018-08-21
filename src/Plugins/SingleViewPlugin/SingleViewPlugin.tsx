@@ -1,6 +1,6 @@
-import React, { ReactText } from 'react'
+import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
-import { shim, action } from 'classy-mst'
+import { shim } from 'classy-mst'
 import Typography from '@material-ui/core/Typography'
 import { AppStyles } from '../BaseThemePlugin/BaseThemePlugin'
 
@@ -24,7 +24,7 @@ const { Plugin: SingleViewPlugin, Component } = PluginCreator(SingleViewControll
 export default SingleViewPlugin
 export type ISingleViewPlugin = typeof SingleViewPlugin.Type
 
-const SingleView = Component(function App (props, classes) {
+const SingleView = Component(function App () {
     let CurrentTab = this.appState.hookPick('Tabs', 0)
     let padding = CurrentTab.padding !== undefined ? CurrentTab.padding : 24
     return <div>

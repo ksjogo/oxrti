@@ -1,13 +1,10 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
-import { types } from 'mobx-state-tree'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
-import Slider from '@material-ui/lab/Slider'
-import { SafeGLIInspector } from '../BasePlugin/BasePlugin'
-import { LinearCopy, Node } from 'gl-react'
-import { Tooltip } from '../BasePlugin/BasePlugin'
+import { Theme, createStyles, Card, CardContent } from '@material-ui/core'
+import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
+import { Node } from 'gl-react'
 
 const QuickPanModel = Plugin.props({
 })
@@ -25,6 +22,10 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     }
 
     dragging = false
+    /**
+     * Update the viewer position due to quick pan movements
+     * Requries the zoom plugin
+     */
     @action
     updatePosition (e: MouseEvent) {
         let rect = (e.target as any).getBoundingClientRect()
@@ -71,6 +72,9 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
+/**
+ * Wrapped QuickPan Preview
+ */
 const QuickPanComponent = Component(function QuickPanComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
@@ -88,12 +92,19 @@ import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SIZE = 150
 
+/**
+ * QuickPan surface
+ * Will show a non-rotated/scaled/panned version of the current base rendering function.
+ * Renders a rect of the current viewing settings on top.
+ */
 const QuickPan = Component(function QuickPan (props, classes) {
     let btf = props.appState.btf()
+    // keep aspect ratio
     let width = SIZE
     let height = 150 * btf.data.height / btf.data.width
     let rootnode
     if (!btf.isDefault()) {
+        // pick the current base rendering function
         props.appState.hookForEach('RendererForModel', (hook) => {
             if (hook.channelModel === btf.data.channelModel) {
                 let Func = hook.node
@@ -101,11 +112,14 @@ const QuickPan = Component(function QuickPan (props, classes) {
                     key={btf.id}
                     height={height}
                     width={width}
-                    lightPos={normalize([0.00001, -0.00001, 1])}
+                    lightPos={normalize([0.00001, -0.00001, 1])/*TOFIX: Why is it black without*/}
                 />
             }
         })
     } else {
+        // render the noise shader
+        // beaware that it will render differently due to different uv behaviour
+        // it is not actual preview
         rootnode = <Node
             height={height}
             width={width}
@@ -117,6 +131,8 @@ const QuickPan = Component(function QuickPan (props, classes) {
             }} />
     }
 
+    // transform view coordinates into texture coordinates
+    // these then are used to render the semi-transparent rect on top
     let A = this.inversePoint([0, 0])
     let B = this.inversePoint([0, 1])
     let C = this.inversePoint([1, 1])
@@ -147,6 +163,10 @@ const QuickPan = Component(function QuickPan (props, classes) {
     </Tooltip>
 }, styles)
 
+/**
+ * Render a generic transparent rect on top of children.
+ * Pass A,B,C,D of that rect as texture coordinates.
+ */
 export const RectRender = Component<{
     A: Point,
     B: Point,
