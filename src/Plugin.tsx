@@ -27,59 +27,42 @@ export { ComponentProps }
 export type ComponentType = ((props: any) => JSX.Element) & IWrappedComponent<(props: any) => JSX.Element>
 export type PluginComponentType<P = {}> = React.StatelessComponent<ComponentProps & P> & IWrappedComponent<React.StatelessComponent<ComponentProps & P>>
 
-/**
- * Plugin Code
- * functions without @action are `views` and cannot change the model
- * only actions can do so
- * instance variables are `volatile`, so not preserved between plugin reloads etc.
- * refer to [mst docs](https://github.com/charto/classy-mst) for details.
- */
-class PluginController extends shim(PluginModel) {
+const PluginShim = shim(PluginModel)
 
-    // volatile access to app state
+/** %begin */
+/** General Plugin controller, will be loaded into the MobX state tree */
+export class PluginController extends PluginShim {
+
+    /** referential access to app state, will be set by the plugin loader */
     appState: IAppState
 
-    /**
-     * A plugin shall be loaded, otherwise it might lay dormant and not do much
-     * will inject the appState reference into the plugin as mobx's inject can't be used
-     */
+    /** called when the plugin is initally loaded from file */
     @action
     load (appState: IAppState) {
         this.appState = appState
     }
 
-    /**
-     * all hooks the plugin is using
-     */
+    /** all hooks the plugin is using */
     get hooks (): HookConfig {
         return {}
     }
 
-    /**
-     * get single hook config
-     */
+    /** get a single typed hook */
     hook<P extends HookName> (name: P, instance: string): HookType<P> {
         return this.hooks[name][instance]
     }
 
-    /**
-     * called before the plugin will be deleted from the state tree
-     */
+    /** called before the plugin will be deleted from the state tree, ususally used for volatile state fixes, e.g. paint layers */
     hotUnload () {
         //
     }
 
-    /**
-     * called after the plugin was restored in the state tree
-     */
+    /** called after the plugin was restored in the state tree */
     hotReload () {
         //
     }
 
-    /**
-     * inverse a rendering point
-     * move point from surface coordinates into texture coordinates
-     */
+    /** convenience function to inverse a rendering point from surface coordinates into texture coordinates */
     inversePoint (point: Point): Point {
         let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
         if (!renderer)
@@ -87,11 +70,7 @@ class PluginController extends shim(PluginModel) {
         return renderer.inversePoint(point)
     }
 
-    /**
-     * non-action based ref handler to allow deletion of refs from unmounted plugins/components
-     * otherwise a plugin will be deleted, the ref trigger, and then an action on the old non living plugin be called
-     * @param id namespaced into the plugin
-     */
+    /** some components need references to their actual DOM nodes, these are stored outside the plugins scope to allow hot-reloads */
     handleRef (id: string) {
         let key = (this as any).$
         return (ref: any) => {
@@ -102,10 +81,7 @@ class PluginController extends shim(PluginModel) {
         }
     }
 
-    /**
-     * return a stored ref
-     * @param id namespaced into the plugin
-     */
+    /** return a stored ref */
     ref (id: string) {
         let key = (this as any).$
         if (!refCache[key])
@@ -113,6 +89,7 @@ class PluginController extends shim(PluginModel) {
         return refCache[key][id]
     }
 }
+/** %end */
 
 /**
  * Actual Plugin `class` which will be used as superclass
@@ -120,19 +97,23 @@ class PluginController extends shim(PluginModel) {
 const Plugin = mst(PluginController, PluginModel, 'Plugin')
 type IPlugin = typeof Plugin.Type
 export { IPlugin }
+
+/** %beginCreator */
 /**
  * Create Subplugins
- * @param Code is the controller, extending this Plugin
- * @param Data is the model, extendings this Plugins model
+ * @param Code is the controller
+ * @param Data is the model
  * @param name must be the same as the folder and filename
  */
 function PluginCreator<S extends ModelProperties, T, U> (Code: new () => U, Data: IModelType<S, T>, name: string) {
+    // create the resulting plugin class
     let SubPlugin = mst(Code, Data, name)
-    // outer level constructor function
+    // higher-order-component
     // inner is basically (props, classes?) => ReactElement
-    // we could potentially extract a better style definition though
+    // inner this will be bound to the SubPlugin instance
     type innerType<P, C extends string> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: ClassNameMap<C>) => ReactElement<any>
-    // can we type the styles somehow?
+    // P are they freely definable properties of the embedded react component
+    // C are the infered class keys for styling, usually no need to manually pass them
     function SubComponent<P = {}, C extends string = ''> (inner: innerType<P, C>, styles?: StyleRulesCallback<C>): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         let innerMost = function (props: any) {
@@ -140,21 +121,27 @@ function PluginCreator<S extends ModelProperties, T, U> (Code: new () => U, Data
             // actual rendering function
             // allow this so all code inside a plugin can just refer to this
             let innerProps = [props]
+            // append styles
             if (styles)
                 innerProps.push(props.classes)
+            // call the embedded component
             return inner.apply(plugin, innerProps)
         };
+        // set a nice name for the MobX/redux dev tools
         (innerMost as any).displayName = inner.name
+        // use MobX higher order functions to link into the state tree
         let func: any = inject('appState')(observer(innerMost))
+        // wrap with material-ui styles if provided
         if (styles)
             func = withStyles(styles)(func);
+        // also name the wrapped function for dev tools
         (func as PluginComponentType<P>).displayName = `PluginComponent(${inner.name})`
         return func
     }
-
     // allow easier renaming in the calling module
     return { Plugin: SubPlugin, Component: SubComponent }
 }
+/** %endCreator */
 
 export default Plugin
 export {

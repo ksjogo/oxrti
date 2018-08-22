@@ -17,7 +17,7 @@ const ZoomModel = Plugin.props({
     panY: 0,
 })
 
-class ZoomController extends shim(ZoomModel, Plugin) {
+export class ZoomController extends shim(ZoomModel, Plugin) {
 
     get hooks () {
         return {

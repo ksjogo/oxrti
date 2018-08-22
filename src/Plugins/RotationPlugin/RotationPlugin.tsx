@@ -15,7 +15,7 @@ const RotationModel = Plugin.props({
     rad: 0,
 })
 
-class RotationController extends shim(RotationModel, Plugin) {
+export class RotationController extends shim(RotationModel, Plugin) {
 
     get hooks () {
         return {

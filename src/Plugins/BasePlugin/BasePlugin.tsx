@@ -2,18 +2,29 @@ import React, { ReactText } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import Rjv from 'react-json-view'
-import { Tooltip as MTooltip, Theme, createStyles, Divider, Paper, Drawer, Card, CardContent, CardActions, List, ListItem } from '@material-ui/core'
+import { Tooltip as MTooltip, Card, CardContent } from '@material-ui/core'
 import { ComponentHook, LimitedHook } from '../../Hook'
-
+import { types, IModelType } from 'mobx-state-tree'
+export type __IModelType = IModelType<any, any>
+/** %begin */
 const BasePluginModel = Plugin.props({
+    greeting: 'In the beginning was the deed!',
 })
 
 class BasePluginController extends shim(BasePluginModel, Plugin) {
+    @action
+    onGreeting () {
+        this.greeting += '!'
+    }
 }
 
+// general plugin template code
 const { Plugin: BasePlugin, Component } = PluginCreator(BasePluginController, BasePluginModel, 'BasePlugin')
 export default BasePlugin
+// export the type to allow other plugins to retrieve this plugin
 export type IBasePlugin = typeof BasePlugin.Type
+
+/** %end */
 
 const JSONDisplay = Component<{ json: object | string, style?: any }>(function JSONDisplay (props) {
     let json = (typeof props.json === 'string') ? JSON.parse(props.json) : props.json
@@ -44,7 +55,7 @@ const BTFMetadataDisplay = Component(function BTFMetadataDisplay (props) {
 })
 
 const BTFMetadataConciseDisplay = Component(function BTFMetadataConciseDisplay (props) {
-    if (!this.appState.btf().isDefault())
+    if (!props.appState.btf().isDefault())
         return < Card style={{ width: '100%' }}>
             <CardContent>
                 <JSONDisplay
@@ -69,7 +80,7 @@ const BTFMetadataConciseDisplay = Component(function BTFMetadataConciseDisplay (
  * Will split on ':' and then look up the respective component from within the plugin tree
  */
 const RenderHooks = Component<{ name: LimitedHook<ComponentHook> }>(function RenderHooks (props) {
-    let rendered = this.appState.hookMap(props.name, (hook, fullName) => {
+    let rendered = props.appState.hookMap(props.name, (hook, fullName) => {
         let Func = hook.component
         return <Func key={fullName} />
     })

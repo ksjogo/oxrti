@@ -57,7 +57,7 @@ import { createMuiTheme, StyleRules } from '@material-ui/core/styles'
 const BaseThemeModel = Plugin.props({
 })
 
-class BaseThemeController extends shim(BaseThemeModel, Plugin) {
+export class BaseThemeController extends shim(BaseThemeModel, Plugin) {
 
     themeBase: ThemeOptions = {
         palette: {

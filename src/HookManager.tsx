@@ -24,7 +24,7 @@ export type HookMapper<P extends HookName, S> = (hook: HookType<P>, fullName: st
 export type HookFind<P extends HookName, S> = (hook: HookType<P>, fullName: string) => S
 
 /** * Manage one named hook */
-class HookManagerCode extends ShimHookManager {
+export class HookManagerCode extends ShimHookManager {
     /**
      * Add some hook into the managed stack
      * @param name in `Plugin$Hookname$Entryname` form
