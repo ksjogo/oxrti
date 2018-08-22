@@ -3,35 +3,32 @@ import { shim, action, mst } from 'classy-mst'
 import { HookName, HookType } from './Hook'
 import { IPlugin } from './Plugin'
 
-// circular dependency at the moment
-type IAppState = any
-
-/** Single entry */
+/** single hook entry */
 const HookEntry = types.model({
     name: types.string,
     priority: types.number,
 })
 
-/**
- * Keeping track of all entries
- */
+/** the hook manager is keeping a sorted stack of hooks */
 const HookManagerData = types.model({
     stack: types.optional(types.array(HookEntry), []),
 })
 
+const ShimHookManager = shim(HookManagerData)
+/** %begin */
+
+/** type definitions for the different iterators */
 export type HookIterator<P extends HookName> = (hook: HookType<P>, fullName: string) => boolean | void
 export type AsyncHookIterator<P extends HookName> = (hook: HookType<P>, fullName: string) => Promise<boolean | void>
 export type HookMapper<P extends HookName, S> = (hook: HookType<P>, fullName: string) => S
 export type HookFind<P extends HookName, S> = (hook: HookType<P>, fullName: string) => S
-/**
- * Manage the rendering stack for the main viewer component
- */
-class HookManagerCode extends shim(HookManagerData) {
 
+/** * Manage one named hook */
+class HookManagerCode extends ShimHookManager {
     /**
-     * Add some component into the rendering stack
-     * @param name of the Rendering Layer in `Plugin:Component` form
-     * @param priority Higher will be rendered first
+     * Add some hook into the managed stack
+     * @param name in `Plugin$Hookname$Entryname` form
+     * @param priority higher will be treated first with the iterators
      */
     @action
     insert (name: string, priority: number = 0) {
@@ -65,6 +62,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
+    /** Iterate with iterator over all registered hooks, stop iteration if the iterator is returning true, name is redundant as it could be infered from ourselves, but allows for easy typesafe calling, appState is needed to retrieve the current plugin instance */
     forEach<P extends HookName> (iterator: HookIterator<P>, name: P, appState: IAppState) {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
@@ -75,6 +73,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
+    /** iterate over all hooks, but wait for asynchronous hooks to finish before executing the next one */
     async asyncForEach<P extends HookName> (iterator: AsyncHookIterator<P>, name: P, appState: IAppState): Promise<void> {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]
@@ -85,6 +84,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
+    /** iterate in reverse order */
     forEachReverse<P extends HookName> (iterator: HookIterator<P>, name: P, appState: IAppState) {
         for (let i = this.stack.length - 1; i >= 0; i--) {
             let hook = this.stack[i]
@@ -95,6 +95,7 @@ class HookManagerCode extends shim(HookManagerData) {
         }
     }
 
+    /** map over all hooks */
     map<S, P extends HookName> (mapper: HookMapper<P, S>, name: HookName, appState: IAppState): S[] {
         let result: S[] = []
         this.forEach((hook, fullName) => {
@@ -103,6 +104,7 @@ class HookManagerCode extends shim(HookManagerData) {
         return result
     }
 
+    /** get the concrete hook at index number */
     pick<P extends HookName> (index: number, name: P, appState: IAppState): HookType<P> {
         let hook = this.stack[index]
         let instance = hook.name.split('$')
@@ -110,7 +112,10 @@ class HookManagerCode extends shim(HookManagerData) {
         return plugin.hook(name, instance[2])
     }
 }
+/** %end */
 
 const RenderStack = mst(HookManagerCode, HookManagerData, 'HookManager')
 export default RenderStack
 export type IRenderStack = typeof RenderStack.Type
+
+import { IAppState } from './AppState'

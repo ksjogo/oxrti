@@ -19,18 +19,24 @@ class RotationController extends shim(RotationModel, Plugin) {
 
     get hooks () {
         return {
+            /** %beginRotationHooks  */
+            // register two nodes inside the rendering stack
+            // higher priority will be run first
             ViewerRender: {
+                // first center the underlying texture
                 Centerer: {
                     component: CentererComponent,
                     inversePoint: this.undoCurrentCenterer,
                     priority: 11,
                 },
+                // then rotate it
                 Rotation: {
                     component: RotationComponent,
                     inversePoint: this.undoCurrentRotation,
                     priority: 10,
                 },
             },
+            /** %endRotationHooks  */
             ViewerSide: {
                 Rotation: {
                     component: SliderComponent,
@@ -63,7 +69,7 @@ class RotationController extends shim(RotationModel, Plugin) {
     }
 
     @action
-    onSlider (value: number) {
+    onSlider (event: any, value: number) {
         let currentCenter = this.inversePoint([0.5, 0.5])
         this.rad = value
         this.zoomer.zoomOnPoint(currentCenter)
@@ -129,22 +135,30 @@ export const RotationComponent = Component(function RotationNode (props) {
         }} />
 })
 
+/** %beginCenterer */
 export const CentererComponent = Component(function CentererNode (props) {
+    // dynamic sizes depending on the loaded btf
+    // if the btf changes, the uniforms will be updated automatically
     let [width, height] = this.centererSizes
     let maxDims = this.maxDims
+    // create one gl-react Node
     return <Node
         width={maxDims}
         height={maxDims}
         shader={{
+            // shader from import centerShader from './centerer.glsl'
             frag: centerShader,
         }}
+        // uniforms will be automatically type-converted to the appropiate WebGL types
         uniforms={{
+            // refering to rendering output one step before
             children: props.children,
             inputHeight: height,
             inputWidth: width,
             maxDim: maxDims,
         }} />
 })
+/** %endCenterer */
 
 const SliderComponent = Component(function RotationSlider () {
     return <Card style={{ width: '100%' }} >

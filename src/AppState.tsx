@@ -7,12 +7,17 @@ import HookManager, { HookMapper, HookIterator, AsyncHookIterator } from './Hook
 import { HookConfig, HookName, HookType, UnknownHook } from './Hook'
 import BTFFile, { BTFCache } from './BTFFile'
 
+/** %beginData */
+// types refering to MST types
 const AppStateData = types.model({
-  activeTab: 0,
+  // keep references to loaded plugins
   plugins: types.late(() => types.optional(types.map(Plugin), {})),
+  // have a HookMangager for each HookName
   hooks: types.optional(types.map(HookManager), {}),
+  // currently opened BTF file, name is the key for the BTFCache
   currentFile: '',
 })
+/** %endData */
 
 export type PluginLoader = (name: string) => Plugin
 export type StateReloader = (state: any) => void
@@ -104,26 +109,6 @@ class AppStateController extends shim(AppStateData) {
       instance.hotReload()
       this.hookForEach('AfterPluginLoads')
     }
-  }
-
-  @action
-  setActiveTab (index: number) {
-    this.activeTab = index
-  }
-
-  @action
-  async switchTab (event: any, index: number) {
-    let oldTab = this.hookPick('Tabs', this.activeTab)
-    let newTab = this.hookPick('Tabs', index)
-    oldTab.beforeFocusLose && await oldTab.beforeFocusLose()
-    newTab.beforeFocusGain && await newTab.beforeFocusGain()
-
-    this.setActiveTab(index)
-
-    setTimeout(async () => {
-      oldTab.afterFocusLose && await oldTab.afterFocusLose()
-      newTab.afterFocusGain && await newTab.afterFocusGain()
-    }, 10)
   }
 
   /**

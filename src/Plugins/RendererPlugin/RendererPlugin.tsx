@@ -365,15 +365,16 @@ const Stack = Component(function Stack (props, classes) {
     let lightControl = this.appState.plugins.get('LightControlPlugin') as ILightControlPlugin
 
     if (!btf.isDefault()) {
-        props.appState.hookForEach('RendererForModel', (hook) => {
-            if (hook.channelModel === btf.data.channelModel) {
-                let Func = hook.node
-                current = <Func
+        /** %beingPicker */
+        props.appState.hookForEach('RendererForModel', (Hook) => {
+            if (Hook.channelModel === btf.data.channelModel) {
+                current = <Hook.node
                     key={btf.id}
                     lightPos={lightControl.lightPos}
                 />
             }
         })
+        /** %endPicker */
     }
     if (!current) {
         current = <Node
@@ -385,13 +386,13 @@ const Stack = Component(function Stack (props, classes) {
         />
     }
 
-    props.appState.hookForEach('ViewerRender', (hook) => {
-        let Func = hook.component
-        current = <Func
-            // flush layer if the btf file changed
+    /** %beingWrapper */
+    props.appState.hookForEach('ViewerRender', (Hook) => {
+        current = <Hook.component
             key={btf.id}
-        >{current}</Func>
+        >{current}</Hook.component>
     })
+    /** %endWrapper */
 
     return <div style={{
         marginLeft: marginXP ? margin : 0,
