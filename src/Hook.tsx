@@ -1,6 +1,6 @@
 import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
 import { MouseListener } from './Plugins/RendererPlugin/MouseListener'
-import { Point } from './Math'
+import { Point } from './Util'
 import { ChannelModel } from './BTFFile'
 export { ChannelModel }
 import { BaseNodeProps } from './Plugins/RendererPlugin/BaseNode'
@@ -10,7 +10,7 @@ import { Theme } from '@material-ui/core'
 
 // generic hook definitions to allow for a typesafe hook system
 
-// %begin
+/** %begin */
 
 // Hooks are sorted in descending priority order in their respective `HookManager`
 export type HookBase = { priority?: number }
@@ -48,11 +48,11 @@ type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof
 // limit hookname parameters to a type conforming subset, e.g. LimitedHook<ComponentHook>
 export type LimitedHook<P> = LimitedHooks<HookConfig, Hooks<P>>
 
-// %end
+/** %end */
 
 // specific hooks for the plugins to use
 
-// %AppHooksBegin
+/** %AppHooksBegin */
 
 type Tab = {
     content: PluginComponentType
@@ -76,21 +76,15 @@ type ViewerTabFocus = {
     beforeLose?: () => void,
 }
 
-type ScreenshotMeta = {
-    key: string,
-    fullshot?: () => (string | number)[] | string | number,
-    snapshot?: () => (string | number)[] | string | number,
-}
-
 type ViewerFileAction = {
     tooltip: string,
     text: string,
     action: () => Promise<void>,
 }
 
-// %AppHooksEnd
+/** %AppHooksEnd */
 
-// %RendererHooksBegin
+/** %RendererHooksBegin */
 
 type BaseNodeConfig = {
     channelModel: ChannelModel,
@@ -107,9 +101,15 @@ type MouseConfig = {
     mouseLeft?: () => void,
 }
 
-// %RendererHooksEnd
+type ScreenshotMeta = {
+    key: string,
+    fullshot?: () => (string | number)[] | string | number,
+    snapshot?: () => (string | number)[] | string | number,
+}
 
-// %BookmarkHooksBegin
+/** %RendererHooksEnd */
+
+/** %BookmarkHooksBegin */
 
 type BookmarkSaver = {
     key: string,
@@ -117,15 +117,15 @@ type BookmarkSaver = {
     restore: (values: (string | number)[]) => void,
 }
 
-// %BookmarkHooksEnd
+/** %BookmarkHooksEnd */
 
-// %ThemeHooksBegin
+/** %ThemeHooksBegin */
 
 type ThemeConfig = {
     controller: { theme: Theme },
 }
 
-// %ThemeHooksEnd
+/** %ThemeHooksEnd */
 
 type HookTypes = {
     ActionBar?: ConfigHook<ActionBar>,

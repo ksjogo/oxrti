@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
-import { Point, Node2PNG } from '../../Math'
+import { Point, Node2PNG, sleep, JSONY } from '../../Util'
 import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
 import { observable } from 'mobx'
 import List from '@material-ui/core/List'
@@ -15,7 +15,6 @@ import uniqid from 'uniqid'
 import { ChromePicker } from 'react-color'
 import FileSaver from 'file-saver'
 import { Node, Bus } from 'gl-react'
-import { sleep, JSONY } from '../../util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 import cssColorConverter from 'css-color-converter'
@@ -56,7 +55,6 @@ class PaintController extends shim(PaintModel, Plugin) {
 
     @action
     loadColorFromTheme () {
-        debugger
         let theme = this.appState.appTheme.palette.primary.main
         let rgba = cssColorConverter(theme).toRgbaArray()
         this.color = observable.array(rgba.map((value, index) => {

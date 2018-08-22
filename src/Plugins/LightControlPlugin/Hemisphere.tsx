@@ -1,4 +1,4 @@
-import { normalize } from '../../Math'
+import { normalize } from '../../Util'
 
 // as taken from http://vcg.isti.cnr.it/rti/webviewer.php
 export default function hemispherical (x: number, y: number) {

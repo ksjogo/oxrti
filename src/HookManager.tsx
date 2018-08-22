@@ -6,9 +6,7 @@ import { IPlugin } from './Plugin'
 // circular dependency at the moment
 type IAppState = any
 
-/**
- * Single entry
- */
+/** Single entry */
 const HookEntry = types.model({
     name: types.string,
     priority: types.number,

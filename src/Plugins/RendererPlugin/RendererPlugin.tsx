@@ -10,11 +10,10 @@ import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay, Tooltip } from '../BasePlugin/BasePlugin'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
-import { Point } from '../../Math'
+import { Point, sleep, JSONY } from '../../Util'
 import uniqid from 'uniqid'
 import FileSaver from 'file-saver'
 import { Surface } from 'gl-react-dom'
-import { sleep, JSONY } from '../../util'
 
 const RendererModel = Plugin.props({
 })

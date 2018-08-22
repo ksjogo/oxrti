@@ -1,6 +1,11 @@
 import JSZip from 'jszip'
-import { DummyRenderSize } from './Math'
-import { JSONY } from './util'
+
+function JSONY (thing: object) {
+    return JSON.stringify(thing, null, 2)
+}
+
+const DummyRenderSize = 300
+
 export type BTFCache = { [key: string]: BTFFile }
 
 export type ChannelModel = 'RGB' | 'LRGB' | 'SPECTRAL'
@@ -40,10 +45,13 @@ export type TexForRender = {
 }
 
 let IDC = 0
-
+/** %beginBTF */
 export default class BTFFile {
+    /** running id numbers to allow easy cache busts */
     id: number
+    /** JSON object of the included oxrti state */
     oxrtiState: object = {}
+    /** default data representation */
     data: Data = {
         width: DummyRenderSize,
         height: DummyRenderSize,
@@ -51,11 +59,12 @@ export default class BTFFile {
         channels: {},
         formatExtra: {},
     }
-
+    /** reference to annotation layers */
     layers: AnnotationLayer[] = []
+    /** user visible name */
     name: string = ''
-
-    constructor (manifest?: any) {
+    /** manifest can come from an unpacked zip, usully typed as any */
+    constructor (manifest?: BTFFile) {
         if (!manifest)
             return
 
@@ -65,24 +74,25 @@ export default class BTFFile {
         this.layers = manifest.layers
         this.oxrtiState = manifest.oxrtiState
     }
-
+    /** cannocical zip name for name and id */
     zipName () {
         return `${this.name || 'noise'}.btf.zip`
     }
 
+    /** return true if no data is contained/is dummy object */
     isDefault () {
         return this.name === ''
     }
 
+    /** export the JSON data of the manifest.json file */
     generateManifest () {
         let manifest = {
             name: this.name,
             data: this.data,
         }
-        manifest.data.channels = this.formatChannels(manifest.data.channels)
         return JSONY(manifest)
     }
-
+    /** export user visible shortened metadata */
     conciseManifest () {
         return JSONY({
             name: this.name,
@@ -92,14 +102,10 @@ export default class BTFFile {
         })
     }
 
-    formatChannels (channels: Channels) {
-        return channels
-    }
-
     /**
      * Generate a unique tex container which the gl-react loader will cache
-     * @param channel
-     * @param coefficent
+     * @param channel reference to the named channel
+     * @param coefficent reference to the named child coefficent of channel
      */
     texForRender (channel: string, coefficent: string): TexForRender {
         let co = this.data.channels[channel].coefficents[coefficent]
@@ -113,7 +119,11 @@ export default class BTFFile {
         }
     }
 
-    annotationTexForRender (id: string, cacheBust: number = null): TexForRender {
+    /**
+     * Generate a tex configuration for a layer
+     * @param id of the layer, must be found in this.layers
+     */
+    annotationTexForRender (id: string): TexForRender {
         let layer = this.layers.find(layer => layer.id === id)
         if (!layer)
             return null
@@ -127,10 +137,12 @@ export default class BTFFile {
         }
     }
 
+    /** aspect ratio of the contained data */
     aspectRatio () {
         return this.data.width / this.data.height
     }
 
+    /** package the current data into a zip blob */
     async generateZip () {
         let zip = new JSZip()
 
@@ -154,6 +166,7 @@ export default class BTFFile {
     }
 }
 
+/** unpackage a zip blob into a BTFFile */
 export async function fromZip (zipData: Blob | ArrayBuffer) {
     let archive = await JSZip.loadAsync(zipData)
     let dataFolder = archive.folder('data')
@@ -193,3 +206,4 @@ export async function fromZip (zipData: Blob | ArrayBuffer) {
     let btf = new BTFFile(manifest)
     return btf
 }
+/** %endBTF */

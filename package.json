@@ -99,7 +99,8 @@
     "electronbuild": "node scripts/electronbuild.js",
     "build": "node scripts/build.js",
     "startweb": "node server.js",
-    "bundlesize": "npx  webpack --mode 'production' --json | npx webpack-bundle-size-analyzer"
+    "bundlesize": "npx  webpack --mode 'production' --json | npx webpack-bundle-size-analyzer",
+    "declarations": "tsc -p tsconfig.declarations.json > /dev/null || true"
   },
   "author": "Johannes Bernhard Goslar",
   "license": "GPL-3.0",

@@ -1,15 +1,14 @@
-import {
-    globalRegistry,
-    WebGLTextureLoaderAsyncHashCache,
-} from 'webgltexture-loader'
+import { globalRegistry, WebGLTextureLoaderAsyncHashCache } from 'webgltexture-loader'
+import { TexForRender } from '../../BTFFile'
+import { IAppState } from '../../AppState'
+import pLimit from 'p-limit'
+
 type TextureAndSize = {
     texture: WebGLTexture,
     width: number,
     height: number,
 }
-import { TexForRender } from '../../BTFFile'
-import { IAppState } from '../../AppState'
-import pLimit from 'p-limit'
+type RetType = { promise: Promise<TextureAndSize>, dispose: Function }
 
 function isWebGL2 (gl: any) {
     if (!gl) return false
@@ -17,10 +16,11 @@ function isWebGL2 (gl: any) {
         && gl instanceof (window as any).WebGL2RenderingContext
 }
 
+// if synchronous loads are needed, promises can be thened from here
 let limiter = pLimit(1)
 
+// reference to the appstate to ahve access to the loaded btf
 let appState: IAppState = null
-type RetType = { promise: Promise<TextureAndSize>, dispose: Function }
 
 /**
  *  Allow direct texture loading from an in memory btf file
@@ -28,17 +28,21 @@ type RetType = { promise: Promise<TextureAndSize>, dispose: Function }
 export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashCache<TexForRender> {
     gl: WebGLRenderingContext
 
+    // the input objects will be labled from their config constructed in the BTF
     canLoad (input: any) {
         return input.type === 'oxrti'
     }
 
+    // the BTF is already providing identifiers
     inputHash (input: TexForRender) {
         return input.ident
     }
 
+    // the texture loader library should have some caching on its own, but weird bugs were arising
+    // so simple memoization again
+    // cache the promises
     cache: { [key: string]: RetType } = {}
     loadNoCache (config: TexForRender): RetType {
-        // debugger
         if (this.cache[config.ident])
             return this.cache[config.ident]
 
@@ -59,10 +63,10 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                 switch (config.format) {
                     case 'PNG8':
                         // gl R8 not supported in webgl context v1
-                        // LUMINACE seems to work fine so far
+                        // LUMINACE seems to work fine so far in an 8bit contest
                         type = gl.LUMINANCE
                         break
-                    // TOFIX: allow for 1pr6-bit
+                    // TOFIX: allow for 16-bit
                     case 'PNG24':
                         type = gl.RGB
                         break
@@ -77,18 +81,16 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 
-                if (isWebGL2(gl)) {
+                /*if (isWebGL2(gl)) {
                     gl.generateMipmap(gl.TEXTURE_2D)
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR)
-                    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST_MIPMAP_LINEAR)
-                }
+                }*/
 
                 appState.textureLoaded()
                 return { texture, width: img.width, height: img.height }
             }).catch((reason) => {
                 alert('Texture failed to load' + reason)
-                console.error(reason)
-                console.error(config)
+                console.error(reason, config)
                 appState.textureLoaded()
                 return { texture: null, width: config.width, height: config.height }
             })

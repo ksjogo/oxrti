@@ -9,7 +9,7 @@ import ConverterStrategy from './ConverterStrategy'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
-import { sleep } from '../../util'
+import { sleep } from '../../Util'
 import { BTFMetadataDisplay } from '../BasePlugin/BasePlugin'
 
 const ConverterModel = Plugin.props({

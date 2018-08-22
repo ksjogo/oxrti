@@ -9,7 +9,7 @@ import Slider from '@material-ui/lab/Slider'
 import { Card, CardContent, Button } from '@material-ui/core'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
-import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Math'
+import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Util'
 
 const RotationModel = Plugin.props({
     rad: 0,

@@ -6,7 +6,7 @@ import { HookConfig, HookName, ComponentHook, FunctionHook, HookType } from './H
 import { IAppState } from './AppState'
 import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core'
 import { observer, inject, IWrappedComponent } from 'mobx-react'
-import { Point } from './Math'
+import { Point } from './Util'
 import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin'
 import { StyleRules } from '@material-ui/core/styles'
 import { ClassNameMap } from '@material-ui/core/styles/withStyles'

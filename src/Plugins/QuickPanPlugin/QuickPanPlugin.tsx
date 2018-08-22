@@ -87,7 +87,7 @@ const QuickPanComponent = Component(function QuickPanComponent (props) {
 
 import noise from '../RendererPlugin/noise.glsl'
 import quickPanShader from './quickpan.glsl'
-import { normalize, sub, Point, rotate } from '../../Math'
+import { normalize, sub, Point, rotate } from '../../Util'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const SIZE = 150

@@ -174,7 +174,7 @@ const SliderComponent = Component(function LightControlComponent (props) {
 })
 
 import shader from './hemisphere.glsl'
-import { toTex, rotate, Point, normalize } from '../../Math'
+import { toTex, rotate, Point, normalize } from '../../Util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 import { BaseNodeProps } from '../RendererPlugin/BaseNode'
 
