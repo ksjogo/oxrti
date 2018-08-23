@@ -64,10 +64,11 @@ export class PluginController extends PluginShim {
 
     /** convenience function to inverse a rendering point from surface coordinates into texture coordinates */
     inversePoint (point: Point): Point {
-        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
-        if (!renderer)
-            throw new Error('Need RendererPlugin to inversePoint')
-        return renderer.inversePoint(point)
+        this.appState.hookForEachReverse('ViewerRender', (hook) => {
+            if (hook.inversePoint)
+                point = hook.inversePoint(point)
+        })
+        return point
     }
 
     /** some components need references to their actual DOM nodes, these are stored outside the plugins scope to allow hot-reloads */

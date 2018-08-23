@@ -49,9 +49,11 @@ const JSONDisplay = Component<{ json: object | string, style?: any }>(function J
 })
 
 const BTFMetadataDisplay = Component(function BTFMetadataDisplay (props) {
-    if (!this.appState.btf().isDefault())
+    if (!this.appState.btf().isDefault()) {
+        let manifest = props.appState.btf().generateManifest()
+        console.log(manifest)
         return <JSONDisplay
-            json={props.appState.btf().generateManifest()}
+            json={manifest}
             style={{
                 'fontFamily': 'monospace',
                 'cursor': 'default',
@@ -61,8 +63,9 @@ const BTFMetadataDisplay = Component(function BTFMetadataDisplay (props) {
                 'borderRadius': '3px',
                 'margin': '10px 0px',
             }} />
-    else
+    } else {
         return <div />
+    }
 })
 
 const BTFMetadataConciseDisplay = Component(function BTFMetadataConciseDisplay (props) {

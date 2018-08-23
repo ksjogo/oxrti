@@ -158,14 +158,6 @@ class RendererController extends shim(RendererModel, Plugin) {
         this.lastDragTex = nextTex
     }
 
-    inversePoint (point: Point) {
-        this.appState.hookForEachReverse('ViewerRender', (hook) => {
-            if (hook.inversePoint)
-                point = hook.inversePoint(point)
-        })
-        return point
-    }
-
     @action
     onMouseLeave () {
         this.dragging = false

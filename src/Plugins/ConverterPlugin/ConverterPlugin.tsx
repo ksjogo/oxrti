@@ -10,7 +10,7 @@ import { readAsArrayBuffer } from 'promise-file-reader'
 import IConverterUI from './ConverterUI'
 import FileSaver from 'file-saver'
 import { sleep } from '../../Util'
-import { BTFMetadataDisplay } from '../BasePlugin/BasePlugin'
+import { BTFMetadataDisplay, Tooltip } from '../BasePlugin/BasePlugin'
 
 const ConverterModel = Plugin.props({
 })
@@ -126,15 +126,19 @@ const ConverterView = Component(function ConverterView (props, classes) {
         <ListItem>
             <Card className={classes.dropcard}>
                 <CardContent>
-                    <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
-                        <div>Try dropping some files here, or click to select files to upload.</div>
-                    </Dropzone>
+                    <Tooltip title='Drop a .ptm file here'>
+                        <Dropzone onDrop={this.onDrop} className={classes.dropzone}>
+                            <div>Try dropping some files here, or click to select files to upload.</div>
+                        </Dropzone>
+                    </Tooltip>
                     <LinearProgress variant='determinate' value={this.progress} className={classes.progress} />
                     <div><p>{this.statusMessage} </p></div>
                     {this.dataHref &&
-                        <Button variant='contained' download={this.zipName} type='application/zip' href={this.dataHref}>
-                            Download {this.zipName}
-                        </Button>}
+                        <Tooltip title='Download converted file'>
+                            <Button variant='contained' download={this.zipName} type='application/zip' href={this.dataHref}>
+                                Download {this.zipName}
+                            </Button>
+                        </Tooltip>}
                 </CardContent>
             </Card>
         </ListItem>

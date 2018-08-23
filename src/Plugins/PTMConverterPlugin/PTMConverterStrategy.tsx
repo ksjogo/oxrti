@@ -68,25 +68,24 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
     }
 
+    /** %beginRead */
     async readPixelsLRGB () {
-        /**
-         * The block contains of
-         * pixels times [a_0, a_1, a_2, a_3, a_4, a_5]
-         * and then
-         * pixels times [R, G, B]
-         */
+        // allocate output buffers for ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
+        // this.pixelData contains pixels * [a_0, a_1, a_2, a_3, a_4, a_5] and then pixels * [R, G, B]
         for (let y = 0; y < this.height; ++y)
             for (let x = 0; x < this.width; ++x) {
+                // iterate over pixels
                 let originalIndex = ((y * this.width) + x)
+                // flip the Y index, as PTM is bottom-row first, whereas BTF is top-row first
                 let targetIndex = ((this.height - 1 - y) * this.width) + x
-
+                // read from the coefficent block
                 for (let i = 0; i <= 5; i++)
                     this.coeffData[i][targetIndex] = this.pixelData[originalIndex * 6 + i]
-
+                // read from RGB block by skipping over the coefficent block and then iterating colors
                 for (let i = 0; i <= 2; i++)
                     this.coeffData[i + 6][targetIndex] = this.pixelData[this.pixels * 6 + originalIndex * 3 + i]
-
+                // update the progress bar
                 if (originalIndex % (this.pixels / 100) === 0) {
                     await this.ui.setProgress(originalIndex / this.pixels * 100 + 1)
                 }
@@ -94,28 +93,30 @@ export default class PTMConverterStrategy extends ConverterStrategy {
     }
 
     async readPixelsRGB () {
-        /**
-         * The block contains of
-         * pixels times [a_0, a_1, a_2, a_3, a_4, a_5] for each color
-         */
+        // allocate output buffers for ['R0R1R2', 'R3R4R5', 'G0G1G2', 'G3G4G5', 'B0B1B2', 'B3B4B5']
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels * 3))
+        // this.pixelData contains a block of  pixels * [a_0, a_1, a_2, a_3, a_4, a_5] for each color
         for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 for (let color = 0; color <= 2; color++) {
+                    // iterate over pixels and colors
                     let inputIndex = (((y * this.width) + x) + this.pixels * color) * 6
+                    // flip the Y index, as PTM is bottom-row first, whereas BTF is top-row first
                     let targetIndex = (((this.height - 1 - y) * this.width) + x) * 3
-
+                    // iterate over the coefficents for the given pixel/inputIndex */
                     for (let i = 0; i <= 5; i++) {
                         let bucket = color * 2 + Math.floor(i / 3)
                         this.coeffData[bucket][targetIndex + (i % 3)] = this.pixelData[inputIndex + i]
                     }
                 }
             }
+            // update the progress bar
             if (y % (this.height / 100) === 0) {
                 await this.ui.setProgress(y / this.height * 100 + 1)
             }
         }
     }
+    /** %endRead */
 
     async readSuffix () {
         //

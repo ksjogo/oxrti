@@ -83,32 +83,47 @@ type ViewerTabFocus = {
 
 /** %RendererHooksBegin */
 
+// specific channelModel renderers can register their base node
 type BaseNodeConfig = {
     channelModel: ChannelModel,
     node: PluginComponentType<BaseNodeProps>,
 }
 
+// hook for a node in the renderer stack
 type RendererNode = {
     component: PluginComponentType,
+    // if the node is transforming the texture coordinates, and inverse method needs to be provided
     inversePoint?: (point: Point) => Point,
 }
 
+// hook for listening to mouse event inside the main renderer
 type MouseConfig = {
     listener: MouseListener,
     mouseLeft?: () => void,
 }
 
+// hook for adding file actions/buttons below the upload field
 type ViewerFileAction = {
     tooltip: string,
     text: string,
     action: () => Promise<void>,
 }
 
+// hook for adding information to the metadata file when shots are exported
 type ScreenshotMeta = {
     key: string,
     fullshot?: () => (string | number)[] | string | number,
     snapshot?: () => (string | number)[] | string | number,
 }
+
+// components to be rendered inside the drawer
+type ViewerSide = ComponentHook
+
+// notifications, that a btf file will be exported and plugins should update their respective data inside the current in-memory version
+type PreDownload = FunctionHook
+
+// notification that a btf file was loaded, plugins can import extra data
+type PostLoad = FunctionHook
 
 /** %RendererHooksEnd */
 
@@ -136,8 +151,8 @@ type HookTypes = {
     AppView?: ComponentHook,
     Bookmarks?: ConfigHook<BookmarkSaver>,
     ConverterFileFormat?: ConfigHook<ConverterStrategyConfig>,
-    PostLoad?: FunctionHook,
-    PreDownload?: FunctionHook,
+    PostLoad?: PostLoad,
+    PreDownload?: PreDownload,
     RendererForModel?: ConfigHook<BaseNodeConfig>,
     ScreenshotMeta?: ConfigHook<ScreenshotMeta>
     Tabs?: ConfigHook<Tab>,
@@ -145,7 +160,7 @@ type HookTypes = {
     ViewerFileAction?: ConfigHook<ViewerFileAction>,
     ViewerMouse?: ConfigHook<MouseConfig>,
     ViewerRender?: ConfigHook<RendererNode>,
-    ViewerSide?: ComponentHook,
+    ViewerSide?: ViewerSide,
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
     Theme?: ConfigHook<ThemeConfig>,
 }

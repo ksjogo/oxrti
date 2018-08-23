@@ -43,29 +43,37 @@ const shaders = Shaders.create({
     },
 })
 
+/** %begin */
 const coeffs = ['a0a1a2', 'a3a4a5']
+// return a texture configuration array for the given coefficent
 function mapper (btf: BTFFile, name: string) {
     return coeffs.map(c => {
         return btf.texForRender(name, c)
     })
 }
 
+// render a RGB object
 const PTMRGB = Component<BaseNodeProps>(function PTMRGB (props) {
-    this.appState = props.appState
     let btf = props.appState.btf()
     return <Node
+        // from ./ptmrgb.glsl
         shader={shaders.ptmrgb}
+        // adaptive sizing if wanted
         width={props.width || btf.data.width}
         height={props.height || btf.data.height}
         uniforms={{
+            // usually coming from the lightcontrol plugin, is [x:number, y:number, z:number]
             lightPosition: props.lightPos,
+            // texture arrays
             texR: mapper(btf, 'R'),
             texG: mapper(btf, 'G'),
             texB: mapper(btf, 'B'),
+            // retrieve the untyped formatExtra
             biases: (btf.data.formatExtra as PTMFormatMetadata).biases,
             scales: (btf.data.formatExtra as PTMFormatMetadata).scales,
         }} />
 })
+/** %end */
 
 const PTMLRGB = Component<BaseNodeProps>(function PTMLRGB (props) {
     let btf = props.appState.btf()
