@@ -49,12 +49,11 @@ export default class OxrtiDataTextureLoader extends WebGLTextureLoaderAsyncHashC
         appState.textureIsLoading()
         let gl = this.gl
         let data = config.data
-        // console.log(config)
         let promise = createImageBitmap(data, { imageOrientation: 'flipY' })
             // firefox doesn't like 9 big textures and gcs (?) some of them, so we have to limit concurrency if one fails
             // this should still allow max currency for other environments
             .catch((reason) => {
-                console.log('Parallel texture load failed:', reason)
+                console.error('Parallel texture load failed:', reason)
                 return limiter(() => createImageBitmap(data))
             }).then(img => {
                 let texture = gl.createTexture()

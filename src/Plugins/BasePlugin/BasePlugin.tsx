@@ -51,7 +51,6 @@ const JSONDisplay = Component<{ json: object | string, style?: any }>(function J
 const BTFMetadataDisplay = Component(function BTFMetadataDisplay (props) {
     if (!this.appState.btf().isDefault()) {
         let manifest = props.appState.btf().generateManifest()
-        console.log(manifest)
         return <JSONDisplay
             json={manifest}
             style={{

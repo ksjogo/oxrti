@@ -72,3 +72,15 @@ export function sleep (ms: number) {
 export function JSONY (thing: object) {
     return JSON.stringify(thing, null, 2)
 }
+
+import cssColorConverter from 'css-color-converter'
+
+export function css2color (name: string) {
+    let rgba = cssColorConverter(name).toRgbaArray()
+    return rgba.map((value, index) => {
+        if (index < 3)
+            return value / 255
+        else
+            return value
+    })
+}

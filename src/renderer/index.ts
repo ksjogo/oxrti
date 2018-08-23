@@ -9,7 +9,7 @@ try {
                 .catch((err: any) => console.log('An error occurred: ', err))
         })
 } catch (e) {
-    console.log('Extension install failed:', e)
+    console.error('Extension install failed:', e)
 }
 
 init('app')

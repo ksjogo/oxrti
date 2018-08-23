@@ -39,7 +39,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.DefinePlugin({ "global.GENTLY": false }),
         new webpack.SourceMapDevToolPlugin({
             filename: '[name].map'

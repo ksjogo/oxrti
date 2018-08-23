@@ -26,6 +26,11 @@ class LightController extends shim(LightControlModel, Plugin) {
 
     get hooks () {
         return {
+            AfterPluginLoads: {
+                Paint: {
+                    func: this.loadColorFromTheme,
+                },
+            },
             ViewerSide: {
                 Rotation: {
                     component: SliderComponent,
@@ -158,6 +163,12 @@ class LightController extends shim(LightControlModel, Plugin) {
             return normalize([0.00001, -0.00001, 1])
         return [this.x, this.y, this.z]
     }
+
+    @action
+    loadColorFromTheme () {
+        let theme = this.appState.appTheme.palette.primary.main
+        this.hemisphereFrom = css2color(theme)
+    }
 }
 
 const { Plugin: LightControlPlugin, Component } = PluginCreator(LightController, LightControlModel, 'LightControlPlugin')
@@ -191,7 +202,7 @@ const SliderComponent = Component(function LightControlComponent (props) {
 })
 
 import shader from './hemisphere.glsl'
-import { toTex, rotate, Point, normalize } from '../../Util'
+import { toTex, rotate, Point, normalize, css2color } from '../../Util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 import { BaseNodeProps } from '../RendererPlugin/BaseNode'
 import { SettingsType } from '../../Hook'

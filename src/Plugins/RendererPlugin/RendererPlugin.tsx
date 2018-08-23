@@ -80,12 +80,10 @@ class RendererController extends shim(RendererModel, Plugin) {
     }
 
     hotUnload () {
-        console.log('Renderer Hot Unload')
         this.appState.hookForEach('PreDownload')
     }
 
     hotReload () {
-        console.log('Renderer Hot Load')
         this.appState.hookForEach('PostLoad')
     }
 
@@ -107,7 +105,6 @@ class RendererController extends shim(RendererModel, Plugin) {
     onResize (contentRect: ContentRect) {
         this.elementHeight = Math.floor(contentRect.bounds.height)
         this.elementWidth = Math.floor(contentRect.bounds.width)
-        console.log('on resize')
     }
 
     onResizeHandler (contentRect: ContentRect) {

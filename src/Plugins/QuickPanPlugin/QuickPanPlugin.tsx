@@ -5,17 +5,39 @@ import { Surface } from 'gl-react-dom'
 import { Theme, createStyles, Card, CardContent } from '@material-ui/core'
 import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
 import { Node } from 'gl-react'
+import { normalize, sub, Point, rotate, Node2PNG } from '../../Util'
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import FileSaver from 'file-saver'
+import ndarray from 'ndarray'
 
 const QuickPanModel = Plugin.props({
 })
 
 class QuickPanController extends shim(QuickPanModel, Plugin) {
+    grabTreshold = false
+    grabNext = true
+
+    load (appState: IAppState) {
+        super.load(appState)
+    }
+
     get hooks () {
         return {
             ViewerSide: {
                 Rotation: {
                     component: QuickPanComponent,
                     priority: 80,
+                },
+            },
+            ViewerRender: {
+                Grabber: {
+                    priority: 100000,
+                    component: Grabber,
+                },
+            },
+            PostLoad: {
+                Grabber: {
+                    func: this.enableGrabNext,
                 },
             },
         }
@@ -61,6 +83,48 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
     onMouseUp () {
         this.dragging = false
     }
+
+    get widthHeight () {
+        let btf = this.appState.btf()
+        // keep aspect ratio
+        let width = SIZE
+        let height = Math.floor(150 * btf.data.height / btf.data.width)
+        return [width, height]
+    }
+
+    grabberNode: any = null
+    quickPanPreview: TexForRender = null
+
+    @action
+    handleGrabberRef (node: any) {
+        this.grabberNode = node
+    }
+
+    @action
+    handleGrabberDraw () {
+        if (this.grabNext && this.appState.loadingTextures === 0 && this.grabberNode) {
+            let btf = this.appState.btf()
+            let [width, height] = this.widthHeight
+            let data = Node2PNG(this.grabberNode, width, height, true)
+            this.quickPanPreview = {
+                type: 'oxrti',
+                data: data,
+
+                width: width,
+                height: height,
+                ident: `${btf.name}_preview`,
+                format: 'PNG32',
+            }
+            this.grabNext = false
+        }
+    }
+
+    @action
+    enableGrabNext () {
+        this.grabNext = true
+        this.quickPanPreview = null
+    }
+
 }
 
 const { Plugin: QuickPanPlugin, Component } = PluginCreator(QuickPanController, QuickPanModel, 'QuickPanPlugin')
@@ -85,10 +149,10 @@ const QuickPanComponent = Component(function QuickPanComponent (props) {
     </Card>
 })
 
-import noise from '../RendererPlugin/noise.glsl'
 import quickPanShader from './quickpan.glsl'
-import { normalize, sub, Point, rotate } from '../../Util'
-import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
+import grabberShader from './grabber.glsl'
+import { TexForRender } from '../../BTFFile'
+import { IAppState } from '../../AppState'
 
 const SIZE = 150
 
@@ -102,34 +166,6 @@ const QuickPan = Component(function QuickPan (props, classes) {
     // keep aspect ratio
     let width = SIZE
     let height = 150 * btf.data.height / btf.data.width
-    let rootnode
-    if (!btf.isDefault()) {
-        // pick the current base rendering function
-        props.appState.hookForEach('RendererForModel', (hook) => {
-            if (hook.channelModel === btf.data.channelModel) {
-                let Func = hook.node
-                rootnode = <Func
-                    key={btf.id}
-                    height={height}
-                    width={width}
-                    lightPos={normalize([0.00001, -0.00001, 1])/*TOFIX: Why is it black without*/}
-                />
-            }
-        })
-    } else {
-        // render the noise shader
-        // beaware that it will render differently due to different uv behaviour
-        // it is not actual preview
-        rootnode = <Node
-            height={height}
-            width={width}
-            shader={{
-                frag: noise,
-            }}
-            uniforms={{
-                iGlobalTime: props.appState.uptime,
-            }} />
-    }
 
     // transform view coordinates into texture coordinates
     // these then are used to render the semi-transparent rect on top
@@ -156,7 +192,7 @@ const QuickPan = Component(function QuickPan (props, classes) {
                     C={C}
                     D={D}
                 >
-                    {rootnode}
+                    {this.quickPanPreview}
                 </RectRender>
             </Surface>
         </div>
@@ -185,4 +221,22 @@ export const RectRender = Component<{
             children: props.children,
         }}>
     </Node>
+})
+
+const Grabber = Component(function Grabber (props) {
+    let [width, height] = this.widthHeight
+    if (!this.grabNext)
+        return React.Children.only(props.children)
+    return <Node
+        width={width}
+        height={height}
+        ref={this.handleGrabberRef}
+        onDraw={this.handleGrabberDraw}
+        shader={{
+            frag: grabberShader,
+        }}
+        uniforms={{
+            children: props.children,
+        }}
+    />
 })

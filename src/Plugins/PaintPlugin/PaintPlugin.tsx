@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
-import { Point, Node2PNG, sleep, JSONY } from '../../Util'
+import { Point, Node2PNG, sleep, JSONY, css2color } from '../../Util'
 import { Switch, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField } from '@material-ui/core'
 import { observable } from 'mobx'
 import List from '@material-ui/core/List'
@@ -17,7 +17,6 @@ import FileSaver from 'file-saver'
 import { Node, Bus } from 'gl-react'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
-import cssColorConverter from 'css-color-converter'
 
 import paintShader from './paint.glsl'
 import mixerShader from './mixer.glsl'
@@ -56,13 +55,7 @@ class PaintController extends shim(PaintModel, Plugin) {
     @action
     loadColorFromTheme () {
         let theme = this.appState.appTheme.palette.primary.main
-        let rgba = cssColorConverter(theme).toRgbaArray()
-        this.color = observable.array(rgba.map((value, index) => {
-            if (index < 3)
-                return value / 255
-            else
-                return value
-        }))
+        this.color = observable.array(css2color(theme))
     }
 
     get layerCount () {
