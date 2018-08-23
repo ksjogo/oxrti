@@ -114,7 +114,7 @@ function PluginCreator<S extends ModelProperties, T, U> (Code: new () => U, Data
     // inner this will be bound to the SubPlugin instance
     type innerType<P, C extends string> = (this: typeof SubPlugin.Type, props: ComponentProps & { children?: ReactNode } & P, classes?: ClassNameMap<C>) => ReactElement<any>
     // P are they freely definable properties of the embedded react component
-    // C are the infered class keys for styling, usually no need to manually pass them
+    // C are the inffered class keys for styling, usually no need to manually pass them
     function SubComponent<P = {}, C extends string = ''> (inner: innerType<P, C>, styles?: StyleRulesCallback<C>): PluginComponentType<P> {
         // wrapper function to extract the corresponding plugin from props into plugin argument typedly
         let innerMost = function (props: any) {

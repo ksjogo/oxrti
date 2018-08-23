@@ -62,7 +62,7 @@ export class HookManagerCode extends ShimHookManager {
         }
     }
 
-    /** Iterate with iterator over all registered hooks, stop iteration if the iterator is returning true, name is redundant as it could be infered from ourselves, but allows for easy typesafe calling, appState is needed to retrieve the current plugin instance */
+    /** Iterate with iterator over all registered hooks, stop iteration if the iterator is returning true, name is redundant as it could be inferred from ourselves, but allows for easy typesafe calling, appState is needed to retrieve the current plugin instance */
     forEach<P extends HookName> (iterator: HookIterator<P>, name: P, appState: IAppState) {
         for (let i = 0; i < this.stack.length; i++) {
             let hook = this.stack[i]

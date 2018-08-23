@@ -13,7 +13,7 @@ void main() {
     for (int i=0; i < layerCount; i++) {
         if (layerVisibility[i]) {
             vec4 paint = texture2D(layer[i], uv);
-            // and mix their color into the current color according to the layers transparency
+            // and mix their color into the current color according to the layer's transparency
             base = mix(base, paint, paint.a);
             // the result should always be opaque
             base.a = 1.0;
