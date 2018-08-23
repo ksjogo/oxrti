@@ -13,13 +13,13 @@
         "LightControlPlugin",
         "ImpExpPlugin",
         "BookmarksPlugin",
-        "RedThemePlugin",
-        "TabViewPlugin",
+        "BlueThemePlugin",
+        "SingleViewPlugin",
         "QuickPanPlugin"
     ],
     "disabled": [
-        "BlueThemePlugin",
-        "SingleViewPlugin",
+        "RedThemePlugin",
+        "TabViewPlugin",
         "UndoPlugin",
         "TestPlugin"
     ]

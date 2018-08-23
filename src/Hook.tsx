@@ -53,17 +53,20 @@ export type LimitedHook<P> = LimitedHooks<HookConfig, Hooks<P>>
 // specific hooks for the plugins to use
 
 /** %AppHooksBegin */
-
+// register a new tab
 type Tab = {
+    // component to be the base of the tab
     content: PluginComponentType
     tab: TabProps,
     padding?: number,
+    // async functions to allow customisation before/after tabs change
     beforeFocusGain?: () => Promise<void>,
     afterFocusGain?: () => Promise<void>,
     beforeFocusLose?: () => Promise<void>,
     afterFocusLose?: () => Promise<void>,
 }
 
+// action buttons on the top rights
 type ActionBar = {
     onClick: () => void,
     title: string,
@@ -71,17 +74,11 @@ type ActionBar = {
     tooltip?: string,
 }
 
+// notifications if the tab changes for sub-components which are not being a tab themselves
 type ViewerTabFocus = {
     beforeGain?: () => void,
     beforeLose?: () => void,
 }
-
-type ViewerFileAction = {
-    tooltip: string,
-    text: string,
-    action: () => Promise<void>,
-}
-
 /** %AppHooksEnd */
 
 /** %RendererHooksBegin */
@@ -99,6 +96,12 @@ type RendererNode = {
 type MouseConfig = {
     listener: MouseListener,
     mouseLeft?: () => void,
+}
+
+type ViewerFileAction = {
+    tooltip: string,
+    text: string,
+    action: () => Promise<void>,
 }
 
 type ScreenshotMeta = {

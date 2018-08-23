@@ -10,6 +10,7 @@ const RedThemeModel = BaseTheme.props({
 
 class RedThemeController extends shim(RedThemeModel, BaseTheme) {
 
+    /** %begin */
     get hooks (): HookConfig {
         return {
             Theme: {
@@ -20,6 +21,7 @@ class RedThemeController extends shim(RedThemeModel, BaseTheme) {
             },
         }
     }
+    /** %end */
 
     themeExtension = {
         palette: {

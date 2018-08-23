@@ -47,21 +47,20 @@ const AppStyles = (theme: Theme) => createStyles({
 
 export { DrawerWidth, AppStyles }
 
-import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
-import { shim, action } from 'classy-mst'
+import { shim } from 'classy-mst'
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme'
 import _ from 'lodash'
-import { createMuiTheme, StyleRules } from '@material-ui/core/styles'
+import { createMuiTheme } from '@material-ui/core/styles'
 
 const BaseThemeModel = Plugin.props({
 })
 
 export class BaseThemeController extends shim(BaseThemeModel, Plugin) {
-
+    /** %begin */
+    /** app wide theme definitions */
     themeBase: ThemeOptions = {
         palette: {
-            // primary: red,
         },
         overrides: {
             MuiTooltip: {
@@ -78,13 +77,15 @@ export class BaseThemeController extends shim(BaseThemeModel, Plugin) {
         },
     }
 
+    /** per theme plugin overridable definitions */
     themeExtension: ThemeOptions = {}
+    /** %end */
 
     get theme () {
         return createMuiTheme(_.merge(this.themeBase, this.themeExtension))
     }
 }
 
-const { Plugin: BaseThemePlugin, Component } = PluginCreator(BaseThemeController, BaseThemeModel, 'RedThemePlugin')
+const { Plugin: BaseThemePlugin } = PluginCreator(BaseThemeController, BaseThemeModel, 'BaseThemePlugin')
 export default BaseThemePlugin
 export type IBaseThemePlugin = typeof BaseThemePlugin.Type

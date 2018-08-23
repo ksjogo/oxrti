@@ -2,7 +2,7 @@ import React, { ReactText } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import Rjv from 'react-json-view'
-import { Tooltip as MTooltip, Card, CardContent } from '@material-ui/core'
+import { Tooltip as MTooltip, Card, CardContent, Theme, createStyles } from '@material-ui/core'
 import { ComponentHook, LimitedHook } from '../../Hook'
 import { types, IModelType } from 'mobx-state-tree'
 export type __IModelType = IModelType<any, any>
@@ -13,7 +13,7 @@ const BasePluginModel = Plugin.props({
 
 class BasePluginController extends shim(BasePluginModel, Plugin) {
     @action
-    onGreeting () {
+    onGreeting (event: any) {
         this.greeting += '!'
     }
 }
@@ -24,6 +24,17 @@ export default BasePlugin
 // export the type to allow other plugins to retrieve this plugin
 export type IBasePlugin = typeof BasePlugin.Type
 
+// CSS styles, classnames will be mangled, so styles is passed to the component
+const styles = (theme: Theme) => createStyles({
+    hello: {
+        color: 'red',
+    },
+})
+
+// props are standard react props, classes contains the mangled names
+const HelloWorld = Component(function HelloWorld (props, classes) {
+    return <p className={classes.hello} onClick={this.onGreeting}>{this.greeting}</p>
+}, styles)
 /** %end */
 
 const JSONDisplay = Component<{ json: object | string, style?: any }>(function JSONDisplay (props) {
