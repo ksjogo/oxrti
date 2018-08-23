@@ -266,12 +266,12 @@ class PaintController extends shim(PaintModel, Plugin) {
         this.key = uniqid()
     }
 
-    /**
-     * Adapted shader to have fixed unrollable loops for the WebGL compiler
-     */
+    /** %beginMixerShader */
+    // Adapted shader to have fixed unrollable loops
     mixerShader () {
         return mixerShader.replace(/\[X\]/gi, `[${this.layerCount}]`).replace('< layerCount', ` < ${this.layerCount}`)
     }
+    /** %endMixerShader */
 
     anchorEl: HTMLElement
     @action
@@ -322,6 +322,14 @@ class PaintController extends shim(PaintModel, Plugin) {
     @action
     handleBrush (event: any) {
         this.brushRadius = parseInt(event.target.value, 10)
+    }
+
+    get brushRadiusTex () {
+        let btf = this.appState.btf()
+        let width = btf.data.width
+        let height = btf.data.height
+        let mix = Math.sqrt(width * width + height * height)
+        return this.brushRadius / mix / 2
     }
 }
 
@@ -440,6 +448,7 @@ const PaintUI = Component(function PaintUI (props, classes) {
     </Card>
 }, styles)
 
+/** %begin */
 /**
  * Actual painting node inside the render stack
  */
@@ -447,21 +456,10 @@ const PaintNode = Component(function PaintNode (props) {
     let btf = props.appState.btf()
     let width = btf.data.width
     let height = btf.data.height
-    let mix = Math.sqrt(width * width + height * height)
-    let brush = this.brushRadius / mix / 2
+    let brush = this.brushRadiusTex
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
-        return <Node
-            ref={this.handleRef('mixer')}
-            width={width}
-            height={height}
-            key={this.key}
-            shader={{
-                frag: initShader,
-            }}
-            uniforms={{
-                children: props.children,
-            }} />
+        return React.Children.only(props.children)
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node
@@ -471,11 +469,13 @@ const PaintNode = Component(function PaintNode (props) {
             key={this.key}
             onDraw={this.initialized ? null : this.onDraw}
             shader={{
+                // dynamic shader for the current amount of layers
                 frag: this.mixerShader(),
             }}
             uniforms={{
                 children: props.children,
                 layerVisibility: this.layers.map(l => l.visible),
+                // convert mobx array to WebGL compatible one
                 center: this.center.slice(0, 3),
                 brushRadius: brush,
                 showBrush: this.drawing === DrawingState.Hovering,
@@ -483,28 +483,29 @@ const PaintNode = Component(function PaintNode (props) {
         >
             {// map all layers into the `layer` uniform of the mixer shader
                 this.layers.map((layer, index) => {
+                    // only change uniforms of currently drawn layer to not trigger redraws on stable layers
                     let drawThis = this.drawing === DrawingState.Drawing && this.activeLayer === index
-                    return <Bus uniform={'layer'} key={`${layer.id}`} index={index} >
-                        <Node
-                            ref={this.handleRef(layer.id)}
-                            width={width}
-                            height={height}
-                            shader={{
-                                frag: this.initialized ? paintShader : initShader,
-                            }}
-                            clear={null}
-                            uniforms={
-                                // and then write on it
-                                this.initialized ? {
-                                    drawing: drawThis,
-                                    color: drawThis ? this.color.slice(0, 4) : [0, 0, 0, 0],
-                                    center: drawThis ? this.center.slice(0, 3) : [0, 0],
-                                    brushRadius: drawThis ? brush : 0,
-                                } : {
-                                        // clear is null, so we initially grap the loaded texture
-                                        children: btf.annotationTexForRender(layer.id),
-                                    }} />
+                    return <Bus uniform={'layer'} key={`${layer.id}`} index={index} ><Node
+                        // keep track of node refs for export
+                        ref={this.handleRef(layer.id)}
+                        width={width}
+                        height={height}
+                        shader={{
+                            frag: this.initialized ? paintShader : initShader,
+                        }}
+                        clear={null}
+                        uniforms={this.initialized ?
+                            {
+                                drawing: drawThis,
+                                color: drawThis ? this.color.slice(0, 4) : [0, 0, 0, 0],
+                                center: drawThis ? this.center.slice(0, 3) : [0, 0],
+                                brushRadius: drawThis ? brush : 0,
+                            } : {
+                                // clear is null, so we initially just render the loaded texture
+                                children: btf.annotationTexForRender(layer.id),
+                            }} />
                     </Bus>
                 })}
         </Node >
 })
+/** %end */
