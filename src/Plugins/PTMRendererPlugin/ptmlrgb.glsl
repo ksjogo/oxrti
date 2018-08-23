@@ -22,7 +22,6 @@ void main() {
             vec3 pointTangent = vec3(1,0,0);
             vec3 pointBinormal = vec3(0,1,0);
 
-
             vec3 tangentSpaceLight= vec3(
                 dot(toLight, pointTangent),
                 dot(toLight, pointBinormal),
@@ -31,8 +30,7 @@ void main() {
 
             tangentSpaceLight.xy = normalize(tangentSpaceLight.xy);
             tangentSpaceLight.xy *= (1.0-tangentSpaceLight.z);
-
-		
+	
 			float a0 = texture2D(texL0, uv).x;
             float a1 = texture2D(texL1, uv).x;
             float a2 = texture2D(texL2, uv).x;

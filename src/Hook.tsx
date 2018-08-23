@@ -145,6 +145,16 @@ type ThemeConfig = {
 
 /** %ThemeHooksEnd */
 
+export enum SettingsType {
+    Toggle = 1,
+}
+
+type SettingsConfig = {
+    type: SettingsType,
+    value: () => boolean,
+    action: () => void,
+}
+
 type HookTypes = {
     ActionBar?: ConfigHook<ActionBar>,
     AfterPluginLoads?: FunctionHook,
@@ -163,4 +173,5 @@ type HookTypes = {
     ViewerSide?: ViewerSide,
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
     Theme?: ConfigHook<ThemeConfig>,
+    Settings?: ConfigHook<SettingsConfig>,
 }

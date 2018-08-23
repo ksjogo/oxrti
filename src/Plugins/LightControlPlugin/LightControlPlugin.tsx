@@ -7,6 +7,7 @@ import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui
 import hemispherical from './Hemisphere'
 import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
+import Slider from '@material-ui/lab/Slider'
 
 const RenderMargin = 20
 
@@ -15,11 +16,13 @@ const LightControlModel = Plugin.props({
     displayY: 0,
     x: 0,
     y: 0,
+    z: 0,
+    showSliders: false,
 })
 
 class LightController extends shim(LightControlModel, Plugin) {
-    hemisphereFrom = [1, 0, 1]
-    hemisphereTo = [1, 1, 0]
+    hemisphereTo = [0.5, 0.5, 0.5, 0.6]
+    hemisphereFrom = [1, 0, 0, 1]
 
     get hooks () {
         return {
@@ -43,7 +46,19 @@ class LightController extends shim(LightControlModel, Plugin) {
                     snapshot: this.saveBookmark,
                 },
             },
+            Settings: {
+                ShowSliders: {
+                    type: SettingsType.Toggle,
+                    value: () => this.showSliders,
+                    action: this.toggleShowSliders,
+                },
+            },
         }
+    }
+
+    @action
+    toggleShowSliders () {
+        this.showSliders = !this.showSliders
     }
 
     @action
@@ -62,23 +77,24 @@ class LightController extends shim(LightControlModel, Plugin) {
     onSliderX (event: any, value: number) {
         this.x = value
         this.fixHemis()
+        this.displayX = this.x
+        this.displayY = this.y
     }
 
     @action
     onSliderY (event: any, value: number) {
         this.y = value
         this.fixHemis()
-    }
-
-    get hemisphericalCoords () {
-        return hemispherical(this.x, this.y)
+        this.displayX = this.x
+        this.displayY = this.y
     }
 
     @action
     fixHemis () {
-        let hemis = this.hemisphericalCoords
+        let hemis = hemispherical(this.x, this.y)
         this.x = hemis[0]
         this.y = hemis[1]
+        this.z = hemis[2]
     }
 
     // volatile
@@ -98,20 +114,21 @@ class LightController extends shim(LightControlModel, Plugin) {
         let hemis = hemispherical(point[0], point[1])
         this.displayX = hemis[0]
         this.displayY = hemis[1]
-        this.setXYThrottled(hemis)
+        this.setXYZThrottled(hemis)
     }
 
     @Debounce(100, {
         trailing: true,
     })
-    setXYThrottled (hemis: number[]) {
-        this.setXY(hemis)
+    setXYZThrottled (hemis: number[]) {
+        this.setXYZ(hemis)
     }
 
     @action
-    setXY (hemis: number[]) {
+    setXYZ (hemis: number[]) {
         this.x = hemis[0]
         this.y = hemis[1]
+        this.z = hemis[2]
     }
 
     @action
@@ -139,7 +156,7 @@ class LightController extends shim(LightControlModel, Plugin) {
     get lightPos (): number[] {
         if (this.x === 0 && this.y === 0)
             return normalize([0.00001, -0.00001, 1])
-        return hemispherical(this.x, this.y)
+        return [this.x, this.y, this.z]
     }
 }
 
@@ -156,19 +173,19 @@ const styles = (theme: Theme) => createStyles({
 const SliderComponent = Component(function LightControlComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            {/*
-                <Typography variant='headline' component='h3'>
-                Light Control
-                </Typography>
-            <Typography>Pos X</Typography>
-            <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
-            <Typography>Pos Y</Typography>
-            <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
-            <Typography>Hemispherical</Typography> */}
             <SafeGLIInspector>
                 <HemisphereComponent />
             </SafeGLIInspector>
-            {/*  <p>x: {this.hemisphericalCoords()[0]} <br />y: {this.hemisphericalCoords()[1]}<br />z: {this.hemisphericalCoords()[2]}</p> */}
+            {this.showSliders && <>
+                <Typography>Pos X</Typography>
+                <Slider value={this.x} onChange={this.onSliderX} min={-1} max={1} />
+                <Typography>Pos Y</Typography>
+                <Slider value={this.y} onChange={this.onSliderY} min={-1} max={1} />
+                <Typography>Hemispherical</Typography>
+                <p>x: {this.x} <br />
+                    y: {this.y}<br />
+                    z: {this.z}</p>
+            </>}
         </CardContent>
     </Card>
 })
@@ -177,6 +194,7 @@ import shader from './hemisphere.glsl'
 import { toTex, rotate, Point, normalize } from '../../Util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 import { BaseNodeProps } from '../RendererPlugin/BaseNode'
+import { SettingsType } from '../../Hook'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
     let point: Point = [this.displayX, this.displayY]
@@ -184,29 +202,30 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
     if (rotationPlugin) {
         point = rotate(point, -rotationPlugin.rad)
     }
-    return <Tooltip
+    let inner = <div style={{
+        marginLeft: 'calc(50% - 75px)',
+    }}>
+        <Surface
+            className={classes.dragger}
+            width={150}
+            height={150}
+            onMouseLeave={this.onMouseLeave}
+            onMouseMove={this.onMouseMove}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}>
+            <Node shader={{
+                frag: shader,
+            }}
+                uniforms={{
+                    point: toTex(point),
+                    fromColor: this.hemisphereFrom.slice(0),
+                    toColor: this.hemisphereTo.slice(0),
+                }} />
+        </Surface>
+    </div>
+    return this.showSliders ? inner : <Tooltip
         title={<p>x: {this.x}<br />y: {this.y}</p>}
     >
-        <div style={{
-            marginLeft: 'calc(50% - 75px)',
-        }}>
-            <Surface
-                className={classes.dragger}
-                width={150}
-                height={150}
-                onMouseLeave={this.onMouseLeave}
-                onMouseMove={this.onMouseMove}
-                onMouseDown={this.onMouseDown}
-                onMouseUp={this.onMouseUp}>
-                <Node shader={{
-                    frag: shader,
-                }}
-                    uniforms={{
-                        point: toTex(point),
-                        fromColor: this.hemisphereFrom.slice(0),
-                        toColor: this.hemisphereTo.slice(0),
-                    }} />
-            </Surface>
-        </div>
+        {inner}
     </Tooltip>
 }, styles)

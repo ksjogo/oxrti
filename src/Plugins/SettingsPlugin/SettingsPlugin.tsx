@@ -1,7 +1,7 @@
 import React from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim } from 'classy-mst'
-import { Card, CardContent, List, ListItem, Theme, createStyles, Typography } from '@material-ui/core'
+import { Card, CardContent, List, ListItem, Theme, createStyles, Typography, ListItemText, ListItemSecondaryAction, Switch } from '@material-ui/core'
 import { JSONDisplay } from '../BasePlugin/BasePlugin'
 
 const SettingsModel = Plugin.props({
@@ -38,10 +38,29 @@ const SettingsView = Component(function SettingsView (props, classes) {
         return nameA.localeCompare(nameB)
     })
     let rendered = plugins.map(([name, controller]) => {
+        let settings: React.ReactElement<{}>[] = []
+        let settingHooks = controller.hooks.Settings
+        for (const name in settingHooks) {
+            let hook = settingHooks[name]
+            settings.push(<ListItem key={name}>
+                <ListItemText>
+                    {name}
+                </ListItemText>
+                <ListItemSecondaryAction>
+                    <Switch
+                        onChange={hook.action}
+                        checked={hook.value()}
+                    />
+                </ListItemSecondaryAction>
+            </ListItem>)
+        }
         return <ListItem key={name}>
             <Card className={classes.pluginCard}>
                 <CardContent>
-                    {name}
+                    <h3>{name}</h3>
+                    {settings.length !== 0 && <List style={{ maxWidth: 300 }}>
+                        {settings}
+                    </List>}
                     <JSONDisplay json={
                         (controller as any).toJSON()
                     } />
