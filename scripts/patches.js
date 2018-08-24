@@ -31,6 +31,13 @@ replace({
     silent: false,
 });
 
+console.log("Fixing gl-react temporary frame buffers")
+replace({
+    regex: /var silent = false;/,
+    replacement: 'var silent = e.message.startsWith("Node#getGLOutput: framebuffer is not defined.");',
+    paths: ['./node_modules/gl-react/lib/createSurface.js'],
+    silent: false,
+});
 
 console.log("Fixing webpack cli");
 //electron webpack needs thats
