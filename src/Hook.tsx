@@ -130,8 +130,11 @@ type PostLoad = FunctionHook
 /** %BookmarkHooksBegin */
 
 type BookmarkSaver = {
+    // key inside the bookmarks config
     key: string,
+    // called when a new bookmark is created, any returned string or number combination is stored
     save: () => (string | number)[],
+    // called when a bookmark ought to be restored, the saved combination is passed on
     restore: (values: (string | number)[]) => void,
 }
 
