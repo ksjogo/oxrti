@@ -158,6 +158,7 @@ type SettingsConfig = {
     type: SettingsType,
     value: () => boolean,
     action: () => void,
+    title: string,
 }
 /** %SettingsHooksEnd */
 

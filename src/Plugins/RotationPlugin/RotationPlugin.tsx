@@ -10,9 +10,11 @@ import { Card, CardContent, Button } from '@material-ui/core'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Util'
+import { SettingsType } from '../../Hook'
 
 const RotationModel = Plugin.props({
     rad: 0,
+    keepCenter: true,
 })
 
 export class RotationController extends shim(RotationModel, Plugin) {
@@ -56,7 +58,20 @@ export class RotationController extends shim(RotationModel, Plugin) {
                     snapshot: () => this.rad,
                 },
             },
+            Settings: {
+                ShowSliders: {
+                    title: 'Rotate around visible center',
+                    type: SettingsType.Toggle,
+                    value: () => this.keepCenter,
+                    action: this.toggleKeepCenter,
+                },
+            },
         }
+    }
+
+    @action
+    toggleKeepCenter () {
+        this.keepCenter = !this.keepCenter
     }
 
     saveBookmark () {
@@ -72,7 +87,8 @@ export class RotationController extends shim(RotationModel, Plugin) {
     onSlider (event: any, value: number) {
         let currentCenter = this.inversePoint([0.5, 0.5])
         this.rad = value
-        this.zoomer.zoomOnPoint(currentCenter)
+        if (this.keepCenter)
+            this.zoomer.zoomOnPoint(currentCenter)
     }
 
     undoCurrentRotation (point: Point): Point {

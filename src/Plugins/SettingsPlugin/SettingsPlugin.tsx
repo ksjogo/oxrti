@@ -44,7 +44,7 @@ const SettingsView = Component(function SettingsView (props, classes) {
             let hook = settingHooks[name]
             settings.push(<ListItem key={name}>
                 <ListItemText>
-                    {name}
+                    {hook.title}
                 </ListItemText>
                 <ListItemSecondaryAction>
                     <Switch

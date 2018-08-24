@@ -53,6 +53,7 @@ class LightController extends shim(LightControlModel, Plugin) {
             },
             Settings: {
                 ShowSliders: {
+                    title: 'Show Light sliders',
                     type: SettingsType.Toggle,
                     value: () => this.showSliders,
                     action: this.toggleShowSliders,
