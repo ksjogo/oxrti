@@ -106,11 +106,6 @@ declare module 'webgltexture-loader' {
   export { globalRegistry, WebGLTextureLoaderAsyncHashCache }
 }
 
-declare module 'mobx-devtools-mst' {
-  let makeInspectable: (...args: any[]) => any
-  export = makeInspectable
-}
-
 declare module 'css-color-converter' {
   function conv (init: string): { toRgbaArray (): number[] }
   export = conv

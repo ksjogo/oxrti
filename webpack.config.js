@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
               },
             },
             {
-              loader: "awesome-typescript-loader"
+              loader: "ts-loader"
             },
           ],
           include: path.join(__dirname, 'src')

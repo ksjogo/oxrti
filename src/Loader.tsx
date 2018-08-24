@@ -7,7 +7,7 @@ import { connectReduxDevtools } from 'mst-middlewares'
 import * as remotedev from 'remotedev'
 import { Provider } from 'mobx-react'
 import { BTFCache } from './BTFFile'
-import makeInspectable from 'mobx-devtools-mst'
+import makeInspectable from './loaders/mobx-dev-tools/makeInspectable'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 
 if (plugins.enabled.indexOf('BasePlugin') === -1) {
