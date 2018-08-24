@@ -145,6 +145,8 @@ type ThemeConfig = {
 
 /** %ThemeHooksEnd */
 
+/** %SettingsHooksBegin */
+// currently only toggles are supported
 export enum SettingsType {
     Toggle = 1,
 }
@@ -154,6 +156,7 @@ type SettingsConfig = {
     value: () => boolean,
     action: () => void,
 }
+/** %SettingsHooksEnd */
 
 type HookTypes = {
     ActionBar?: ConfigHook<ActionBar>,
