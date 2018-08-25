@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react'
 import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { types } from 'mobx-state-tree'
-import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField, Switch } from '@material-ui/core'
+import { List, ListItem, ListItemSecondaryAction, ListItemText, Checkbox, IconButton, Theme, createStyles, Button, Popover, Card, CardContent, CardActions, Typography, TextField, Switch, Paper, Input } from '@material-ui/core'
 import uniqid from 'uniqid'
 import TrashIcon from '@material-ui/icons/Delete'
 import { Tooltip } from '../BasePlugin/BasePlugin'
@@ -130,6 +130,28 @@ class NotesController extends shim(NotesModel, Plugin) {
         let top = size * (1 - screened[1]) - IndicatorSize / 2
         return [left, top]
     }
+
+    @action
+    setText (index: number, text: string) {
+        this.notes[index].text = text
+    }
+
+    handleTextChange (index: number) {
+        return (e: any) => {
+            this.setText(index, e.target.value)
+        }
+    }
+
+    @action
+    setName (index: number, name: string) {
+        this.notes[index].name = name
+    }
+
+    handleNameChange (index: number) {
+        return (e: any) => {
+            this.setName(index, e.target.value)
+        }
+    }
 }
 
 const { Plugin: NotesPlugin, Component } = PluginCreator(NotesController, NotesModel, 'NotesPlugin')
@@ -150,24 +172,49 @@ const styles = (theme: Theme) => createStyles({
         boxShadow: '0 0 1px 0px rgb(255, 255, 255)',
         width: IndicatorSize,
         height: IndicatorSize,
-        zIndex: 86,
+        zIndex: 80,
         backgroundColor: theme.palette.primary.main,
+    },
+    note: {
+        width: 200,
+        zIndex: 90,
+        minHeight: 50,
+    },
+    inner: {
+        margin: 8,
+        marginTop: 0,
+    },
+    popper: {
+        zIndex: 100,
+        opacity: 0.6,
     },
 })
 
 const NotesUI = Component(function NotesUI (props, classes) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
-            <Typography variant='button'>Notes</Typography>
             <Tooltip title='Create a note on next object click'>
-                <Typography>Create Next:<Switch onClick={this.toggleCreateOnNext} checked={this.createOnNextClick}>Create on next click</Switch></Typography>
+                <Typography variant='button'>Notes Create:<Switch onClick={this.toggleCreateOnNext} checked={this.createOnNextClick}>Create on next click</Switch></Typography>
             </Tooltip>
+            <List dense>
+                {this.notes.map((note, index) => (
+                    <ListItem key={note.id}>
+                        <ListItemText>{note.name}</ListItemText>
+                        <ListItemSecondaryAction>
+                            <Tooltip title='Delete'>
+                                <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                    <TrashIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                ))}
+            </List>
         </CardContent>
     </Card>
 }, styles)
 
 const NotesOverlay = Component(function NotesOverlay (props, classes) {
-
     return <div>
         {this.notes.map((note, index) => {
             let displayPos = this.displayPos(index)
@@ -185,16 +232,35 @@ const NotesPopers = Component(function NotesPopers (props, classes) {
     return <div>
         {this.notes.map((note, index) => {
             let displayPos = this.displayPos(index)
-            if (!displayPos)
+            if (note.collapsed || !displayPos)
                 return null
             return <div key={`${note.id}${displayPos}`} > <Popper referenceElement={this.ref(note.id)}>
                 {({ ref, style, placement, arrowProps }) => (
-                    <div ref={ref} style={style} data-placement={placement}>
-                        Popper element
+                    <div ref={ref} style={style} data-placement={placement} className={classes.popper}>
+                        <Paper className={classes.note}>
+                            <NotesInnerDisplay index={index} />
+                        </Paper>
                         <div ref={arrowProps.ref} style={arrowProps.style} />
                     </div>
                 )}
             </Popper></div>
         })}
+    </div>
+}, styles)
+
+const NotesInnerDisplay = Component<{ index: number }, any>(function NotesInnerDisplay (props, classes) {
+    let note = this.notes[props.index]
+    return <div className={classes.inner}>
+        <Input
+            disableUnderline={true}
+            value={note.name}
+            onChange={this.handleNameChange(props.index)} />
+        <TextField
+            multiline
+            rowsMax={4}
+            value={note.text}
+            onChange={this.handleTextChange(props.index)}
+            margin='normal'
+        />
     </div>
 }, styles)
