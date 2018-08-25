@@ -114,11 +114,6 @@ class NotesController extends shim(NotesModel, Plugin) {
         return true
     }
 
-    @action
-    setDisplayPos (index: number, value: Point) {
-        this.notes[index].displayPos = value
-    }
-
     displayPos (index: number) {
         let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
         let size = renderer.surfaceSize

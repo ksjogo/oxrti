@@ -112,17 +112,16 @@ export class RotationController extends shim(RotationModel, Plugin) {
         return (this.maxDims - this.centererSizes[1]) / 2.0 / this.maxDims
     }
 
-    get vWidth () {
+    get uWidth () {
         return 1.0 - 2.0 * this.uOffset
     }
 
-    get uWidth () {
+    get vWidth () {
         return 1.0 - 2.0 * this.vOffset
     }
 
     undoCurrentCenterer (point: Point): Point {
-        point = [(point[0] - this.uOffset) / this.uWidth, (point[1] - this.vOffset) / this.vWidth]
-        return point
+        return [(point[0] - this.uOffset) / this.uWidth, (point[1] - this.vOffset) / this.vWidth]
     }
 
     doCurrentCenterer (point: Point): Point {
