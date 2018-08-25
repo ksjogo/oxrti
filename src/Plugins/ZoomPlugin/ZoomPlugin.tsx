@@ -26,6 +26,7 @@ export class ZoomController extends shim(ZoomModel, Plugin) {
                     priority: -20,
                     component: ZoomNode,
                     inversePoint: this.undoZoomAndPan,
+                    forwardPoint: this.doZoomAndPan,
                 },
             },
             ViewerSide: {
@@ -112,6 +113,13 @@ export class ZoomController extends shim(ZoomModel, Plugin) {
         return [
             (point[0] - this.panX - 0.5) / this.scale + 0.5,
             (point[1] - this.panY - 0.5) / this.scale + 0.5,
+        ]
+    }
+
+    doZoomAndPan (point: Point): Point {
+        return [
+            (point[0] - 0.5) * this.scale + this.panX + 0.5,
+            (point[1] - 0.5) * this.scale + this.panY + 0.5,
         ]
     }
 

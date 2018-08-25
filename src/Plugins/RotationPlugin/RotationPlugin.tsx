@@ -6,11 +6,10 @@ import { Node } from 'gl-react'
 import rotShader from './rotation.glsl'
 import centerShader from './centerer.glsl'
 import Slider from '@material-ui/lab/Slider'
-import { Card, CardContent, Button } from '@material-ui/core'
+import { Card, CardContent, Button, Switch } from '@material-ui/core'
 import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 import { Point, fromTex, rotate, toTex, DummyRenderSize } from '../../Util'
-import { SettingsType } from '../../Hook'
 
 const RotationModel = Plugin.props({
     rad: 0,
@@ -29,12 +28,14 @@ export class RotationController extends shim(RotationModel, Plugin) {
                 Centerer: {
                     component: CentererComponent,
                     inversePoint: this.undoCurrentCenterer,
+                    forwardPoint: this.doCurrentCenterer,
                     priority: 11,
                 },
                 // then rotate it
                 Rotation: {
                     component: RotationComponent,
                     inversePoint: this.undoCurrentRotation,
+                    forwardPoint: this.doCurrentRotation,
                     priority: 10,
                 },
             },
@@ -61,9 +62,7 @@ export class RotationController extends shim(RotationModel, Plugin) {
             Settings: {
                 ShowSliders: {
                     title: 'Rotate around visible center',
-                    type: SettingsType.Toggle,
-                    value: () => this.keepCenter,
-                    action: this.toggleKeepCenter,
+                    component: SettingsKeepCenter,
                 },
             },
         }
@@ -98,17 +97,36 @@ export class RotationController extends shim(RotationModel, Plugin) {
         return point
     }
 
-    undoCurrentCenterer (point: Point): Point {
-        let size = this.centererSizes
-        let maxDim = this.maxDims
-
-        let uOffset = (maxDim - size[0]) / 2.0 / maxDim
-        let vOffset = (maxDim - size[1]) / 2.0 / maxDim
-        let uWidth = 1.0 - 2.0 * uOffset
-        let vWidth = 1.0 - 2.0 * vOffset
-
-        point = [(point[0] - uOffset) / uWidth, (point[1] - vOffset) / vWidth]
+    doCurrentRotation (point: Point): Point {
+        point = fromTex(point)
+        point = rotate(point, -this.rad)
+        point = toTex(point)
         return point
+    }
+
+    get uOffset () {
+        return (this.maxDims - this.centererSizes[0]) / 2.0 / this.maxDims
+    }
+
+    get vOffset () {
+        return (this.maxDims - this.centererSizes[1]) / 2.0 / this.maxDims
+    }
+
+    get vWidth () {
+        return 1.0 - 2.0 * this.uOffset
+    }
+
+    get uWidth () {
+        return 1.0 - 2.0 * this.vOffset
+    }
+
+    undoCurrentCenterer (point: Point): Point {
+        point = [(point[0] - this.uOffset) / this.uWidth, (point[1] - this.vOffset) / this.vWidth]
+        return point
+    }
+
+    doCurrentCenterer (point: Point): Point {
+        return [point[0] * this.uWidth + this.uOffset, point[1] * this.vWidth + this.vOffset]
     }
 
     get maxDims () {
@@ -187,4 +205,13 @@ const SliderComponent = Component(function RotationSlider () {
             </Tooltip>
         </CardContent>
     </Card>
+})
+
+const SettingsKeepCenter = Component(function SettingsKeepCenter (props) {
+    return <Tooltip title='Keep visible center when using rotation slider'>
+        <Switch
+            onChange={this.toggleKeepCenter}
+            checked={this.keepCenter}
+        />
+    </Tooltip>
 })

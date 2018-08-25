@@ -71,6 +71,14 @@ export class PluginController extends PluginShim {
         return point
     }
 
+    forwardPoint (point: Point): Point {
+        this.appState.hookForEach('ViewerRender', (hook) => {
+            if (hook.forwardPoint)
+                point = hook.forwardPoint(point)
+        })
+        return point
+    }
+
     /** some components need references to their actual DOM nodes, these are stored outside the plugins scope to allow hot-reloads */
     handleRef (id: string) {
         let key = (this as any).$

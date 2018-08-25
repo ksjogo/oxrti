@@ -41,17 +41,12 @@ const SettingsView = Component(function SettingsView (props, classes) {
         let settings: React.ReactElement<{}>[] = []
         let settingHooks = controller.hooks.Settings
         for (const name in settingHooks) {
-            let hook = settingHooks[name]
+            let Hook = settingHooks[name]
             settings.push(<ListItem key={name}>
                 <ListItemText>
-                    {hook.title}
+                    {Hook.title}
                 </ListItemText>
-                <ListItemSecondaryAction>
-                    <Switch
-                        onChange={hook.action}
-                        checked={hook.value()}
-                    />
-                </ListItemSecondaryAction>
+                <Hook.component />
             </ListItem>)
         }
         return <ListItem key={name}>

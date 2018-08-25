@@ -94,6 +94,7 @@ type RendererNode = {
     component: PluginComponentType,
     // if the node is transforming the texture coordinates, and inverse method needs to be provided
     inversePoint?: (point: Point) => Point,
+    forwardPoint?: (point: Point) => Point,
 }
 
 // hook for listening to mouse event inside the main renderer
@@ -149,15 +150,7 @@ type ThemeConfig = {
 /** %ThemeHooksEnd */
 
 /** %SettingsHooksBegin */
-// currently only toggles are supported
-export enum SettingsType {
-    Toggle = 1,
-}
-
-type SettingsConfig = {
-    type: SettingsType,
-    value: () => boolean,
-    action: () => void,
+type SettingsConfig = ComponentHook & {
     title: string,
 }
 /** %SettingsHooksEnd */

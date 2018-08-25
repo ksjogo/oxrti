@@ -1,11 +1,9 @@
 import { normalize } from '../../Util'
 
 // as taken from http://vcg.isti.cnr.it/rti/webviewer.php
-export default function hemispherical (x: number, y: number) {
-    // let lx = ((x / this.ui.width) * 2.2 - 1.1)
-    // let ly = ((y / this.ui.height) * 2.2 - 1.1)
-    let lx = x
-    let ly = y
+export default function hemispherical (x: number, y: number, factor = 1) {
+    let lx = (x * factor)
+    let ly = (y * factor)
     lx = Math.min(1.0, Math.max(-1.0, lx))
     ly = Math.min(1.0, Math.max(-1.0, ly))
     let norm = Math.sqrt(lx * lx + ly * ly)

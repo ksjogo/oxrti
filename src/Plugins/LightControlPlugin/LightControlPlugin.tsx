@@ -3,7 +3,7 @@ import Plugin, { PluginCreator, PluginComponentType } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders } from 'gl-react'
 import { Surface } from 'gl-react-dom'
-import { Typography, Theme, createStyles, Card, CardContent } from '@material-ui/core'
+import { Typography, Theme, createStyles, Card, CardContent, Switch } from '@material-ui/core'
 import hemispherical from './Hemisphere'
 import { SafeGLIInspector, Tooltip } from '../BasePlugin/BasePlugin'
 import { Debounce } from 'lodash-decorators'
@@ -23,6 +23,7 @@ const LightControlModel = Plugin.props({
 class LightController extends shim(LightControlModel, Plugin) {
     hemisphereTo = [0.5, 0.5, 0.5, 0.6]
     hemisphereFrom = [1, 0, 0, 1]
+    factor = 1
 
     get hooks () {
         return {
@@ -54,9 +55,11 @@ class LightController extends shim(LightControlModel, Plugin) {
             Settings: {
                 ShowSliders: {
                     title: 'Show Light sliders',
-                    type: SettingsType.Toggle,
-                    value: () => this.showSliders,
-                    action: this.toggleShowSliders,
+                    component: ShowSliders,
+                },
+                DomeFactor: {
+                    title: 'Dome factor',
+                    component: DomeFactor,
                 },
             },
         }
@@ -68,39 +71,30 @@ class LightController extends shim(LightControlModel, Plugin) {
     }
 
     @action
+    onFactorSlider (event: any, value: number) {
+        this.factor = value
+    }
+
+    @action
     saveBookmark () {
-        return [this.x, this.y]
+        return [this.x, this.y, this.z]
     }
 
     @action
     restoreBookmark (values: number[]) {
         this.x = values[0]
         this.y = values[1]
-        this.fixHemis()
+        this.z = values[2]
     }
 
     @action
     onSliderX (event: any, value: number) {
-        this.x = value
-        this.fixHemis()
-        this.displayX = this.x
-        this.displayY = this.y
+        this.setXYZ(hemispherical(value, this.y, this.factor))
     }
 
     @action
     onSliderY (event: any, value: number) {
-        this.y = value
-        this.fixHemis()
-        this.displayX = this.x
-        this.displayY = this.y
-    }
-
-    @action
-    fixHemis () {
-        let hemis = hemispherical(this.x, this.y)
-        this.x = hemis[0]
-        this.y = hemis[1]
-        this.z = hemis[2]
+        this.setXYZ(hemispherical(this.x, value, this.factor))
     }
 
     // volatile
@@ -117,7 +111,7 @@ class LightController extends shim(LightControlModel, Plugin) {
         if (rotationPlugin) {
             point = rotate(point, rotationPlugin.rad)
         }
-        let hemis = hemispherical(point[0], point[1])
+        let hemis = hemispherical(point[0], point[1], this.factor)
         this.displayX = hemis[0]
         this.displayY = hemis[1]
         this.setXYZThrottled(hemis)
@@ -135,6 +129,8 @@ class LightController extends shim(LightControlModel, Plugin) {
         this.x = hemis[0]
         this.y = hemis[1]
         this.z = hemis[2]
+        this.displayX = hemis[0]
+        this.displayY = hemis[1]
     }
 
     @action
@@ -205,8 +201,6 @@ const SliderComponent = Component(function LightControlComponent (props) {
 import shader from './hemisphere.glsl'
 import { toTex, rotate, Point, normalize, css2color } from '../../Util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
-import { BaseNodeProps } from '../RendererPlugin/BaseNode'
-import { SettingsType } from '../../Hook'
 
 const HemisphereComponent = Component(function Hemisphere (props, classes) {
     let point: Point = [this.displayX, this.displayY]
@@ -241,3 +235,23 @@ const HemisphereComponent = Component(function Hemisphere (props, classes) {
         {inner}
     </Tooltip>
 }, styles)
+
+const ShowSliders = Component(function ShowSlider (props) {
+    return <Tooltip title='Enable light sliders and more explicit output.'>
+        <Switch
+            onChange={this.toggleShowSliders}
+            checked={this.showSliders}
+        />
+    </Tooltip>
+})
+
+const DomeFactor = Component(function DomeFactor (props) {
+    return <Tooltip title={`Dome movement scaling factor: ${this.factor}`}>
+        <Slider
+            value={this.factor}
+            min={1}
+            max={2}
+            onChange={this.onFactorSlider}
+        />
+    </Tooltip>
+})

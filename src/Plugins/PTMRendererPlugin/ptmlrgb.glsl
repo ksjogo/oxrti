@@ -28,8 +28,8 @@ void main() {
                 dot(toLight, pointNormal)
             );
 
-            tangentSpaceLight.xy = normalize(tangentSpaceLight.xy);
-            tangentSpaceLight.xy *= (1.0-tangentSpaceLight.z);
+            //tangentSpaceLight.xy = normalize(tangentSpaceLight.xy);
+            //tangentSpaceLight.xy *= (1.0-tangentSpaceLight.z);
 	
 			float a0 = texture2D(texL0, uv).x;
             float a1 = texture2D(texL1, uv).x;

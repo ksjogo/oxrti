@@ -146,6 +146,9 @@ class RendererController extends shim(RendererModel, Plugin) {
         let nextTex = nextScreen
 
         nextTex = this.inversePoint(nextTex)
+        console.log('screen', nextScreen)
+        console.log('tex', nextTex)
+        console.log('forwarded', this.forwardPoint(nextTex))
 
         this.appState.hookForEach('ViewerMouse', (hook) => {
             return hook.listener(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen, this.dragging)
@@ -165,7 +168,6 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     onMouseMove (e: MouseEvent) {
         this.notifyDraggers(e)
-
     }
 
     @action
