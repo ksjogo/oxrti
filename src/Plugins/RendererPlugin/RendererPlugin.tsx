@@ -394,7 +394,6 @@ const Stack = Component(function Stack (props, classes) {
         >{current}</Hook.component>
     })
     /** %endWrapper */
-    console.log("surface size", size)
     return <div style={{
         marginLeft: marginXP ? margin : 0,
         marginTop: !marginXP ? margin : 0,

@@ -72,6 +72,7 @@
     "react-hot-loader": "^4.3.5",
     "react-json-view": "^1.19.1",
     "react-measure": "^2.1.0",
+    "react-popper": "^1.0.2",
     "remotedev": "git+https://github.com/ksjogo/remotedev.git",
     "replace": "^1.0.0",
     "rimraf": "^2.6.2",

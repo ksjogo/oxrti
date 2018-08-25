@@ -10,6 +10,7 @@ import { Point } from './Util'
 import { IRendererPlugin } from './Plugins/RendererPlugin/RendererPlugin'
 import { StyleRules } from '@material-ui/core/styles'
 import { ClassNameMap } from '@material-ui/core/styles/withStyles'
+import { observable } from 'mobx'
 
 /**
  * Plugin Model/State, is preserved in the app wide state tree
@@ -17,7 +18,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles'
 const PluginModel = types.model({
 })
 
-const refCache: { [key: string]: { [key: string]: any } } = {}
+const refCache = observable.object({} as { [key: string]: { [key: string]: any } })
 
 interface ComponentProps {
     appState?: IAppState,

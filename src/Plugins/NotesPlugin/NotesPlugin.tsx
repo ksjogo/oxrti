@@ -8,6 +8,7 @@ import TrashIcon from '@material-ui/icons/Delete'
 import { Tooltip } from '../BasePlugin/BasePlugin'
 import { Point, sleep, JSONY } from '../../Util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
+import { Popper } from 'react-popper'
 
 const NoteModel = types.model({
     text: 'text me',
@@ -15,6 +16,7 @@ const NoteModel = types.model({
     id: types.string,
     pos: types.array(types.number),
     collapsed: false,
+    needsRepaint: false,
 })
 
 const NotesModel = Plugin.props({
@@ -28,7 +30,7 @@ class NotesController extends shim(NotesModel, Plugin) {
     get hooks () {
         return {
             ViewerSide: {
-                Notes: {
+                NotesOverlay: {
                     component: NotesUI,
                     priority: 22,
                 },
@@ -43,6 +45,9 @@ class NotesController extends shim(NotesModel, Plugin) {
             ViewerSurfaceAttachment: {
                 Notes: {
                     component: NotesOverlay,
+                },
+                NotesPopers: {
+                    component: NotesPopers,
                 },
             },
         }
@@ -96,7 +101,7 @@ class NotesController extends shim(NotesModel, Plugin) {
     }
 
     dragger (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point, dragging: boolean) {
-        return !this.createOnNextClick
+        return this.createOnNextClick
     }
 
     @action
@@ -108,15 +113,45 @@ class NotesController extends shim(NotesModel, Plugin) {
         this.createOnNextClick = false
         return true
     }
+
+    @action
+    setDisplayPos (index: number, value: Point) {
+        this.notes[index].displayPos = value
+    }
+
+    displayPos (index: number) {
+        let renderer = this.appState.plugins.get('RendererPlugin') as IRendererPlugin
+        let size = renderer.surfaceSize
+        let note = this.notes[index]
+        let screened = renderer.forwardPoint(note.pos.slice(0, 2) as Point)
+        if (screened[0] < 0 || screened[0] > 1 || screened[1] < 0 || screened[1] > 1)
+            return null
+        let left = size * screened[0] - IndicatorSize / 2
+        let top = size * (1 - screened[1]) - IndicatorSize / 2
+        return [left, top]
+    }
 }
 
 const { Plugin: NotesPlugin, Component } = PluginCreator(NotesController, NotesModel, 'NotesPlugin')
 export default NotesPlugin
 export type INotesPlugin = typeof NotesPlugin.Type
 
+const IndicatorSize = 8
+
 const styles = (theme: Theme) => createStyles({
-    note: {
+    indicator: {
         position: 'absolute',
+        border: '2px solid #ffffff',
+        borderRadius: '50%',
+        msFilter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=60)',
+        filter: 'alpha(opacity = 60)',
+        opacity: 0.6,
+        webkitBoxShadow: '0 0 1px 0px rgb(255, 255, 255)',
+        boxShadow: '0 0 1px 0px rgb(255, 255, 255)',
+        width: IndicatorSize,
+        height: IndicatorSize,
+        zIndex: 86,
+        backgroundColor: theme.palette.primary.main,
     },
 })
 
@@ -132,21 +167,34 @@ const NotesUI = Component(function NotesUI (props, classes) {
 }, styles)
 
 const NotesOverlay = Component(function NotesOverlay (props, classes) {
-    let renderer = props.appState.plugins.get('RendererPlugin') as IRendererPlugin
-    let size = renderer.surfaceSize
+
     return <div>
         {this.notes.map((note, index) => {
-            let screened = renderer.forwardPoint(note.pos.slice(0, 2) as Point)
-            if (screened[0] < 0 || screened[0] > 1 || screened[1] < 0 || screened[1] > 1)
+            let displayPos = this.displayPos(index)
+            if (!displayPos)
                 return null
-            let left = size * screened[0]
-            let top = size * (1 - screened[1])
-            return <p key={note.id} className={classes.note} style={{
-                top: top,
-                left: left,
-            }}>
-                {screened[0]} {screened[1]}
-            </p>
+            return <div ref={this.handleRef(note.id)} onClick={this.handleCollapse(index)} key={note.id} className={classes.indicator} style={{
+                left: displayPos[0],
+                top: displayPos[1],
+            }} />
+        })}
+    </div>
+}, styles)
+
+const NotesPopers = Component(function NotesPopers (props, classes) {
+    return <div>
+        {this.notes.map((note, index) => {
+            let displayPos = this.displayPos(index)
+            if (!displayPos)
+                return null
+            return <div key={`${note.id}${displayPos}`} > <Popper referenceElement={this.ref(note.id)}>
+                {({ ref, style, placement, arrowProps }) => (
+                    <div ref={ref} style={style} data-placement={placement}>
+                        Popper element
+                        <div ref={arrowProps.ref} style={arrowProps.style} />
+                    </div>
+                )}
+            </Popper></div>
         })}
     </div>
 }, styles)
