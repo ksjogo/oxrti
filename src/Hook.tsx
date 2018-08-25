@@ -1,5 +1,4 @@
 import ConverterStrategyConfig from './Plugins/ConverterPlugin/ConverterStrategyConfig'
-import { MouseListener } from './Plugins/RendererPlugin/MouseListener'
 import { Point } from './Util'
 import { ChannelModel } from './BTFFile'
 export { ChannelModel }
@@ -99,7 +98,8 @@ type RendererNode = {
 
 // hook for listening to mouse event inside the main renderer
 type MouseConfig = {
-    listener: MouseListener,
+    dragger: (oldTex: Point, nextTex: Point, oldScreen: Point, nextScreen: Point, dragging: boolean) => boolean,
+    mouseUp?: (nextScreen: Point, nextTex: Point) => boolean,
     mouseLeft?: () => void,
 }
 
@@ -125,6 +125,9 @@ type PreDownload = FunctionHook
 
 // notification that a btf file was loaded, plugins can import extra data
 type PostLoad = FunctionHook
+
+// components to be rendered around the surface
+type ViewerSurfaceAttachment = ComponentHook
 
 /** %RendererHooksEnd */
 
@@ -171,6 +174,7 @@ type HookTypes = {
     ViewerMouse?: ConfigHook<MouseConfig>,
     ViewerRender?: ConfigHook<RendererNode>,
     ViewerSide?: ViewerSide,
+    ViewerSurfaceAttachment?: ViewerSurfaceAttachment,
     ViewerTabFocus?: ConfigHook<ViewerTabFocus>,
     Theme?: ConfigHook<ThemeConfig>,
     Settings?: ConfigHook<SettingsConfig>,

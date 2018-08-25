@@ -7,7 +7,7 @@ import Measure, { ContentRect } from 'react-measure'
 import { Theme, createStyles, Button, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
-import { BTFMetadataConciseDisplay, Tooltip } from '../BasePlugin/BasePlugin'
+import { BTFMetadataConciseDisplay, Tooltip, RenderHooks } from '../BasePlugin/BasePlugin'
 import { readAsArrayBuffer } from 'promise-file-reader'
 import { fromZip } from '../../BTFFile'
 import { Point, sleep, JSONY } from '../../Util'
@@ -146,16 +146,18 @@ class RendererController extends shim(RendererModel, Plugin) {
         let nextTex = nextScreen
 
         nextTex = this.inversePoint(nextTex)
-        console.log('screen', nextScreen)
+        /*console.log('screen', nextScreen)
         console.log('tex', nextTex)
-        console.log('forwarded', this.forwardPoint(nextTex))
+        console.log('forwarded', this.forwardPoint(nextTex))*/
 
         this.appState.hookForEach('ViewerMouse', (hook) => {
-            return hook.listener(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen, this.dragging)
+            return hook.dragger(this.lastDragTex, nextTex, this.lastDragScreen, nextScreen, this.dragging)
         })
 
         this.lastDragScreen = nextScreen
         this.lastDragTex = nextTex
+
+        return [nextScreen, nextTex]
     }
 
     @action
@@ -181,7 +183,10 @@ class RendererController extends shim(RendererModel, Plugin) {
     @action
     onMouseUp (e: MouseEvent) {
         this.dragging = false
-        this.notifyDraggers(e)
+        let [nextScreen, nextTex] = this.notifyDraggers(e)
+        this.appState.hookForEach('ViewerMouse', (hook) => {
+            return hook.mouseUp && hook.mouseUp(nextScreen, nextTex)
+        })
     }
 
     centerRef: any
@@ -241,6 +246,10 @@ class RendererController extends shim(RendererModel, Plugin) {
     setInhibitTooltips (value: boolean) {
         this.inhibitTooltips = value
     }
+
+    get surfaceSize () {
+        return Math.floor(Math.min(this.elementHeight, this.elementWidth))
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -249,34 +258,36 @@ export type IRendererPlugin = typeof RendererPlugin.Type
 
 const RendererView = Component(function RendererView (props, classes) {
     return <div className={classes.container}>
-        <Measure bounds onResize={this.onResizeHandler}>
-            {({ measureRef }) =>
-                <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
-                    <div className={classes.stack}>
-                        {this.elementHeight !== -1 && <Stack
-                            key={this.key}
-                        />}
+        <div className={classes.surfaceContainer}>
+            <Measure bounds onResize={this.onResizeHandler}>
+                {({ measureRef }) =>
+                    <div ref={this.handleCenterRef(measureRef)} className={classes.content}>
+                        <div className={classes.stack}>
+                            {this.elementHeight !== -1 && <Stack
+                                key={this.key}
+                            />}
+                        </div>
                     </div>
-                </div>
-            }
-        </Measure>
-        <Popover
-            style={{
-                backgroundColor: 'rgb(0.5,0.5,0.5,0.5)',
-            }}
-            anchorEl={this.centerRef}
-            open={this.popoverShown}
-            anchorOrigin={{
-                vertical: 'center',
-                horizontal: 'center',
-            }}
-            transformOrigin={{
-                vertical: 'center',
-                horizontal: 'center',
-            }}
-        >
-            <Typography>{this.popoverText}</Typography>
-        </Popover>
+                }
+            </Measure>
+            <Popover
+                style={{
+                    backgroundColor: 'rgb(0.5,0.5,0.5,0.5)',
+                }}
+                anchorEl={this.centerRef}
+                open={this.popoverShown}
+                anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+            >
+                <Typography>{this.popoverText}</Typography>
+            </Popover>
+        </div>
         <Drawer
             anchor='right'
             variant='permanent'
@@ -298,7 +309,6 @@ const RendererView = Component(function RendererView (props, classes) {
             </List>
         </Drawer>
     </div>
-
 }, AppStyles)
 
 const UploadStyles = (theme: Theme) => createStyles({
@@ -346,7 +356,7 @@ const styles = () => createStyles({
 })
 
 const Stack = Component(function Stack (props, classes) {
-    let size = Math.min(this.elementHeight, this.elementWidth)
+    let size = this.surfaceSize
     let marginXP = this.elementWidth > this.elementHeight
     let margin = Math.abs((this.elementHeight - this.elementWidth) / 2)
 
@@ -384,10 +394,11 @@ const Stack = Component(function Stack (props, classes) {
         >{current}</Hook.component>
     })
     /** %endWrapper */
-
+    console.log("surface size", size)
     return <div style={{
         marginLeft: marginXP ? margin : 0,
         marginTop: !marginXP ? margin : 0,
+        position: 'absolute',
     }}>
         <Surface
             ref={this.handleRef('surface')}
@@ -403,5 +414,6 @@ const Stack = Component(function Stack (props, classes) {
                 {current}
             </LinearCopy>
         </Surface>
+        <RenderHooks name='ViewerSurfaceAttachment' />
     </div>
 }, styles)

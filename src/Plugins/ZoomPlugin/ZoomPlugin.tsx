@@ -37,7 +37,7 @@ export class ZoomController extends shim(ZoomModel, Plugin) {
             },
             ViewerMouse: {
                 Pan: {
-                    listener: this.dragger,
+                    dragger: this.dragger,
                     priority: -10,
                 },
             },

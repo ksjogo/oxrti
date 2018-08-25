@@ -97,7 +97,7 @@ const RenderHooks = Component<{ name: LimitedHook<ComponentHook> }>(function Ren
         let Func = hook.component
         return <Func key={fullName} />
     })
-    return <>{rendered}</>
+    return React.Children.only(<>{rendered}</>)
 })
 
 /**

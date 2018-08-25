@@ -12,6 +12,8 @@ const AppStyles = (theme: Theme) => createStyles({
         position: 'relative',
         display: 'flex',
     },
+    surfaceContainer: {
+    },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
     },

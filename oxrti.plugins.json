@@ -15,6 +15,7 @@
         "BookmarksPlugin",
         "RedThemePlugin",
         "TabViewPlugin",
+        "NotesPlugin",
         "QuickPanPlugin"
     ],
     "disabled": [

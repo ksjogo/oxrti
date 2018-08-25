@@ -89,8 +89,8 @@ class PaintController extends shim(PaintModel, Plugin) {
             },
             ViewerMouse: {
                 Pan: {
-                    listener: this.dragger,
-                    draggerLeft: this.draggerLeft,
+                    dragger: this.dragger,
+                    mouseLeft: this.draggerLeft,
                     priority: 100,
                 },
             },
