@@ -8,3 +8,4 @@ static/bundle.js
 .vscode
 dist/
 out/
+tmp/

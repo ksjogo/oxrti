@@ -143,7 +143,7 @@ class AppStateController extends shim(AppStateData) {
 
   @action
   textureLoaded () {
-    this.loadingTextures--
+    --this.loadingTextures
   }
 
   get appTheme () {

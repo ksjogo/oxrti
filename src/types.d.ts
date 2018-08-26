@@ -42,7 +42,9 @@ declare module 'gl-react' {
     index?: number
   }>
 
-  let LinearCopy: React.StatelessComponent
+  let LinearCopy: React.StatelessComponent<{
+    onDraw?: () => void,
+  }>
   let NearestCopy: React.StatelessComponent
   export { Shaders, Node, LinearCopy, NearestCopy, Bus }
 }

@@ -62,6 +62,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
     @action
     async onDrop (files: File[]) {
         try {
+            console.time('file conversion')
             let file = files[0]
             this.setDatahref('')
             let ending = path.extname(file.name)
@@ -81,6 +82,7 @@ class ConverterController extends shim(ConverterModel, Plugin) implements IConve
             await this.setProgress(50)
             await this.setMessage('Exporting zip.')
             let zip = await btf.generateZip()
+            console.timeEnd('file conversion')
             await this.setProgress(100)
             await this.setMessage('')
             let url = URL.createObjectURL(zip)

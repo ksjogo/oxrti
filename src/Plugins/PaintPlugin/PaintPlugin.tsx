@@ -452,7 +452,17 @@ const PaintNode = Component(function PaintNode (props) {
     let brush = this.brushRadiusTex
     // just render the input texture if we got no other layers to put on top
     if (this.layers.length === 0)
-        return React.Children.only(props.children)
+        return <Node
+            ref={this.handleRef('mixer')}
+            width={width}
+            height={height}
+            key={this.key}
+            shader={{
+                frag: initShader,
+            }}
+            uniforms={{
+                children: props.children,
+            }} />
     else
         // return one mixer node, which stiches the underlying rendered object and the annotations together
         return <Node

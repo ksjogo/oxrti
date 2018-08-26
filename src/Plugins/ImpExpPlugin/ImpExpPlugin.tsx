@@ -33,7 +33,8 @@ class ImpExpController extends shim(ImpExpModel, Plugin) {
             return
         let btf = this.appState.btf()
         let state = this.appState.btf().oxrtiState
-        this.appState.stateReloader(state)
+        if (state)
+            this.appState.stateReloader(state)
     }
 }
 

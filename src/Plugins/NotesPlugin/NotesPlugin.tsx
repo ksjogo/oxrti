@@ -9,6 +9,7 @@ import { Tooltip } from '../BasePlugin/BasePlugin'
 import { Point, sleep, JSONY } from '../../Util'
 import { IRendererPlugin } from '../RendererPlugin/RendererPlugin'
 import { Popper } from 'react-popper'
+import { IZoomPlugin } from '../ZoomPlugin/ZoomPlugin'
 
 const NoteModel = types.model({
     text: 'text me',
@@ -147,6 +148,15 @@ class NotesController extends shim(NotesModel, Plugin) {
             this.setName(index, e.target.value)
         }
     }
+
+    zoomOn (index: number) {
+        return (event: any) => {
+            let zoom = this.appState.plugins.get('ZoomPlugin') as IZoomPlugin
+            if (!zoom)
+                return alert('Zoom Plugin not loaded')
+            zoom.zoomOnPoint(this.notes[index].pos.slice(0, 2) as Point)
+        }
+    }
 }
 
 const { Plugin: NotesPlugin, Component } = PluginCreator(NotesController, NotesModel, 'NotesPlugin')
@@ -193,16 +203,18 @@ const NotesUI = Component(function NotesUI (props, classes) {
             </Tooltip>
             <List dense>
                 {this.notes.map((note, index) => (
-                    <ListItem key={note.id}>
-                        <ListItemText>{note.name}</ListItemText>
-                        <ListItemSecondaryAction>
-                            <Tooltip title='Delete'>
-                                <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
-                                    <TrashIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </ListItemSecondaryAction>
-                    </ListItem>
+                    <Tooltip title='Center note location' key={note.id} >
+                        <ListItem onClick={this.zoomOn(index)} dense button>
+                            <ListItemText>{note.name}</ListItemText>
+                            <ListItemSecondaryAction>
+                                <Tooltip title='Delete'>
+                                    <IconButton aria-label='Trash' onClick={this.handleDelete(index)} >
+                                        <TrashIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </Tooltip>
                 ))}
             </List>
         </CardContent>

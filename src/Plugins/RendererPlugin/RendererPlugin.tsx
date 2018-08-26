@@ -126,12 +126,19 @@ class RendererController extends shim(RendererModel, Plugin) {
             this.showPopover()
             return alert('Only .btf.zip is supported. Please use the converter before.')
         }
+        this.setLoadRunning(2)
+        console.time('file load')
         let content = await readAsArrayBuffer(file)
         this.showPopover('Parsing Zip')
         let btf = await fromZip(content)
         this.showPopover()
         await sleep(0)
         this.appState.loadFile(btf, true)
+    }
+
+    @action
+    setLoadRunning (value: number) {
+        this.loadRunning = value
     }
 
     dragging = false
@@ -249,6 +256,15 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     get surfaceSize () {
         return Math.floor(Math.min(this.elementHeight, this.elementWidth))
+    }
+
+    loadRunning = 0
+    @action
+    onDraw () {
+        if (--this.loadRunning === 0) {
+            console.timeEnd('file load')
+            this.loadRunning = 0
+        }
     }
 }
 
@@ -409,7 +425,7 @@ const Stack = Component(function Stack (props, classes) {
             onMouseDown={this.onMouseDown}
             onMouseUp={this.onMouseUp}
             webglContextAttributes={{ preserveDrawingBuffer: true }}
-        ><LinearCopy>
+        ><LinearCopy onDraw={this.onDraw}>
                 {current}
             </LinearCopy>
         </Surface>
