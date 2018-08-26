@@ -4,7 +4,7 @@ import Plugin, { PluginCreator } from '../../Plugin'
 import { shim, action } from 'classy-mst'
 import { Node, Shaders, LinearCopy } from 'gl-react'
 import Measure, { ContentRect } from 'react-measure'
-import { Theme, createStyles, Button, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography } from '@material-ui/core'
+import { Theme, createStyles, Button, Drawer, Popover, Card, CardContent, CardActions, List, ListItem, Typography, FormControl, InputLabel, Select, Input, MenuItem, FormHelperText } from '@material-ui/core'
 import { Registrator as OxrtiTextureRegistrator } from '../../loaders/oxrtidatatex/OxrtiDataTextureLoader'
 import Dropzone from 'react-dropzone'
 import { BTFMetadataConciseDisplay, Tooltip, RenderHooks } from '../BasePlugin/BasePlugin'
@@ -16,6 +16,7 @@ import FileSaver from 'file-saver'
 import { Surface } from 'gl-react-dom'
 
 const RendererModel = Plugin.props({
+    renderMode: 'default',
 })
 
 class RendererController extends shim(RendererModel, Plugin) {
@@ -76,6 +77,18 @@ class RendererController extends shim(RendererModel, Plugin) {
                     tooltip: 'Load a .btf.zip file',
                 },
             },
+            PostLoad: {
+                RenderMode: {
+                    func: this.resetRenderingMode,
+                },
+            },
+            Bookmarks: {
+                RenderMode: {
+                    key: 'rendermode',
+                    save: this.saveBookmark,
+                    restore: this.restoreBookmark,
+                },
+            },
         }
     }
 
@@ -85,6 +98,15 @@ class RendererController extends shim(RendererModel, Plugin) {
 
     hotReload () {
         this.appState.hookForEach('PostLoad')
+    }
+
+    saveBookmark () {
+        return [this.renderMode]
+    }
+
+    @action
+    restoreBookmark (values: (string | number)[]) {
+        this.renderMode = values[0] as string
     }
 
     @action
@@ -266,6 +288,29 @@ class RendererController extends shim(RendererModel, Plugin) {
             this.loadRunning = 0
         }
     }
+
+    @action
+    handleRenderModeChange (event: any) {
+        this.renderMode = event.target.value as string
+    }
+
+    get currentBaseNode () {
+        let btf = this.appState.btf()
+        let result: HookType<'RendererForModel'>
+        this.appState.hookForEach('RendererForModel', (Hook) => {
+            if (Hook.channelModel === btf.data.channelModel) {
+                result = Hook
+                return true
+            }
+            return false
+        })
+        return result
+    }
+
+    @action
+    resetRenderingMode () {
+        this.renderMode = 'default'
+    }
 }
 
 const { Plugin: RendererPlugin, Component } = PluginCreator(RendererController, RendererModel, 'RendererPlugin')
@@ -327,6 +372,33 @@ const RendererView = Component(function RendererView (props, classes) {
     </div>
 }, AppStyles)
 
+const RenderModePickerStyles = (theme: Theme) => createStyles({
+    select: {
+        width: '100%',
+        marginTop: 10,
+    },
+})
+
+const RenderModePicker = Component(function RenderModePicker (props, classes) {
+    let baseNode = this.currentBaseNode
+    let modes = baseNode ? baseNode.renderingModes : []
+    return <FormControl className={classes.select} >
+        <InputLabel htmlFor='rendering-mode'>Rendering Mode</InputLabel>
+        <Select
+            value={this.renderMode}
+            onChange={this.handleRenderModeChange}
+            input={<Input name='rendering mode' id='rendering-mode' />}
+        >
+            {modes.map((modeName, index) => (
+                <MenuItem value={modeName} key={modeName}>
+                    {modeName}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>
+
+}, RenderModePickerStyles)
+
 const UploadStyles = (theme: Theme) => createStyles({
     dropzone: {
         border: '1px solid ' + theme.palette.primary.main,
@@ -343,6 +415,7 @@ const Upload = Component(function Upload (props, classes) {
                     <div>Try dropping some files here, or click to select files to upload.</div>
                 </Dropzone>
             </Tooltip>
+            <RenderModePicker />
         </CardContent>
         <CardActions>{
             this.appState.hookMap('ViewerFileAction', (hook, fullName) => {
@@ -359,6 +432,7 @@ const Upload = Component(function Upload (props, classes) {
 
 import noise from './noise.glsl'
 import { ILightControlPlugin } from '../LightControlPlugin/LightControlPlugin'
+import { ConfigHook, HookType } from '../../Hook'
 const shaders = Shaders.create({
     noise: {
         frag: noise,
@@ -388,6 +462,7 @@ const Stack = Component(function Stack (props, classes) {
                 current = <Hook.node
                     key={btf.id}
                     lightPos={lightControl.lightPos}
+                    renderingMode={this.renderMode}
                 />
             }
         })
