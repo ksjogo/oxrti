@@ -25,7 +25,7 @@ class QuickPanController extends shim(QuickPanModel, Plugin) {
         return {
             ViewerSide: {
                 Rotation: {
-                    component: QuickPanComponent,
+                    component: QuickPanUI,
                     priority: 80,
                 },
             },
@@ -139,7 +139,7 @@ const styles = (theme: Theme) => createStyles({
 /**
  * Wrapped QuickPan Preview
  */
-const QuickPanComponent = Component(function QuickPanComponent (props) {
+const QuickPanUI = Component(function QuickPanComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <SafeGLIInspector>

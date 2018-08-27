@@ -31,7 +31,7 @@ export class ZoomController extends shim(ZoomModel, Plugin) {
             },
             ViewerSide: {
                 Zoom: {
-                    component: Zoom,
+                    component: ZoomUI,
                     priority: 21,
                 },
             },
@@ -170,7 +170,7 @@ const ZoomNode = Component(function ZoomNode (props) {
         }} />
 })
 
-const Zoom = Component(function ZoomSlider (props) {
+const ZoomUI = Component(function ZoomSlider (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <Tooltip title='Reset'>

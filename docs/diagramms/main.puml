@@ -1,6 +1,6 @@
 @startuml main
+scale 4000*3000
 package MainBundle {
-    database State {
         class AppState {
 
         }
@@ -8,153 +8,217 @@ package MainBundle {
 
         }
         AppState "1" *-- "n" HookManager : contains
-    }
     AppState "1" *-- "n" Plugin : tracks state for
-    rectangle View {
-        class App<<SFC>>
-        class Component<<SFC>>
-        class GLView<<SFC>>
-        class RenderHooks<<SFC>>
-        class Tabs<<Types>>
-        class Theme<<Config>>
-        hide members
-    }
+    
     class Plugin {
 
     }
     class Hook <<Types>> {
 
     }
+    
     class Loader {
 
     }
-    class FileFormat {
+    
+    class BTFFile {
+
+    }
+    
+    class Util {
 
     }
 }
 HookManager "1" -- "1" Hook : contains
 
-rectangle Plugins {
-    package Renderer {
-        class RendererPlugin {
+    package BasePlugin {
 
+        class BasePlugin {
         }
-        Plugin <|-- RendererPlugin
-        class RendererTab<<SFC>>
-        class Stack {
+        mix_component App
+        mix_component JSONDisplay
+        mix_component BTFMetadataDisplay
+        mix_component BTFMetadataConciseDisplay
+        mix_component RenderHooks
+        mix_component SafeGLIInspector
+        mix_component Tooltip
 
+  }
+
+    package BaseThemePlugin {
+        class BaseThemePlugin {
         }
-        class RendererNode {
+        mix_node "style<U+002E>css"
+    }
 
+    package BlueThemePlugin {
+        class BlueThemePlugin {
         }
     }
+
+    BlueThemePlugin -> BaseThemePlugin
+
+     package BookmarksPlugin {
+        class BookmarksPlugin {
+        }
+        mix_component BookmarkUI
+    }
+
+    package ConverterPlugin {
+        class ConverterPlugin {
+        }
+        class BPMWriter {
+        }
+        class ConverterStrategy {
+        }
+        class ConverterStrategyConfig {
+        }
+        class ConverterUI {
+        }
+        class PNGWriter {
+        }
+        class Writer {
+        }
+        mix_component ConverterView
+        PNGWriter -> Writer
+        BPMWriter -> Writer
+    }
+
+    package ImpExpPlugin {
+        class ImpExpPlugin {
+        }
+    }
+
+    package LightControlPlugin {
+        class LightControlPlugin {
+        }
+        class Hemisphere {
+        }
+        mix_node "hemisphere<U+002E>glsl"
+        mix_component LightControlUI
+        mix_component HemisphereDisplay
+        mix_component ShowSliders
+        mix_component DomeFactor
+    }
+
+    package NotesPlugin {
+        class NotesPlugin {
+        }
+        mix_component NotesUI
+        mix_component NotesOverlay
+        mix_component NotesPopers
+        mix_component NotesInnerDisplay
+
+    }
+
+     package PaintPlugin {
+        class PaintPlugin {
+        }
+        mix_node "init<U+002E>glsl"
+        mix_node "mixer<U+002E>glsl"
+        mix_node "paint<U+002E>glsl"
+        mix_database PaintNode
+        mix_component PaintUI
+    }
+
+    package PTMConverterPlugin {
+        class PTMConverterPlugin {
+        }
+    }
+
+    package PTMRendererPlugin {
+        class PTMRendererPlugin {
+        }
+        mix_database PTMRGB
+        mix_database PTMLRGB
+        mix_node "ptmrgb<U+002E>glsl"
+        mix_node "ptmlrgb<U+002E>glsl"
+        mix_node "ptmlrgb_normals<U+002E>glsl"
+    }
+
+    package QuickPanPlugin {
+        class QuickPanPlugin {
+        }
+        mix_component QuickPanUI
+        mix_component Grabber
+
+        mix_node "quickpan<U+002E>glsl"
+        mix_node "grabber<U+002E>glsl"
+    }
+
+    package RedThemePlugin {
+        class RedThemePlugin {
+        }
+    }
+
+    RedThemePlugin -> BaseThemePlugin
+
+    package RendererPlugin {
+        class RendererPlugin {
+        }
+        mix_component RendererView
+        mix_component RenderModePicker
+        mix_component Upload
+        mix_component Stack
+        mix_node "noise<U+002E>glsl"
+    }
+
     package RotationPlugin {
         class RotationPlugin {
-
         }
-        Plugin <|-- RotationPlugin
-        class RotationNode {
-            
-        }
+        mix_node "rotation<U+002E>glsl"
+        mix_node "centerer<U+002E>glsl"
+        mix_component RotationUI
+        mix_component CentererUI
+        mix_component RotationSlider
+        mix_component SettingsKeepCenter
+        mix_database Rotator
+        mix_database Centerer
     }
-    RendererNode <- RotationNode
+
+    package SettingsPlugin {
+        class SettingsPlugin {
+        }
+        mix_component SettingsUI
+    }
+
+    package SingleViewPlugin {
+        class SingleViewPlugin {
+        }
+        mix_component SingleView
+    }
+
+    package TabViewPlugin {
+        class TabViewPlugin {
+        }
+        mix_component TabView
+    }
+
     package ZoomPlugin {
         class ZoomPlugin {
-
         }
-        Plugin <|-- ZoomPlugin
-        class ZoomNode {
-            
-        }
+        mix_component ZoomUI
+        mix_database ZoomNode
     }
-    RendererNode <- ZoomNode 
-    package Converter {
-         class ConverterPlugin {
-            
-        }
-        class ConverterTab<<SFC>>
-        class ConverterStrategy {
-            
-        }
-        Plugin <|-- ConverterPlugin
-    }
-    package PTMConverterPlugin {
-         class PTMConverterPlugin {
-            hooks {}
-        }
-        class PTMStrategy {
-
-        }
-        Plugin <|-- PTMConverterPlugin
-    }
-    ConverterStrategy <|-- PTMStrategy
-    package RTIConverterPlugin {
-         class RTIConverterPlugin {
-            hooks {}
-        }
-        class RTIStrategy {
-
-        }
-        Plugin <|-- RTIConverterPlugin
-    }
-    ConverterStrategy <|-- RTIStrategy
-    package Settings {
-        class SettingsPlugin {
-            
-        }
-        class ConverterTab<<SFC>>
-        Plugin <|-- SettingsPlugin
-    }
-    package Test {
-         class TestPlugin {
-            
-        }
-        class TestTab<<SFC>>
-        Plugin <|-- TestPlugin
-    }
-}
-FileFormat <-> ConverterStrategy
-package ElectronBackend {
-
-}
-
-cloud WebViewer {
- 
-}
-
-WebViewer -> MainBundle
-
-cloud ElectronApp {
- 
-}
-
-cloud AzureHosted {
- 
-}
-
-AzureHosted -> MainBundle
-
-ElectronApp -> MainBundle
-ElectronApp -> ElectronBackend
-
-mix_actor "Museum Website Visitor"
-"Museum Website Visitor" -> WebViewer
-
-mix_actor "Researcher"
-"Researcher" -> ElectronApp
 
 
-WebViewer .. Plugins :bundles
-AzureHosted .. Plugins
-ElectronApp .. Plugins
-
-Loader -> State : creates initial
+Loader -> AppState : creates initial
 Loader -> App : mounts
-App -> State : renders
+App -> AppState : renders
 
 Plugin "1" *-- "n" Hook : declares
+
+mix_node "index"
+"index" -> Loader
+
+ ConverterPlugin -[hidden]up- index
+ ImpExpPlugin -[hidden]up- BookmarksPlugin
+ SettingsPlugin -[hidden]up- BookmarksPlugin
+ TabViewPlugin -[hidden]up- SingleViewPlugin
+BasePlugin -[hidden]up- ConverterPlugin
 
 hide <<SFC>> circle
 hide <<Config>> circle
 hide <<Types>> circle
+
 @enduml

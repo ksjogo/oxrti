@@ -144,7 +144,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
         let channels: Channels = {
             R: {
-                coefficentModel: 'RGB',
+                coefficentModel: 'RTIpoly6',
                 coefficents: {
                     a0a1a2: {
                         data: this.bmps[0],
@@ -157,7 +157,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             G: {
-                coefficentModel: 'RGB',
+                coefficentModel: 'RTIpoly6',
                 coefficents: {
                     a0a1a2: {
                         data: this.bmps[2],
@@ -170,7 +170,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             B: {
-                coefficentModel: 'RGB',
+                coefficentModel: 'RTIpoly6',
                 coefficents: {
                     a0a1a2: {
                         data: this.bmps[4],
@@ -199,7 +199,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
         let channels: Channels = {
             L: {
-                coefficentModel: 'LRGB',
+                coefficentModel: 'RTIpoly6',
                 coefficents: {
                     a0: {
                         data: this.bmps[0],
@@ -228,7 +228,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             R: {
-                coefficentModel: 'LRGB',
+                coefficentModel: 'flat',
                 coefficents: {
                     a0: {
                         data: this.bmps[6],
@@ -237,7 +237,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             G: {
-                coefficentModel: 'LRGB',
+                coefficentModel: 'flat',
                 coefficents: {
                     a0: {
                         data: this.bmps[7],
@@ -246,7 +246,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
                 },
             },
             B: {
-                coefficentModel: 'LRGB',
+                coefficentModel: 'flat',
                 coefficents: {
                     a0: {
                         data: this.bmps[8],

@@ -26,14 +26,14 @@ export class RotationController extends shim(RotationModel, Plugin) {
             ViewerRender: {
                 // first center the underlying texture
                 Centerer: {
-                    component: CentererComponent,
+                    component: CentererUI,
                     inversePoint: this.undoCurrentCenterer,
                     forwardPoint: this.doCurrentCenterer,
                     priority: 11,
                 },
                 // then rotate it
                 Rotation: {
-                    component: RotationComponent,
+                    component: RotationUI,
                     inversePoint: this.undoCurrentRotation,
                     forwardPoint: this.doCurrentRotation,
                     priority: 10,
@@ -42,7 +42,7 @@ export class RotationController extends shim(RotationModel, Plugin) {
             /** %endRotationHooks  */
             ViewerSide: {
                 Rotation: {
-                    component: SliderComponent,
+                    component: RotationSlider,
                     priority: 10,
                 },
             },
@@ -154,7 +154,7 @@ const { Plugin: RotationPlugin, Component } = PluginCreator(RotationController, 
 export default RotationPlugin
 export type IRotationPlugin = typeof RotationPlugin.Type
 
-export const RotationComponent = Component(function RotationNode (props) {
+export const RotationUI = Component(function RotationNode (props) {
     let maxDims = this.maxDims
     return <Node
         width={maxDims}
@@ -169,7 +169,7 @@ export const RotationComponent = Component(function RotationNode (props) {
 })
 
 /** %beginCenterer */
-export const CentererComponent = Component(function CentererNode (props) {
+export const CentererUI = Component(function CentererNode (props) {
     // dynamic sizes depending on the loaded btf
     // if the btf changes, the uniforms will be updated automatically
     let [width, height] = this.centererSizes
@@ -193,7 +193,7 @@ export const CentererComponent = Component(function CentererNode (props) {
 })
 /** %endCenterer */
 
-const SliderComponent = Component(function RotationSlider () {
+const RotationSlider = Component(function RotationSlider () {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <Tooltip title='Reset'>

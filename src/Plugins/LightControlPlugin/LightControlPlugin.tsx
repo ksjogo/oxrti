@@ -34,7 +34,7 @@ class LightController extends shim(LightControlModel, Plugin) {
             },
             ViewerSide: {
                 Rotation: {
-                    component: SliderComponent,
+                    component: LightControlUI,
                     priority: 90,
                 },
             },
@@ -178,11 +178,11 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-const SliderComponent = Component(function LightControlComponent (props) {
+const LightControlUI = Component(function LightControlComponent (props) {
     return <Card style={{ width: '100%' }} >
         <CardContent>
             <SafeGLIInspector>
-                <HemisphereComponent />
+                <HemisphereDisplay />
             </SafeGLIInspector>
             {this.showSliders && <>
                 <Typography>Pos X</Typography>
@@ -202,7 +202,7 @@ import shader from './hemisphere.glsl'
 import { toTex, rotate, Point, normalize, css2color } from '../../Util'
 import { IRotationPlugin } from '../RotationPlugin/RotationPlugin'
 
-const HemisphereComponent = Component(function Hemisphere (props, classes) {
+const HemisphereDisplay = Component(function Hemisphere (props, classes) {
     let point: Point = [this.displayX, this.displayY]
     let rotationPlugin = props.appState.plugins.get('RotationPlugin') as IRotationPlugin
     if (rotationPlugin) {

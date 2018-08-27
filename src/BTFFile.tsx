@@ -9,7 +9,7 @@ const DummyRenderSize = 300
 export type BTFCache = { [key: string]: BTFFile }
 
 export type ChannelModel = 'RGB' | 'LRGB' | 'SPECTRAL'
-export type CoefficentModel = 'flat' | string
+export type CoefficentModel = 'RTIpoly6' | 'flat'
 export type FileFormat = 'BMP8' | 'BMP16' | 'BMP24' | 'BMP32' | 'PNG8' | 'PNG16' | 'PNG24' | 'PNG32' | 'PNG42' | 'PNG64'
 export type Channels = { [key: string]: Channel }
 export type Channel = {

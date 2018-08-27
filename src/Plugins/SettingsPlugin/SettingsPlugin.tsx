@@ -13,7 +13,7 @@ class SettingsController extends shim(SettingsModel, Plugin) {
             Tabs: {
                 Converter: {
                     priority: 0,
-                    content: SettingsView,
+                    content: SettingsUI,
                     tab: {
                         label: 'Settings',
                     },
@@ -33,7 +33,7 @@ const styles = () => createStyles({
     },
 })
 
-const SettingsView = Component(function SettingsView (props, classes) {
+const SettingsUI = Component(function SettingsView (props, classes) {
     let plugins = Array.from(props.appState.plugins.entries()).sort(([nameA], [nameB]) => {
         return nameA.localeCompare(nameB)
     })
