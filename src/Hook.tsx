@@ -85,7 +85,7 @@ type ViewerTabFocus = {
 // specific channelModel renderers can register their base node
 type BaseNodeConfig = {
     channelModel: ChannelModel,
-    // e.g. default, surface normals, specular enhancement, etc.
+    // a basenode can declare that it supports multiple rendering modes e.g. default, surface normals, specular enhancement, etc.
     renderingModes: string[],
     node: PluginComponentType<BaseNodeProps>,
 }

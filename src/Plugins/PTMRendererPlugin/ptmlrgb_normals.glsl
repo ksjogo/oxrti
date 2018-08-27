@@ -25,8 +25,8 @@ void main() {
     a4 = (a4 * 255.0 - biases[4]) * scales[4] / 255.0;
     a5 = (a5 * 255.0 - biases[5]) * scales[5] / 255.0;
     
-    float Iu = (a2 * a4 - 2.0 * a1 * a3) / (4.0 * a0 * a1 - a2 * a2);
-    float Iv = (a2 * a3 - 2.0 * a0 * a4) / (4.0 * a0 * a1 - a2 * a2);
+    float Iu = clamp((a2 * a4 - 2.0 * a1 * a3) / (4.0 * a0 * a1 - a2 * a2),-1.0,1.0);
+    float Iv =  clamp((a2 * a3 - 2.0 * a0 * a4) / (4.0 * a0 * a1 - a2 * a2),-1.0,1.0);
     float Iz = sqrt(1.0 - Iu * Iu - Iv * Iv);
 
     float Px = Iu * 0.5 + 0.5;
