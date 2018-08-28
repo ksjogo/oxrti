@@ -68,7 +68,6 @@ export default class PTMConverterStrategy extends ConverterStrategy {
         }
     }
 
-    /** %beginRead */
     async readPixelsLRGB () {
         // allocate output buffers for ['a_0', 'a_1', 'a_2', 'a_3', 'a_4', 'a_5', 'R', 'G', 'B']
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels))
@@ -92,6 +91,7 @@ export default class PTMConverterStrategy extends ConverterStrategy {
             }
     }
 
+    /** %beginRead */
     async readPixelsRGB () {
         // allocate output buffers for ['R0R1R2', 'R3R4R5', 'G0G1G2', 'G3G4G5', 'B0B1B2', 'B3B4B5']
         this.coeffData = this.coeffNames.map(e => Buffer.alloc(this.pixels * 3))

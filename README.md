@@ -3,13 +3,14 @@
 ## Background
 
 This is the current development place for new RTI/BRDF software developed inside the Computer Science department at the University of Oxford.
-The inital parts will be the main body of a master thesis by Johannes "ksjogo" Goslar, which will contain deeper discussion of all components.
 
 # Running It
 
+If you have a local copy of the git repository, a `index.html` file is present. Opening this should load the latest version of the software. Google Chrome is recommended as the WebGL implementation is more performant and standard conform than Firefox.
+
 ## Online Copy
 
-The easiest way to access to software is by visiting [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
+Just visit [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
 
 ## Download
 
@@ -30,21 +31,23 @@ git clone https://github.com/ksjogo/oxrti.git
 npm install
 ```
 
-Access either the webpack dev server inside your browser:
+Then run:
+```
+npm start
+```
+An oxrti Electron window should open up (tested on MacOS and Windows only).
+
+
+Or access the webpack dev server inside your browser after:
 ```
 npm run-script startweb
 ```
 Then open http://localhost:3000 inside your browser.
 
-Or use the electron version:
-```
-npm start
-```
-An oxrti window should open up.
 
 ## Test Files
 
-There are some test files inside a submodule. Run
+If you have a full checkout, some data files are inside the `data` directory. Otherwise run
 ```
 git submodule update --init
 ```

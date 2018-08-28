@@ -17,11 +17,13 @@ export type HookBase = { priority?: number }
 // Generic single component hook, usually used for rendering a dynamic list of components
 export type ComponentHook<P = PluginComponentType> = HookBase & { component: P }
 
-// Generic single component hook, usually used for notifications
+// Generic single function hook, usually used for notifications
 export type FunctionHook<P = (...args: any[]) => any> = HookBase & { func: P }
 
 // Generic hook config, requiring more work at the consumer side
 export type ConfigHook<P = any> = HookBase & P
+
+/** %end */
 
 // union of all hooks to allow for manual hook distinction
 export type UnknownHook = ComponentHook & FunctionHook & ConfigHook
@@ -46,8 +48,6 @@ type LimitedHooks<T, U> = ({ [P in keyof T]: T[P] extends U ? P : never })[keyof
 
 // limit hookname parameters to a type conforming subset, e.g. LimitedHook<ComponentHook>
 export type LimitedHook<P> = LimitedHooks<HookConfig, Hooks<P>>
-
-/** %end */
 
 // specific hooks for the plugins to use
 
