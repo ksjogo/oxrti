@@ -12,6 +12,7 @@ replace({
     paths: ['./azurestatic/index.html'],
     silent: false,
 });
+
 try {
     spawnSync('npx', ["-c webpack --mode 'production'"], { stdio: 'inherit' });
     spawnSync('npx', ["-c webpack --config webpack.functions.js"], { stdio: 'inherit' });
