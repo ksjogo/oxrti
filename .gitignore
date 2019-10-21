@@ -9,3 +9,6 @@ static/bundle.js
 dist/
 out/
 tmp/
+!dist/static
+!dist/oxrti.zip
+!dist/bundle.js

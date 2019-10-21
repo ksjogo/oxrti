@@ -10,7 +10,7 @@ If you have a local copy of the git repository, a `index.html` file is present. 
 
 ## Online Copy
 
-Just visit [our hosted version](https://oxrtimaster.azurewebsites.net/api/azurestatic) for the current master.
+Just visit [our hosted version](http://oxrti.kronberger-spiele.de) for the current master.
 
 ## Download
 

@@ -27,13 +27,18 @@ try {
     folder.file('oxrti.js', js);
 
     zip
-    .generateNodeStream({type:'nodebuffer',streamFiles:true})
-    .pipe(fs.createWriteStream('./dist/oxrti.zip'))
-    .on('finish', function () {
-        // JSZip generates a readable stream with a "end" event,
-        // but is piped here in a writable stream which emits a "finish" event.
-        console.log("out.zip written.");
-    });
+        .generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+        .pipe(fs.createWriteStream('./dist/oxrti.zip'))
+        .on('finish', function () {
+            // JSZip generates a readable stream with a "end" event,
+            // but is piped here in a writable stream which emits a "finish" event.
+            console.log("out.zip written.");
+        });
+
+
+    //static web build
+    fs.writeFileSync('./dist/static/oxrti.js', js)
+    fs.writeFileSync('./dist/static/index.html', html)
 } catch (e) {
     console.error(e);
 }
