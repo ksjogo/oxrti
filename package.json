@@ -61,7 +61,7 @@
     "mobx-state-tree": "^3.2.3",
     "mst-middlewares": "^3.2.3",
     "ndarray": "^1.0.18",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.1",
     "p-limit": "^2.0.0",
     "pngjs": "git+https://github.com/lukeapage/pngjs.git",
     "promise-file-reader": "^1.0.2",
