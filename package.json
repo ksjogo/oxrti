@@ -37,7 +37,7 @@
     "css-color-converter": "^1.1.0",
     "css-loader": "^1.0.0",
     "diff": "^3.5.0",
-    "electron": "^3.0.0-nightly.20180821",
+    "electron": "^9.4.0",
     "electron-builder": "^20.28.2",
     "electron-devtools-installer": "^2.2.4",
     "electron-webpack": "^2.2.1",
